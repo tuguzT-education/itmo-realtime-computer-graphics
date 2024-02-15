@@ -1,6 +1,3 @@
-// MySuper3DApp.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <windows.h>
 #include <WinUser.h>
 #include <wrl.h>
@@ -10,6 +7,8 @@
 #include <d3dcompiler.h>
 #include <directxmath.h>
 #include <chrono>
+#include <tchar.h>
+#include <Window.h>
 
 
 #pragma comment(lib, "d3d11.lib")
@@ -18,91 +17,30 @@
 #pragma comment(lib, "dxguid.lib")
 
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)
+int APIENTRY _tWinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPTSTR lpCmdLine,
+	_In_ int nCmdShow)
 {
-	switch (umessage)
-	{
-	case WM_KEYDOWN:
-	{
-		// If a key is pressed send it to the input object so it can record that state.
-		std::cout << "Key: " << static_cast<unsigned int>(wparam) << std::endl;
+	constexpr LONG width = 800, height = 800;
 
-		if (static_cast<unsigned int>(wparam) == 27) PostQuitMessage(0);
-		return 0;
-	}
-	default:
-		{
-			return DefWindowProc(hwnd, umessage, wparam, lparam);
-		}
-	}
-}
-
-
-int main()
-{
-	LPCWSTR applicationName = L"My3DApp";
-	HINSTANCE hInstance = GetModuleHandle(nullptr);
-
-#pragma region Window init
-    WNDCLASSEX wc;
-    
-	wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-	wc.lpfnWndProc = WndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(nullptr, IDI_WINLOGO);
-	wc.hIconSm = wc.hIcon;
-	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wc.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH));
-	wc.lpszMenuName = nullptr;
-	wc.lpszClassName = applicationName;
-	wc.cbSize = sizeof(WNDCLASSEX);
-
-	// Register the window class.
-	RegisterClassEx(&wc);
-
-
-	auto screenWidth = 800;
-	auto screenHeight = 800;
-
-	RECT windowRect = { 0, 0, static_cast<LONG>(screenWidth), static_cast<LONG>(screenHeight) };
-	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
-
-	auto dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_THICKFRAME;
-
-	auto posX = (GetSystemMetrics(SM_CXSCREEN) - screenWidth) / 2;
-	auto posY = (GetSystemMetrics(SM_CYSCREEN) - screenHeight) / 2;
-
-	HWND hWnd = CreateWindowEx(WS_EX_APPWINDOW, applicationName, applicationName,
-		dwStyle,
-		posX, posY,
-		windowRect.right - windowRect.left,
-		windowRect.bottom - windowRect.top,
-		nullptr, nullptr, hInstance, nullptr);
-
-	ShowWindow(hWnd, SW_SHOW);
-	SetForegroundWindow(hWnd);
-	SetFocus(hWnd);
-
-	ShowCursor(true);
-
-#pragma endregion Window init
+	yage::Window window{TEXT("Application"), width, height, hInstance};
 
 
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
 
 	DXGI_SWAP_CHAIN_DESC swapDesc = {};
 	swapDesc.BufferCount = 2;
-	swapDesc.BufferDesc.Width = screenWidth;
-	swapDesc.BufferDesc.Height = screenHeight;
+	swapDesc.BufferDesc.Width = width;
+	swapDesc.BufferDesc.Height = height;
 	swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapDesc.BufferDesc.RefreshRate.Numerator = 60;
 	swapDesc.BufferDesc.RefreshRate.Denominator = 1;
 	swapDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	swapDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 	swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	swapDesc.OutputWindow = hWnd;
+	swapDesc.OutputWindow = window.GetRawHandle();
 	swapDesc.Windowed = true;
 	swapDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 	swapDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
@@ -141,7 +79,7 @@ int main()
 
 	ID3DBlob* vertexBC = nullptr;
 	ID3DBlob* errorVertexCode = nullptr;
-	res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl",
+	res = D3DCompileFromFile(L"./resources/shaders/shader.hlsl",
 		nullptr /*macros*/,
 		nullptr /*include*/,
 		"VSMain",
@@ -161,7 +99,7 @@ int main()
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(hWnd, L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
+			MessageBox(window.GetRawHandle(), L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
 		}
 
 		return 0;
@@ -171,7 +109,7 @@ int main()
 
 	ID3DBlob* pixelBC;
 	ID3DBlob* errorPixelCode;
-	res = D3DCompileFromFile(L"./Shaders/MyVeryFirstShader.hlsl", Shader_Macros /*macros*/, nullptr /*include*/, "PSMain", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &pixelBC, &errorPixelCode);
+	res = D3DCompileFromFile(L"./resources/shaders/shader.hlsl", Shader_Macros /*macros*/, nullptr /*include*/, "PSMain", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &pixelBC, &errorPixelCode);
 
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
@@ -294,8 +232,8 @@ int main()
 		context->RSSetState(rastState);
 
 		D3D11_VIEWPORT viewport = {};
-		viewport.Width = static_cast<float>(screenWidth);
-		viewport.Height = static_cast<float>(screenHeight);
+		viewport.Width = static_cast<float>(width);
+		viewport.Height = static_cast<float>(height);
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
 		viewport.MinDepth = 0;
@@ -325,7 +263,7 @@ int main()
 
 			WCHAR text[256];
 			swprintf_s(text, TEXT("FPS: %f"), fps);
-			SetWindowText(hWnd, text);
+			window.SetTitle(text);
 
 			frameCount = 0;
 		}
@@ -343,15 +281,5 @@ int main()
 	}
 
     std::cout << "Hello World!\n";
+	return 0;
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
