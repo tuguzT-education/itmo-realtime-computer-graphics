@@ -1,34 +1,31 @@
 #pragma once
 
-#include "Namespace.hpp"
-
 #include <wtypes.h>
 
-namespace borov_engine
-{
-	class Window
-	{
-	public:
-		struct Dimensions
-		{
-			LONG width;
-			LONG height;
-		};
+namespace borov_engine {
 
-		explicit Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instanceHandle = nullptr);
+struct Dimensions {
+    LONG width;
+    LONG height;
+};
 
-		HWND GetRawHandle() const;
-		HINSTANCE GetRawInstanceHandle() const;
+class Window {
+  public:
+    explicit Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instanceHandle = nullptr);
 
-		RECT GetRect() const;
-		Dimensions GetDimensions() const;
+    [[nodiscard]] HWND GetRawHandle() const;
+    [[nodiscard]] HINSTANCE GetRawInstanceHandle() const;
 
-		RECT GetClientRect() const;
-		Dimensions GetClientDimensions() const;
+    [[nodiscard]] RECT GetRect() const;
+    [[nodiscard]] Dimensions GetDimensions() const;
 
-		bool SetTitle(LPCTSTR title);
+    [[nodiscard]] RECT GetClientRect() const;
+    [[nodiscard]] Dimensions GetClientDimensions() const;
 
-	private:
-		HWND handle;
-	};
+    bool SetTitle(LPCTSTR title);
+
+  private:
+    HWND handle;
+};
+
 }

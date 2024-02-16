@@ -2,113 +2,103 @@
 
 #include <winuser.h>
 
-namespace borov_engine
-{
-	namespace detail
-	{
-		LRESULT CALLBACK WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
-		{
-			switch (uMessage)
-			{
-			case WM_KEYDOWN:
-			{
-				// If a key is pressed send it to the input object, so it can record that state.
-				// std::cout << "Key: " << static_cast<unsigned int>(wParam) << std::endl;
+namespace borov_engine {
 
-				if (static_cast<unsigned int>(wParam) == 27) PostQuitMessage(0);
-				return 0;
-			}
-			case WM_CLOSE:
-			{
-				DestroyWindow(hWnd);
-				return 0;
-			}
-			case WM_DESTROY:
-			{
-				PostQuitMessage(0);
-				return 0;
-			}
-			default:
-				return DefWindowProc(hWnd, uMessage, wParam, lParam);
-			}
-		}
-	}
+namespace detail {
 
-	Window::Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instanceHandle)
-	{
-		instanceHandle = (instanceHandle != nullptr) ? instanceHandle : GetModuleHandle(nullptr);
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam) {
+    switch (uMessage) {
+        case WM_KEYDOWN: {
+            // If a key is pressed send it to the input object, so it can record that state.
+            // std::cout << "Key: " << static_cast<unsigned int>(wParam) << std::endl;
 
-		WNDCLASSEX wc{
-			.cbSize = sizeof(WNDCLASSEX),
-			.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
-			.lpfnWndProc = detail::WndProc,
-			.hInstance = instanceHandle,
-			.hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)),
-			.lpszClassName = name,
-		};
-		RegisterClassEx(&wc);
+            if (static_cast<unsigned int>(wParam) == 27) PostQuitMessage(0);
+            return 0;
+        }
+        case WM_CLOSE: {
+            DestroyWindow(hWnd);
+            return 0;
+        }
+        case WM_DESTROY: {
+            PostQuitMessage(0);
+            return 0;
+        }
+        default: {
+            return DefWindowProc(hWnd, uMessage, wParam, lParam);
+        }
+    }
+}
 
-		RECT rect{.left = 0, .top = 0, .right = width, .bottom = height};
-		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+}
 
-		handle = CreateWindowEx(WS_EX_APPWINDOW, name, name,
-			WS_OVERLAPPEDWINDOW,
-			(GetSystemMetrics(SM_CXSCREEN) - width) / 2,
-			(GetSystemMetrics(SM_CYSCREEN) - height) / 2,
-			rect.right - rect.left,
-			rect.bottom - rect.top,
-			nullptr, nullptr, instanceHandle, nullptr);
+Window::Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instanceHandle) {
+    instanceHandle = (instanceHandle != nullptr) ? instanceHandle : GetModuleHandle(nullptr);
 
-		ShowWindow(handle, SW_SHOW);
-		SetForegroundWindow(handle);
-		SetFocus(handle);
-		ShowCursor(true);
-	}
+    WNDCLASSEX wc{
+        .cbSize = sizeof(WNDCLASSEX),
+        .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
+        .lpfnWndProc = detail::WndProc,
+        .hInstance = instanceHandle,
+        .hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)),
+        .lpszClassName = name,
+    };
+    RegisterClassEx(&wc);
 
-	HWND Window::GetRawHandle() const
-	{
-		return handle;
-	}
+    RECT rect{.left = 0, .top = 0, .right = width, .bottom = height};
+    AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
 
-	HINSTANCE Window::GetRawInstanceHandle() const
-	{
-		return (HINSTANCE)GetWindowLongPtr(handle, GWLP_HINSTANCE);
-	}
+    handle = CreateWindowEx(WS_EX_APPWINDOW, name, name,
+                            WS_OVERLAPPEDWINDOW,
+                            (GetSystemMetrics(SM_CXSCREEN) - width) / 2,
+                            (GetSystemMetrics(SM_CYSCREEN) - height) / 2,
+                            rect.right - rect.left,
+                            rect.bottom - rect.top,
+                            nullptr, nullptr, instanceHandle, nullptr);
 
-	RECT Window::GetRect() const
-	{
-		RECT rect{};
-		GetWindowRect(handle, &rect);
-		return rect;
-	}
+    ShowWindow(handle, SW_SHOW);
+    SetForegroundWindow(handle);
+    SetFocus(handle);
+    ShowCursor(true);
+}
 
-	Window::Dimensions Window::GetDimensions() const
-	{
-		RECT rect = GetRect();
-		return Dimensions{
-			.width = rect.right - rect.left,
-			.height = rect.bottom - rect.top,
-		};
-	}
+HWND Window::GetRawHandle() const {
+    return handle;
+}
 
-	RECT Window::GetClientRect() const
-	{
-		RECT rect{};
-		::GetClientRect(handle, &rect);
-		return rect;
-	}
+HINSTANCE Window::GetRawInstanceHandle() const {
+    return (HINSTANCE) GetWindowLongPtr(handle, GWLP_HINSTANCE);
+}
 
-	Window::Dimensions Window::GetClientDimensions() const
-	{
-		RECT rect = GetClientRect();
-		return Dimensions{
-			.width = rect.right - rect.left,
-			.height = rect.bottom - rect.top,
-		};
-	}
+RECT Window::GetRect() const {
+    RECT rect{};
+    GetWindowRect(handle, &rect);
+    return rect;
+}
 
-	bool Window::SetTitle(LPCTSTR title)
-	{
-		return SetWindowText(handle, title);
-	}
+Dimensions Window::GetDimensions() const {
+    RECT rect = GetRect();
+    return Dimensions{
+        .width = rect.right - rect.left,
+        .height = rect.bottom - rect.top,
+    };
+}
+
+RECT Window::GetClientRect() const {
+    RECT rect{};
+    ::GetClientRect(handle, &rect);
+    return rect;
+}
+
+Dimensions Window::GetClientDimensions() const {
+    RECT rect = GetClientRect();
+    return Dimensions{
+        .width = rect.right - rect.left,
+        .height = rect.bottom - rect.top,
+    };
+}
+
+bool Window::SetTitle(LPCTSTR title) {
+    return SetWindowText(handle, title);
+}
+
 }

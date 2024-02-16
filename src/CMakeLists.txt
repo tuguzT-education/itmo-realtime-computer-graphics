@@ -1,5 +1,4 @@
 set(HEADER_LIST
-        ${PROJECT_SOURCE_DIR}/include/borov_engine/Namespace.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/Window.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/Delegates.hpp)
 set(SOURCE_LIST
