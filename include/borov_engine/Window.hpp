@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Namespace.h"
+#include "Namespace.hpp"
 
 #include <wtypes.h>
 
-namespace yet_another_game_engine
+namespace borov_engine
 {
 	class Window
 	{
 	public:
-		struct Dimensions 
+		struct Dimensions
 		{
 			LONG width;
 			LONG height;

@@ -1,8 +1,8 @@
-#include "Window.h"
+#include "borov_engine/Window.hpp"
 
 #include <winuser.h>
 
-namespace yet_another_game_engine
+namespace borov_engine
 {
 	namespace detail
 	{
@@ -12,7 +12,7 @@ namespace yet_another_game_engine
 			{
 			case WM_KEYDOWN:
 			{
-				// If a key is pressed send it to the input object so it can record that state.
+				// If a key is pressed send it to the input object, so it can record that state.
 				// std::cout << "Key: " << static_cast<unsigned int>(wParam) << std::endl;
 
 				if (static_cast<unsigned int>(wParam) == 27) PostQuitMessage(0);

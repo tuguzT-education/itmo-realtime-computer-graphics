@@ -1,5 +1,7 @@
+#include <borov_engine/Window.hpp>
+
 #include <windows.h>
-#include <WinUser.h>
+#include <winuser.h>
 #include <wrl.h>
 #include <iostream>
 #include <d3d.h>
@@ -8,7 +10,6 @@
 #include <directxmath.h>
 #include <chrono>
 #include <tchar.h>
-#include <Window.h>
 
 
 #pragma comment(lib, "d3d11.lib")
@@ -25,7 +26,7 @@ int APIENTRY _tWinMain(
 {
 	constexpr LONG width = 800, height = 800;
 
-	yage::Window window{TEXT("Application"), width, height, hInstance};
+	borov_engine::Window window{TEXT("Application"), width, height, hInstance};
 
 
 	D3D_FEATURE_LEVEL featureLevel[] = { D3D_FEATURE_LEVEL_11_1 };
@@ -79,7 +80,7 @@ int APIENTRY _tWinMain(
 
 	ID3DBlob* vertexBC = nullptr;
 	ID3DBlob* errorVertexCode = nullptr;
-	res = D3DCompileFromFile(L"./resources/shaders/shader.hlsl",
+	res = D3DCompileFromFile(L"resources/shaders/shader.hlsl",
 		nullptr /*macros*/,
 		nullptr /*include*/,
 		"VSMain",
@@ -99,7 +100,7 @@ int APIENTRY _tWinMain(
 		// If there was  nothing in the error message then it simply could not find the shader file itself.
 		else
 		{
-			MessageBox(window.GetRawHandle(), L"MyVeryFirstShader.hlsl", L"Missing Shader File", MB_OK);
+			MessageBox(window.GetRawHandle(), TEXT("MyVeryFirstShader.hlsl"), TEXT("Missing Shader File"), MB_OK);
 		}
 
 		return 0;
@@ -109,7 +110,7 @@ int APIENTRY _tWinMain(
 
 	ID3DBlob* pixelBC;
 	ID3DBlob* errorPixelCode;
-	res = D3DCompileFromFile(L"./resources/shaders/shader.hlsl", Shader_Macros /*macros*/, nullptr /*include*/, "PSMain", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &pixelBC, &errorPixelCode);
+	res = D3DCompileFromFile(L"resources/shaders/shader.hlsl", Shader_Macros /*macros*/, nullptr /*include*/, "PSMain", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &pixelBC, &errorPixelCode);
 
 	ID3D11VertexShader* vertexShader;
 	ID3D11PixelShader* pixelShader;
@@ -261,8 +262,8 @@ int APIENTRY _tWinMain(
 
 			totalTime -= 1.0f;
 
-			WCHAR text[256];
-			swprintf_s(text, TEXT("FPS: %f"), fps);
+			TCHAR text[256];
+			sprintf_s(text, TEXT("FPS: %f"), fps);
 			window.SetTitle(text);
 
 			frameCount = 0;
