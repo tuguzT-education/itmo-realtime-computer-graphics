@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef BOROV_ENGINE_WINDOW_HPP_INCLUDED
+#define BOROV_ENGINE_WINDOW_HPP_INCLUDED
+
 #include <wtypes.h>
 
 namespace borov_engine {
@@ -29,3 +32,5 @@ class Window {
 };
 
 }
+
+#endif //BOROV_ENGINE_WINDOW_HPP_INCLUDED

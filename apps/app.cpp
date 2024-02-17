@@ -1,4 +1,5 @@
-#include <borov_engine/Window.hpp>
+#include <borov_engine/window.hpp>
+#include <borov_engine/delegate/delegate.hpp>
 
 #include <winuser.h>
 #include <wrl.h>
@@ -267,5 +268,6 @@ int main() {
     }
 
     std::cout << "Hello World!\n";
+    Delegate<int, int, double> delegate;
     return 0;
 }

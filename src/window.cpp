@@ -1,4 +1,4 @@
-#include "borov_engine/Window.hpp"
+#include "borov_engine/window.hpp"
 
 #include <winuser.h>
 
