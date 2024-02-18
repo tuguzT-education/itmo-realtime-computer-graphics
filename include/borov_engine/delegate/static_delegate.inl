@@ -6,7 +6,7 @@
 namespace borov_engine::delegate {
 
 template<typename R, typename... Args, typename... Payload>
-StaticDelegate<R(Args...), Payload...>::StaticDelegate(DelegateFunction function, Payload &&... payload)
+StaticDelegate<R(Args...), Payload...>::StaticDelegate(Function function, Payload &&... payload)
     : function_{function},
       payload_{std::forward<Payload>(payload)...} {}
 

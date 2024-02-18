@@ -15,6 +15,8 @@ class LambdaDelegate;
 template<typename Lambda, typename R, typename... Args, typename... Payload>
 class LambdaDelegate<Lambda, R(Args...), Payload...> : public DelegateKind<R, Args...> {
   public:
+    using Function = Lambda;
+
     explicit LambdaDelegate(Lambda &&lambda, Payload &&... payload);
 
     R Execute(Args &&... args) override;

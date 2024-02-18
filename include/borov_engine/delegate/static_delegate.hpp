@@ -14,10 +14,10 @@ class StaticDelegate;
 
 template<typename R, typename... Args, typename... Payload>
 class StaticDelegate<R(Args...), Payload...> : public DelegateKind<R, Args...> {
-    using DelegateFunction = R(*)(Args..., Payload...);
-
   public:
-    explicit StaticDelegate(DelegateFunction function, Payload &&... payload);
+    using Function = R(*)(Args..., Payload...);
+
+    explicit StaticDelegate(Function function, Payload &&... payload);
 
     R Execute(Args &&... args) override;
 
@@ -25,7 +25,7 @@ class StaticDelegate<R(Args...), Payload...> : public DelegateKind<R, Args...> {
     template<std::size_t... Is>
     R Execute_Internal(Args &&... args, std::index_sequence<Is...>);
 
-    DelegateFunction function_;
+    Function function_;
     std::tuple<Payload...> payload_;
 };
 

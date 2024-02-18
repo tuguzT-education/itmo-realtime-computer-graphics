@@ -6,8 +6,6 @@
 #include <utility>
 #include <cstring>
 
-#include "callbacks.hpp"
-
 namespace borov_engine::alloc {
 
 template<std::size_t MaxStackSize>
@@ -68,7 +66,7 @@ void *InlineAllocator<MaxStackSize>::Allocate(const std::size_t size) {
         Free();
         size_ = size;
         if (size > MaxStackSize) {
-            alloc_ = borov_engine::alloc::Alloc(size);
+            alloc_ = std::malloc(size);
             return alloc_;
         }
     }
@@ -78,7 +76,7 @@ void *InlineAllocator<MaxStackSize>::Allocate(const std::size_t size) {
 template<std::size_t MaxStackSize>
 void InlineAllocator<MaxStackSize>::Free() {
     if (size_ > MaxStackSize) {
-        borov_engine::alloc::Free(alloc_);
+        std::free(alloc_);
     }
     size_ = 0;
 }

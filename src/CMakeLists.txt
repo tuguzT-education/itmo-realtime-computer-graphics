@@ -1,5 +1,4 @@
 set(HEADER_LIST
-        ${PROJECT_SOURCE_DIR}/include/borov_engine/alloc/callbacks.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/alloc/inline_allocator.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/alloc/inline_allocator.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/member_function.hpp
@@ -13,11 +12,14 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/lambda_delegate.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/shared_ptr_delegate.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/shared_ptr_delegate.inl
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/delegate_handle.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/delegate_handle.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/delegate.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/multicast_delegate.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/multicast_delegate.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/window.hpp)
 set(SOURCE_LIST
-        alloc/callbacks.cpp
-        delegate/delegate.cpp
+        delegate/delegate_handle.cpp
         window.cpp)
 
 add_library(borov_engine ${SOURCE_LIST} ${HEADER_LIST})

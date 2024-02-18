@@ -7,7 +7,7 @@ namespace borov_engine::delegate {
 
 template<bool IsConst, typename T, typename R, typename... Args, typename... Payload>
 SharedPtrDelegate<IsConst, T, R(Args...), Payload...>::SharedPtrDelegate(const std::shared_ptr<T> &object,
-                                                                         DelegateFunction function,
+                                                                         Function function,
                                                                          Payload &&... payload)
     : object_{object},
       function_{function},

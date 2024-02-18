@@ -15,10 +15,10 @@ class RawDelegate;
 
 template<bool IsConst, typename T, typename R, typename... Args, typename... Payload>
 class RawDelegate<IsConst, T, R(Args...), Payload...> : public DelegateKind<R, Args...> {
-    using DelegateFunction = typename detail::MemberFunction<IsConst, T, R, Args..., Payload...>::Type;
-
   public:
-    RawDelegate(T *object, DelegateFunction function, Payload &&... payload);
+    using Function = typename detail::MemberFunction<IsConst, T, R, Args..., Payload...>::Type;
+
+    RawDelegate(T *object, Function function, Payload &&... payload);
 
     R Execute(Args &&... args) override;
 
@@ -29,7 +29,7 @@ class RawDelegate<IsConst, T, R(Args...), Payload...> : public DelegateKind<R, A
     R Execute_Internal(Args &&... args, std::index_sequence<Is...>);
 
     T *object_;
-    DelegateFunction function_;
+    Function function_;
     std::tuple<Payload...> payload_;
 };
 

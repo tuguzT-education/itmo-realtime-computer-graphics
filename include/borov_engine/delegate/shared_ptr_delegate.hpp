@@ -16,10 +16,10 @@ class SharedPtrDelegate;
 
 template<bool IsConst, typename T, typename R, typename... Args, typename... Payload>
 class SharedPtrDelegate<IsConst, T, R(Args...), Payload...> : public DelegateKind<R, Args...> {
-    using DelegateFunction = typename detail::MemberFunction<IsConst, T, R, Args..., Payload...>::Type;
-
   public:
-    SharedPtrDelegate(const std::shared_ptr<T> &object, DelegateFunction function, Payload &&... payload);
+    using Function = typename detail::MemberFunction<IsConst, T, R, Args..., Payload...>::Type;
+
+    SharedPtrDelegate(const std::shared_ptr<T> &object, Function function, Payload &&... payload);
 
     R Execute(Args &&... args) override;
 
@@ -30,7 +30,7 @@ class SharedPtrDelegate<IsConst, T, R(Args...), Payload...> : public DelegateKin
     R Execute_Internal(Args &&... args, std::index_sequence<Is...>);
 
     std::weak_ptr<T> object_;
-    DelegateFunction function_;
+    Function function_;
     std::tuple<Payload...> payload_;
 };
 

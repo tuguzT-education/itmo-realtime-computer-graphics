@@ -6,9 +6,7 @@
 namespace borov_engine::delegate {
 
 template<bool IsConst, typename T, typename R, typename... Args, typename... Payload>
-RawDelegate<IsConst, T, R(Args...), Payload...>::RawDelegate(T *object,
-                                                             DelegateFunction function,
-                                                             Payload &&... payload)
+RawDelegate<IsConst, T, R(Args...), Payload...>::RawDelegate(T *object, Function function, Payload &&... payload)
     : object_{object},
       function_{function},
       payload_{std::forward<Payload>(payload)...} {}

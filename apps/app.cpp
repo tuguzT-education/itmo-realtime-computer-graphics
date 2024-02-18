@@ -1,5 +1,6 @@
 #include <borov_engine/window.hpp>
 #include <borov_engine/delegate/delegate.hpp>
+#include <borov_engine/delegate/multicast_delegate.hpp>
 
 #include <winuser.h>
 #include <wrl.h>
@@ -268,6 +269,15 @@ int main() {
     }
 
     std::cout << "Hello World!\n";
-    Delegate<int, int, double> delegate;
+
+    borov_engine::delegate::Delegate<int> delegate;
+    delegate.BindLambda([] { return 42; });
+    auto result = delegate.ExecuteIfBound();
+    std::cout << result.value() << std::endl;
+
+    borov_engine::delegate::MulticastDelegate multicast_delegate;
+    multicast_delegate.AddLambda([&result] { std::cout << result.value() << std::endl; });
+    multicast_delegate.Broadcast();
+
     return 0;
 }
