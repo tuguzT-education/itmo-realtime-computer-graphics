@@ -23,10 +23,11 @@ void Timer::Tick() {
     current_ = Clock::now();
 
     frame_count_ += 1;
-    float seconds_from_previous_frame = SecondsFrom(previous_frame_);
-    if (seconds_from_previous_frame > 1) {
-        frames_per_second_ = static_cast<float>(frame_count_) / seconds_from_previous_frame;
-        previous_frame_ += std::chrono::seconds{1};
+    auto second = std::chrono::seconds{1};
+    auto time_from_previous_frame = current_ - previous_frame_;
+    if (time_from_previous_frame > second) {
+        frames_per_second_ = static_cast<float>(frame_count_) / SecondsFrom(time_from_previous_frame);
+        previous_frame_ += second;
         frame_count_ = 0;
     }
 }
@@ -43,11 +44,15 @@ float Timer::FramesPerSecond() const {
     return frames_per_second_;
 }
 
-float Timer::SecondsFrom(Timer::TimePoint time_point) const {
-    using Duration = std::chrono::microseconds;
+float Timer::SecondsFrom(TimePoint time_point) const {
+    return SecondsFrom(current_ - time_point);
+}
 
-    auto ticks = std::chrono::duration_cast<Duration>(current_ - time_point).count();
-    return static_cast<float>(ticks) / Duration::period::den;
+float Timer::SecondsFrom(Duration duration) {
+    using std::chrono::microseconds;
+
+    auto ticks = std::chrono::duration_cast<microseconds>(duration).count();
+    return static_cast<float>(ticks) / microseconds::period::den;
 }
 
 }

@@ -11,6 +11,7 @@ class Timer {
   public:
     using Clock = std::chrono::steady_clock;
     using TimePoint = Clock::time_point;
+    using Duration = Clock::duration;
     using FrameCount = std::uint16_t;
 
     explicit Timer() noexcept;
@@ -29,6 +30,7 @@ class Timer {
     explicit Timer(TimePoint time_point) noexcept;
 
     [[nodiscard]] float SecondsFrom(TimePoint time_point) const;
+    [[nodiscard]] static float SecondsFrom(Duration duration);
 
     TimePoint start_;
     TimePoint current_;
