@@ -204,8 +204,8 @@ int main() {
 
         game.device_context_->OMSetRenderTargets(1, game.render_target_view_.GetAddressOf(), nullptr);
 
-        float integral;
-        float red = std::modf(timer.StartTime(), &integral);
+        float start_time = timer.StartTime();
+        float red = start_time - std::floor(start_time);
         float color[] = {red, 0.1f, 0.1f, 1.0f};
         game.device_context_->ClearRenderTargetView(game.render_target_view_.Get(), color);
 
