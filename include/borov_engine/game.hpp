@@ -8,6 +8,7 @@
 
 #include "game.fwd"
 #include "window.hpp"
+#include "timer.hpp"
 
 namespace borov_engine {
 
@@ -18,15 +19,22 @@ class Game {
   public:
     explicit Game(Window &window);
 
-    ComPtr<ID3D11RenderTargetView> render_target_view_;
-    ComPtr<IDXGISwapChain> swap_chain_;
-    ComPtr<ID3D11DeviceContext> device_context_;
-    ComPtr<ID3D11Device> device_;
+    [[nodiscard]] const Timer &GetTimer() const;
+
+    void Run();
 
   private:
     void InitializeDevice();
     void InitializeSwapChain(const Window &window);
     void InitializeRenderTargetView();
+
+    ComPtr<ID3D11RenderTargetView> render_target_view_;
+    ComPtr<IDXGISwapChain> swap_chain_;
+    ComPtr<ID3D11DeviceContext> device_context_;
+    ComPtr<ID3D11Device> device_;
+
+    Timer timer_;
+    Window &window_;
 };
 
 }
