@@ -1,4 +1,5 @@
 #include <borov_engine/window.hpp>
+#include <borov_engine/game.hpp>
 #include <borov_engine/delegate/delegate.hpp>
 #include <borov_engine/delegate/multicast_delegate.hpp>
 
@@ -19,51 +20,8 @@ int main() {
     constexpr LONG width = 800, height = 800;
     borov_engine::Window window{TEXT("Application"), width, height, GetModuleHandle(nullptr)};
 
-    D3D_FEATURE_LEVEL featureLevel[] = {D3D_FEATURE_LEVEL_11_1};
-
-    DXGI_SWAP_CHAIN_DESC swapDesc = {};
-    swapDesc.BufferCount = 2;
-    swapDesc.BufferDesc.Width = width;
-    swapDesc.BufferDesc.Height = height;
-    swapDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    swapDesc.BufferDesc.RefreshRate.Numerator = 60;
-    swapDesc.BufferDesc.RefreshRate.Denominator = 1;
-    swapDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    swapDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-    swapDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapDesc.OutputWindow = window.GetRawHandle();
-    swapDesc.Windowed = true;
-    swapDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    swapDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-    swapDesc.SampleDesc.Count = 1;
-    swapDesc.SampleDesc.Quality = 0;
-
-    Microsoft::WRL::ComPtr<ID3D11Device> device;
-    ID3D11DeviceContext *context;
-    IDXGISwapChain *swapChain;
-
-    auto res = D3D11CreateDeviceAndSwapChain(
-        nullptr,
-        D3D_DRIVER_TYPE_HARDWARE,
-        nullptr,
-        D3D11_CREATE_DEVICE_DEBUG,
-        featureLevel,
-        1,
-        D3D11_SDK_VERSION,
-        &swapDesc,
-        &swapChain,
-        &device,
-        nullptr,
-        &context);
-
-    if (FAILED(res)) {
-        // Well, that was unexpected
-    }
-
-    ID3D11Texture2D *backTex;
-    ID3D11RenderTargetView *rtv;
-    res = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void **) &backTex);    // __uuidof(ID3D11Texture2D)
-    res = device->CreateRenderTargetView(backTex, nullptr, &rtv);
+    HRESULT res;
+    borov_engine::Game game{window};
 
     ID3DBlob *vertexBC = nullptr;
     ID3DBlob *errorVertexCode = nullptr;
@@ -108,12 +66,12 @@ int main() {
 
     ID3D11VertexShader *vertexShader;
     ID3D11PixelShader *pixelShader;
-    device->CreateVertexShader(
+    game.device_->CreateVertexShader(
         vertexBC->GetBufferPointer(),
         vertexBC->GetBufferSize(),
         nullptr, &vertexShader);
 
-    device->CreatePixelShader(
+    game.device_->CreatePixelShader(
         pixelBC->GetBufferPointer(),
         pixelBC->GetBufferSize(),
         nullptr, &pixelShader);
@@ -138,7 +96,7 @@ int main() {
     };
 
     ID3D11InputLayout *layout;
-    device->CreateInputLayout(
+    game.device_->CreateInputLayout(
         inputElements,
         2,
         vertexBC->GetBufferPointer(),
@@ -166,24 +124,24 @@ int main() {
     vertexData.SysMemSlicePitch = 0;
 
     ID3D11Buffer *vb;
-    device->CreateBuffer(&vertexBufDesc, &vertexData, &vb);
+    game.device_->CreateBuffer(&vertexBufDesc, &vertexData, &vb);
 
-    int indeces[] = {0, 1, 2, 1, 0, 3};
+    int indices[] = {0, 1, 2, 1, 0, 3};
     D3D11_BUFFER_DESC indexBufDesc = {};
     indexBufDesc.Usage = D3D11_USAGE_DEFAULT;
     indexBufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     indexBufDesc.CPUAccessFlags = 0;
     indexBufDesc.MiscFlags = 0;
     indexBufDesc.StructureByteStride = 0;
-    indexBufDesc.ByteWidth = sizeof(int) * std::size(indeces);
+    indexBufDesc.ByteWidth = sizeof(int) * std::size(indices);
 
     D3D11_SUBRESOURCE_DATA indexData = {};
-    indexData.pSysMem = indeces;
+    indexData.pSysMem = indices;
     indexData.SysMemPitch = 0;
     indexData.SysMemSlicePitch = 0;
 
     ID3D11Buffer *ib;
-    device->CreateBuffer(&indexBufDesc, &indexData, &ib);
+    game.device_->CreateBuffer(&indexBufDesc, &indexData, &ib);
 
     UINT strides[] = {32};
     UINT offsets[] = {0};
@@ -193,9 +151,9 @@ int main() {
     rastDesc.FillMode = D3D11_FILL_SOLID;
 
     ID3D11RasterizerState *rastState;
-    res = device->CreateRasterizerState(&rastDesc, &rastState);
+    res = game.device_->CreateRasterizerState(&rastDesc, &rastState);
 
-    context->RSSetState(rastState);
+    game.device_context_->RSSetState(rastState);
 
     std::chrono::time_point<std::chrono::steady_clock> PrevTime = std::chrono::steady_clock::now();
     float totalTime = 0;
@@ -215,9 +173,9 @@ int main() {
             isExitRequested = true;
         }
 
-        context->ClearState();
+        game.device_context_->ClearState();
 
-        context->RSSetState(rastState);
+        game.device_context_->RSSetState(rastState);
 
         D3D11_VIEWPORT viewport = {};
         viewport.Width = static_cast<float>(width);
@@ -227,14 +185,14 @@ int main() {
         viewport.MinDepth = 0;
         viewport.MaxDepth = 1.0f;
 
-        context->RSSetViewports(1, &viewport);
+        game.device_context_->RSSetViewports(1, &viewport);
 
-        context->IASetInputLayout(layout);
-        context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        context->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
-        context->IASetVertexBuffers(0, 1, &vb, strides, offsets);
-        context->VSSetShader(vertexShader, nullptr, 0);
-        context->PSSetShader(pixelShader, nullptr, 0);
+        game.device_context_->IASetInputLayout(layout);
+        game.device_context_->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        game.device_context_->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
+        game.device_context_->IASetVertexBuffers(0, 1, &vb, strides, offsets);
+        game.device_context_->VSSetShader(vertexShader, nullptr, 0);
+        game.device_context_->PSSetShader(pixelShader, nullptr, 0);
 
         auto curTime = std::chrono::steady_clock::now();
         float
@@ -256,16 +214,16 @@ int main() {
             frameCount = 0;
         }
 
-        context->OMSetRenderTargets(1, &rtv, nullptr);
+        game.device_context_->OMSetRenderTargets(1, game.render_target_view_.GetAddressOf(), nullptr);
 
         float color[] = {totalTime, 0.1f, 0.1f, 1.0f};
-        context->ClearRenderTargetView(rtv, color);
+        game.device_context_->ClearRenderTargetView(game.render_target_view_.Get(), color);
 
-        context->DrawIndexed(6, 0, 0);
+        game.device_context_->DrawIndexed(6, 0, 0);
 
-        context->OMSetRenderTargets(0, nullptr, nullptr);
+        game.device_context_->OMSetRenderTargets(0, nullptr, nullptr);
 
-        swapChain->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+        game.swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
     }
 
     std::cout << "Hello World!\n";

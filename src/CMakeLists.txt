@@ -17,10 +17,12 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/delegate.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/multicast_delegate.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/multicast_delegate.inl
-        ${PROJECT_SOURCE_DIR}/include/borov_engine/window.hpp)
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/window.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/game.hpp)
 set(SOURCE_LIST
         delegate/delegate_handle.cpp
-        window.cpp)
+        window.cpp
+        game.cpp)
 
 add_library(borov_engine ${SOURCE_LIST} ${HEADER_LIST})
 target_include_directories(borov_engine PUBLIC ${PROJECT_SOURCE_DIR}/include)
