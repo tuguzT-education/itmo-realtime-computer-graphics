@@ -1,4 +1,5 @@
 #include <borov_engine/window.hpp>
+#include <borov_engine/timer.hpp>
 #include <borov_engine/game.hpp>
 #include <borov_engine/delegate/delegate.hpp>
 #include <borov_engine/delegate/multicast_delegate.hpp>
@@ -16,24 +17,29 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
+#ifdef UNICODE
+#define sprintf_s swprintf_s
+#else
+#define sprintf_s sprintf_s
+#endif
+
 int main() {
     constexpr LONG width = 800, height = 800;
     borov_engine::Window window{TEXT("Application"), width, height, GetModuleHandle(nullptr)};
-
-    HRESULT res;
     borov_engine::Game game{window};
+    borov_engine::Timer timer{};
 
     ID3DBlob *vertexBC = nullptr;
     ID3DBlob *errorVertexCode = nullptr;
-    res = D3DCompileFromFile(L"resources/shaders/shader.hlsl",
-                             nullptr /*macros*/,
-                             nullptr /*include*/,
-                             "VSMain",
-                             "vs_5_0",
-                             D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-                             0,
-                             &vertexBC,
-                             &errorVertexCode);
+    HRESULT res = D3DCompileFromFile(L"resources/shaders/shader.hlsl",
+                                     nullptr /*macros*/,
+                                     nullptr /*include*/,
+                                     "VSMain",
+                                     "vs_5_0",
+                                     D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
+                                     0,
+                                     &vertexBC,
+                                     &errorVertexCode);
 
     if (FAILED(res)) {
         // If the shader failed to compile it should have written something to the error message.
@@ -155,10 +161,6 @@ int main() {
 
     game.device_context_->RSSetState(rastState);
 
-    std::chrono::time_point<std::chrono::steady_clock> PrevTime = std::chrono::steady_clock::now();
-    float totalTime = 0;
-    unsigned int frameCount = 0;
-
     MSG msg = {};
     bool isExitRequested = false;
     while (!isExitRequested) {
@@ -194,29 +196,17 @@ int main() {
         game.device_context_->VSSetShader(vertexShader, nullptr, 0);
         game.device_context_->PSSetShader(pixelShader, nullptr, 0);
 
-        auto curTime = std::chrono::steady_clock::now();
-        float
-            deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(curTime - PrevTime).count() / 1000000.0f;
-        PrevTime = curTime;
+        timer.Tick();
 
-        totalTime += deltaTime;
-        frameCount++;
-
-        if (totalTime > 1.0f) {
-            float fps = frameCount / totalTime;
-
-            totalTime -= 1.0f;
-
-            TCHAR text[256];
-            sprintf_s(text, TEXT("FPS: %f"), fps);
-            window.SetTitle(text);
-
-            frameCount = 0;
-        }
+        TCHAR text[256];
+        sprintf_s(text, TEXT("FPS: %f"), timer.FramesPerSecond());
+        window.SetTitle(text);
 
         game.device_context_->OMSetRenderTargets(1, game.render_target_view_.GetAddressOf(), nullptr);
 
-        float color[] = {totalTime, 0.1f, 0.1f, 1.0f};
+        float integral;
+        float red = std::modf(timer.StartTime(), &integral);
+        float color[] = {red, 0.1f, 0.1f, 1.0f};
         game.device_context_->ClearRenderTargetView(game.render_target_view_.Get(), color);
 
         game.device_context_->DrawIndexed(6, 0, 0);

@@ -6,6 +6,7 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
+#include "game.fwd"
 #include "window.hpp"
 
 namespace borov_engine {

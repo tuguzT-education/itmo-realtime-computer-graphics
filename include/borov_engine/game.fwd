@@ -1,0 +1,12 @@
+#pragma once
+
+#ifndef BOROV_ENGINE_GAME_FWD_INCLUDED
+#define BOROV_ENGINE_GAME_FWD_INCLUDED
+
+namespace borov_engine {
+
+class Game;
+
+}
+
+#endif //BOROV_ENGINE_GAME_FWD_INCLUDED
