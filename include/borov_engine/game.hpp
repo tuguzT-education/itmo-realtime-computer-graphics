@@ -21,8 +21,6 @@ class Game {
   public:
     explicit Game(Window &window);
 
-    [[nodiscard]] const Timer &GetTimer() const;
-
     void Run();
 
   private:
@@ -31,6 +29,8 @@ class Game {
     void InitializeDevice();
     void InitializeSwapChain(const Window &window);
     void InitializeRenderTargetView();
+
+    void Draw();
 
     Timer timer_;
     Window &window_;

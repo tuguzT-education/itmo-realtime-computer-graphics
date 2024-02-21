@@ -36,10 +36,6 @@ Game::Game(Window &window) : window_{window} {
     components_.push_back(std::move(triangle_component));
 }
 
-const Timer &Game::GetTimer() const {
-    return timer_;
-}
-
 #ifdef UNICODE
 #define sprintf_s swprintf_s
 #else
@@ -47,31 +43,17 @@ const Timer &Game::GetTimer() const {
 #endif
 
 void Game::Run() {
-    MSG msg = {};
-    bool isExitRequested = false;
-    while (!isExitRequested) {
+    MSG msg{};
+    while (true) {
         // Handle the windows messages.
         while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-
         // If windows signals to end the application then exit out.
         if (msg.message == WM_QUIT) {
-            isExitRequested = true;
+            break;
         }
-
-        device_context_->ClearState();
-
-        D3D11_VIEWPORT viewport = {};
-        viewport.Width = 800;
-        viewport.Height = 800;
-        viewport.TopLeftX = 0;
-        viewport.TopLeftY = 0;
-        viewport.MinDepth = 0;
-        viewport.MaxDepth = 1.0f;
-
-        device_context_->RSSetViewports(1, &viewport);
 
         timer_.Tick();
 
@@ -79,20 +61,7 @@ void Game::Run() {
         sprintf_s(text, TEXT("FPS: %f"), timer_.FramesPerSecond());
         window_.SetTitle(text);
 
-        device_context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), nullptr);
-
-        float start_time = timer_.StartTime();
-        float red = start_time - std::floor(start_time);
-        float color[] = {red, 0.1f, 0.1f, 1.0f};
-        device_context_->ClearRenderTargetView(render_target_view_.Get(), color);
-
-        for (const auto &component : components_) {
-            component->Draw();
-        }
-
-        device_context_->OMSetRenderTargets(0, nullptr, nullptr);
-
-        swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+        Draw();
     }
 }
 
@@ -166,6 +135,36 @@ void Game::InitializeRenderTargetView() {
 
     result = device_->CreateRenderTargetView(back_buffer.Get(), nullptr, &render_target_view_);
     detail::CheckResult(result, "Failed to create render target view");
+}
+
+void Game::Draw() {
+    device_context_->ClearState();
+
+    D3D11_VIEWPORT viewport{
+        .TopLeftX = 0,
+        .TopLeftY = 0,
+        .Width = 800,
+        .Height = 800,
+        .MinDepth = 0,
+        .MaxDepth = 1.0f,
+    };
+    std::array viewports{viewport};
+    device_context_->RSSetViewports(viewports.size(), viewports.data());
+
+    device_context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), nullptr);
+
+    float start_time = timer_.StartTime();
+    float red = start_time - std::floor(start_time);
+    DirectX::XMFLOAT4 color{red, 0.1f, 0.1f, 1.0f};
+    device_context_->ClearRenderTargetView(render_target_view_.Get(), &color.x);
+
+    for (const auto &component : components_) {
+        component->Draw();
+    }
+
+    device_context_->OMSetRenderTargets(0, nullptr, nullptr);
+
+    swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }
 
 }
