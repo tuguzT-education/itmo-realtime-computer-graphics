@@ -9,6 +9,10 @@
 namespace borov_engine {
 
 Game::Game(Window &window) : window_{window} {
+    auto [width, height] = window.GetClientDimensions();
+    initial_width_ = width;
+    initial_height_ = height;
+
     InitializeDevice();
     InitializeSwapChain(window);
     InitializeRenderTargetView();
@@ -143,8 +147,8 @@ void Game::Draw() {
     D3D11_VIEWPORT viewport{
         .TopLeftX = 0,
         .TopLeftY = 0,
-        .Width = 800,
-        .Height = 800,
+        .Width = static_cast<FLOAT>(initial_width_),
+        .Height = static_cast<FLOAT>(initial_height_),
         .MinDepth = 0,
         .MaxDepth = 1.0f,
     };

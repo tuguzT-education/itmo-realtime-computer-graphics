@@ -34,6 +34,8 @@ class Game {
 
     Timer timer_;
     Window &window_;
+    LONG initial_width_;
+    LONG initial_height_;
     std::vector<std::unique_ptr<Component>> components_;
 
     detail::D3DPtr<ID3D11RenderTargetView> render_target_view_;
