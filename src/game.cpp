@@ -42,18 +42,9 @@ Game::Game(Window &window) : window_{window} {
 }
 
 void Game::Run() {
-    MSG msg;
     while (true) {
-        bool needs_to_quit = false;
-        while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-            if (msg.message == WM_QUIT) {
-                needs_to_quit = true;
-                break;
-            }
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        if (needs_to_quit) {
+        window_.ProcessQueueMessages();
+        if (window_.IsDestroyed()) {
             break;
         }
 
@@ -61,8 +52,11 @@ void Game::Run() {
         Draw();
 
         if (float fps = timer_.FramesPerSecond(); fps > 0) {
-            std::string text = std::format("FPS: {}", fps);
+            static std::string text;
+
+            std::format_to(std::back_inserter(text), "FPS: {}", fps);
             window_.SetTitle(text);
+            text.clear();
         }
     }
 }

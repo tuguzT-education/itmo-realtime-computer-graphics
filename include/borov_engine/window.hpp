@@ -27,7 +27,10 @@ class Window {
     [[nodiscard]] RECT GetClientRect() const;
     [[nodiscard]] Dimensions GetClientDimensions() const;
 
+    [[nodiscard]] bool IsDestroyed() const;
+
     bool SetTitle(std::string_view title);
+    void ProcessQueueMessages();
     void Destroy();
 
   private:
@@ -37,6 +40,7 @@ class Window {
 
     HWND handle_;
     InputDevice *input_device_;
+    bool is_destroyed_;
 };
 
 }

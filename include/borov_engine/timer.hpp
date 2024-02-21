@@ -12,7 +12,6 @@ class Timer {
     using Clock = std::chrono::steady_clock;
     using TimePoint = Clock::time_point;
     using Duration = Clock::duration;
-    using FrameCount = std::uint16_t;
 
     explicit Timer() noexcept;
     explicit Timer(std::nullptr_t) noexcept;
@@ -21,12 +20,18 @@ class Timer {
     void Tick();
 
     [[nodiscard]] float StartTime() const;
-
     [[nodiscard]] float DeltaTime() const;
 
     [[nodiscard]] float FramesPerSecond() const;
+    [[nodiscard]] float ImmediateFramesPerSecond() const;
+
+    [[nodiscard]] TimePoint StartTimePoint() const;
+    [[nodiscard]] TimePoint CurrentTickTimePoint() const;
+    [[nodiscard]] TimePoint PreviousTickTimePoint() const;
 
   private:
+    using FrameCount = std::uint16_t;
+
     explicit Timer(TimePoint time_point) noexcept;
 
     [[nodiscard]] float SecondsFrom(TimePoint time_point) const;

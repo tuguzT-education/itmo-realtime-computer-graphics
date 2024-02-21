@@ -8,7 +8,9 @@
 
 namespace borov_engine {
 
-Window::Window(std::string_view name, LONG width, LONG height, HINSTANCE instance_handle) : input_device_{} {
+Window::Window(std::string_view name,
+               LONG width, LONG height,
+               HINSTANCE instance_handle) : input_device_{}, is_destroyed_{} {
     instance_handle = (instance_handle != nullptr)
                       ? instance_handle
                       : GetModuleHandle(nullptr);
@@ -86,13 +88,28 @@ auto Window::GetClientDimensions() const -> Dimensions {
     };
 }
 
+bool Window::IsDestroyed() const {
+    return is_destroyed_;
+}
+
 bool Window::SetTitle(std::string_view title) {
     std::basic_string<TCHAR> t_title = detail::MultiByteToTChar(CP_UTF8, 0, title);
     LPCTSTR c_title = t_title.c_str();
     return SetWindowText(handle_, c_title);
 }
 
+void Window::ProcessQueueMessages() {
+    MSG msg;
+    while (PeekMessage(&msg, handle_, 0, 0, PM_REMOVE)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+}
+
 void Window::Destroy() {
+    if (IsDestroyed()) {
+        return;
+    }
     DestroyWindow(handle_);
 }
 
@@ -135,9 +152,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
             switch (raw_input->header.dwType) {
                 case RIM_TYPEKEYBOARD: {
                     input_device->OnRawKeyboard(raw_input->data.keyboard);
+                    break;
                 }
                 case RIM_TYPEMOUSE: {
                     input_device->OnRawMouse(raw_input->data.mouse);
+                    break;
                 }
                 default: {
                     break;
@@ -152,7 +171,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
             break;
         }
         case WM_DESTROY: {
-            PostQuitMessage(0);
+            window->is_destroyed_ = true;
             break;
         }
         default: {
