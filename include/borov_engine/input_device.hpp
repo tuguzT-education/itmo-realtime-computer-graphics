@@ -4,7 +4,6 @@
 #define BOROV_ENGINE_INPUT_DEVICE_HPP_INCLUDED
 
 #include <directxmath.h>
-#include <windows.h>
 
 #include <unordered_set>
 
@@ -46,26 +45,8 @@ class InputDevice {
   private:
     friend class Window;
 
-    struct RawKeyboardData {
-        USHORT make_code;
-        USHORT flags;
-        USHORT v_key;
-        UINT message;
-    };
-
-    struct RawMouseData {
-        /* MOUSE_MOVE_RELATIVE */
-        int mode;
-        int button_flags;
-        int extra_information;
-        int buttons;
-        int wheel_delta;
-        int x;
-        int y;
-    };
-
-    void OnRawKeyboard(RawKeyboardData data);
-    void OnRawMouse(RawMouseData data);
+    void OnRawKeyboard(const RAWKEYBOARD &data);
+    void OnRawMouse(const RAWMOUSE &data);
 
     void AddPressedKey(InputKey key);
     void RemovePressedKey(InputKey key);

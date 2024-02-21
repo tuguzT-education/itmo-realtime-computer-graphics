@@ -1,5 +1,7 @@
 #include "borov_engine/input_device.hpp"
 
+#include <hidusage.h>
+
 #include <iostream>
 #include <stdexcept>
 #include <array>
@@ -9,45 +11,17 @@
 
 namespace borov_engine {
 
-namespace detail {
-
-enum class MouseButtonFlags : std::uint16_t {
-    None = 0,
-
-    LeftButtonDown = 1,
-    LeftButtonUp = 2,
-    RightButtonDown = 4,
-    RightButtonUp = 8,
-    MiddleButtonDown = 16,
-    MiddleButtonUp = 32,
-    Button4Down = 64,
-    Button4Up = 128,
-    Button5Down = 256,
-    Button5Up = 512,
-    MouseWheel = 1024,
-    MouseHWheel = 2048,
-
-    Button1Down = LeftButtonDown,
-    Button1Up = LeftButtonUp,
-    Button2Down = RightButtonDown,
-    Button2Up = RightButtonUp,
-    Button3Down = MiddleButtonDown,
-    Button3Up = MiddleButtonUp,
-};
-
-}
-
 InputDevice::InputDevice(Window &window) : window_{window}, mouse_move_data_{} {
     std::array raw_input_devices{
         RAWINPUTDEVICE{
-            .usUsagePage = 0x01,
-            .usUsage = 0x02,
+            .usUsagePage = HID_USAGE_PAGE_GENERIC,
+            .usUsage = HID_USAGE_GENERIC_MOUSE,
             .dwFlags = 0, // adds HID mouse and also ignores legacy mouse messages
             .hwndTarget = window.GetRawHandle(),
         },
         RAWINPUTDEVICE{
-            .usUsagePage = 0x01,
-            .usUsage = 0x06,
+            .usUsagePage = HID_USAGE_PAGE_GENERIC,
+            .usUsage = HID_USAGE_GENERIC_KEYBOARD,
             .dwFlags = 0, // adds HID keyboard and also ignores legacy keyboard messages
             .hwndTarget = window.GetRawHandle(),
         },
@@ -104,40 +78,40 @@ auto InputDevice::GetOnInputKeyDown() -> OnInputKeyDown & {
     return on_input_key_up_;
 }
 
-void InputDevice::OnRawKeyboard(RawKeyboardData data) {
-    bool a_break = data.flags & 0x01;
+void InputDevice::OnRawKeyboard(const RAWKEYBOARD &data) {
+    bool is_key_up = data.Flags & RI_KEY_BREAK;
 
-    auto key = static_cast<InputKey>(data.v_key);
-    if (data.make_code == 42) {
+    auto key = static_cast<InputKey>(data.VKey);
+    if (data.MakeCode == 42) {
         key = InputKey::LeftShift;
-    } else if (data.make_code == 54) {
+    } else if (data.MakeCode == 54) {
         key = InputKey::RightShift;
     }
 
-    if (a_break) {
+    if (is_key_up) {
         if (IsKeyDown(key)) RemovePressedKey(key);
     } else {
         if (!IsKeyDown(key)) AddPressedKey(key);
     }
 }
 
-void InputDevice::OnRawMouse(RawMouseData data) {
-    if (data.button_flags & static_cast<int>(detail::MouseButtonFlags::LeftButtonDown)) {
+void InputDevice::OnRawMouse(const RAWMOUSE &data) {
+    if (data.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) {
         AddPressedKey(InputKey::LeftButton);
     }
-    if (data.button_flags & static_cast<int>(detail::MouseButtonFlags::LeftButtonUp)) {
+    if (data.usButtonFlags & RI_MOUSE_LEFT_BUTTON_UP) {
         RemovePressedKey(InputKey::LeftButton);
     }
-    if (data.button_flags & static_cast<int>(detail::MouseButtonFlags::RightButtonDown)) {
+    if (data.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_DOWN) {
         AddPressedKey(InputKey::RightButton);
     }
-    if (data.button_flags & static_cast<int>(detail::MouseButtonFlags::RightButtonUp)) {
+    if (data.usButtonFlags & RI_MOUSE_RIGHT_BUTTON_UP) {
         RemovePressedKey(InputKey::RightButton);
     }
-    if (data.button_flags & static_cast<int>(detail::MouseButtonFlags::MiddleButtonDown)) {
+    if (data.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_DOWN) {
         AddPressedKey(InputKey::MiddleButton);
     }
-    if (data.button_flags & static_cast<int>(detail::MouseButtonFlags::MiddleButtonUp)) {
+    if (data.usButtonFlags & RI_MOUSE_MIDDLE_BUTTON_UP) {
         RemovePressedKey(InputKey::MiddleButton);
     }
 
@@ -147,8 +121,8 @@ void InputDevice::OnRawMouse(RawMouseData data) {
 
     mouse_move_data_ = {
         .position = {static_cast<float>(point.x), static_cast<float>(point.y)},
-        .offset = {static_cast<float>(data.x), static_cast<float>(data.y)},
-        .wheel_delta = data.wheel_delta,
+        .offset = {static_cast<float>(data.lLastX), static_cast<float>(data.lLastY)},
+        .wheel_delta = data.usButtonData,
     };
     on_mouse_move_.Broadcast(mouse_move_data_);
 }

@@ -134,25 +134,10 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
             auto raw_input = (RAWINPUT *) lpb.data();
             switch (raw_input->header.dwType) {
                 case RIM_TYPEKEYBOARD: {
-                    InputDevice::RawKeyboardData data{
-                        .make_code = raw_input->data.keyboard.MakeCode,
-                        .flags = raw_input->data.keyboard.Flags,
-                        .v_key = raw_input->data.keyboard.VKey,
-                        .message = raw_input->data.keyboard.Message,
-                    };
-                    input_device->OnRawKeyboard(data);
+                    input_device->OnRawKeyboard(raw_input->data.keyboard);
                 }
                 case RIM_TYPEMOUSE: {
-                    InputDevice::RawMouseData data{
-                        .mode = raw_input->data.mouse.usFlags,
-                        .button_flags = raw_input->data.mouse.usButtonFlags,
-                        .extra_information = static_cast<int>(raw_input->data.mouse.ulExtraInformation),
-                        .buttons = static_cast<int>(raw_input->data.mouse.ulRawButtons),
-                        .wheel_delta = static_cast<short>(raw_input->data.mouse.usButtonData),
-                        .x = raw_input->data.mouse.lLastX,
-                        .y = raw_input->data.mouse.lLastY,
-                    };
-                    input_device->OnRawMouse(data);
+                    input_device->OnRawMouse(raw_input->data.mouse);
                 }
                 default: {
                     break;
