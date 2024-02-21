@@ -2,6 +2,7 @@
 
 #include <array>
 #include <iostream>
+#include <format>
 
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/triangle_component.hpp"
@@ -40,12 +41,6 @@ Game::Game(Window &window) : window_{window} {
     components_.push_back(std::move(triangle_component));
 }
 
-#ifdef UNICODE
-#define sprintf_s swprintf_s
-#else
-#define sprintf_s sprintf_s
-#endif
-
 void Game::Run() {
     MSG msg{};
     while (true) {
@@ -60,16 +55,14 @@ void Game::Run() {
         }
 
         timer_.Tick();
-
-        TCHAR text[256];
-        sprintf_s(text, TEXT("FPS: %f"), timer_.FramesPerSecond());
-        window_.SetTitle(text);
-
         Draw();
+
+        if (float fps = timer_.FramesPerSecond(); fps > 0) {
+            std::string text = std::format("FPS: {}", fps);
+            window_.SetTitle(text);
+        }
     }
 }
-
-#undef sprintf_s
 
 void Game::Exit() {
     window_.Destroy();

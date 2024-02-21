@@ -10,7 +10,7 @@
 #pragma comment(lib, "dxguid.lib")
 
 int main() {
-    borov_engine::Window window{TEXT("Application"), 800, 800, GetModuleHandle(nullptr)};
+    borov_engine::Window window{"Application", 800, 800, GetModuleHandle(nullptr)};
     borov_engine::InputDevice input_device{window};
     borov_engine::Game game{window};
 

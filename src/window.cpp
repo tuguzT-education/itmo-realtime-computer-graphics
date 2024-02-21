@@ -3,22 +3,25 @@
 #include <stdexcept>
 #include <vector>
 
+#include "borov_engine/detail/string_api_set.hpp"
 #include "borov_engine/input_device.hpp"
 
 namespace borov_engine {
 
-Window::Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instance_handle) : input_device_{} {
+Window::Window(std::string_view name, LONG width, LONG height, HINSTANCE instance_handle) : input_device_{} {
     instance_handle = (instance_handle != nullptr)
                       ? instance_handle
                       : GetModuleHandle(nullptr);
 
+    std::basic_string<TCHAR> t_name = detail::MultiByteToTChar(CP_UTF8, 0, name);
+    LPCTSTR c_name = t_name.c_str();
     WNDCLASSEX wc{
         .cbSize = sizeof(decltype(wc)),
         .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
         .lpfnWndProc = WndProc,
         .hInstance = instance_handle,
         .hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)),
-        .lpszClassName = name,
+        .lpszClassName = c_name,
     };
     RegisterClassEx(&wc);
 
@@ -29,8 +32,8 @@ Window::Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instance_handle)
     AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
 
     handle_ = CreateWindowEx(WS_EX_APPWINDOW,
-                             name,
-                             name,
+                             c_name,
+                             c_name,
                              WS_OVERLAPPEDWINDOW,
                              (GetSystemMetrics(SM_CXSCREEN) - width) / 2,
                              (GetSystemMetrics(SM_CYSCREEN) - height) / 2,
@@ -83,8 +86,10 @@ auto Window::GetClientDimensions() const -> Dimensions {
     };
 }
 
-bool Window::SetTitle(LPCTSTR title) {
-    return SetWindowText(handle_, title);
+bool Window::SetTitle(std::string_view title) {
+    std::basic_string<TCHAR> t_title = detail::MultiByteToTChar(CP_UTF8, 0, title);
+    LPCTSTR c_title = t_title.c_str();
+    return SetWindowText(handle_, c_title);
 }
 
 void Window::Destroy() {

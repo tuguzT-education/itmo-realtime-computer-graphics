@@ -5,6 +5,8 @@
 
 #include <windows.h>
 
+#include <string_view>
+
 namespace borov_engine {
 
 class Window {
@@ -14,7 +16,7 @@ class Window {
         LONG height;
     };
 
-    explicit Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instance_handle = nullptr);
+    explicit Window(std::string_view name, LONG width, LONG height, HINSTANCE instance_handle = nullptr);
 
     [[nodiscard]] HWND GetRawHandle() const;
     [[nodiscard]] HINSTANCE GetRawInstanceHandle() const;
@@ -25,7 +27,7 @@ class Window {
     [[nodiscard]] RECT GetClientRect() const;
     [[nodiscard]] Dimensions GetClientDimensions() const;
 
-    bool SetTitle(LPCTSTR title);
+    bool SetTitle(std::string_view title);
     void Destroy();
 
   private:
