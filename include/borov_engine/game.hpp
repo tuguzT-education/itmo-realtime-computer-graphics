@@ -3,19 +3,21 @@
 #ifndef BOROV_ENGINE_GAME_HPP_INCLUDED
 #define BOROV_ENGINE_GAME_HPP_INCLUDED
 
-#include <d3d11.h>
-#include <wrl/client.h>
-
 #include "game.fwd"
+
+#include <d3d11.h>
+
+#include <vector>
+#include <memory>
+
+#include "borov_engine/detail/d3d_ptr.hpp"
+#include "component.hpp"
 #include "window.hpp"
 #include "timer.hpp"
 
 namespace borov_engine {
 
 class Game {
-    template<typename T>
-    using ComPtr = Microsoft::WRL::ComPtr<T>;
-
   public:
     explicit Game(Window &window);
 
@@ -24,17 +26,20 @@ class Game {
     void Run();
 
   private:
+    friend class Component;
+
     void InitializeDevice();
     void InitializeSwapChain(const Window &window);
     void InitializeRenderTargetView();
 
-    ComPtr<ID3D11RenderTargetView> render_target_view_;
-    ComPtr<IDXGISwapChain> swap_chain_;
-    ComPtr<ID3D11DeviceContext> device_context_;
-    ComPtr<ID3D11Device> device_;
-
     Timer timer_;
     Window &window_;
+    std::vector<std::unique_ptr<Component>> components_;
+
+    detail::D3DPtr<ID3D11RenderTargetView> render_target_view_;
+    detail::D3DPtr<IDXGISwapChain> swap_chain_;
+    detail::D3DPtr<ID3D11DeviceContext> device_context_;
+    detail::D3DPtr<ID3D11Device> device_;
 };
 
 }

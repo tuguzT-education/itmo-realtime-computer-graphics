@@ -1,9 +1,9 @@
+#include <iostream>
+
 #include <borov_engine/window.hpp>
 #include <borov_engine/game.hpp>
 #include <borov_engine/delegate/delegate.hpp>
 #include <borov_engine/delegate/multicast_delegate.hpp>
-
-#include <iostream>
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")

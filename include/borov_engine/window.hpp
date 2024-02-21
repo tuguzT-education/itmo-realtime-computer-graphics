@@ -3,17 +3,17 @@
 #ifndef BOROV_ENGINE_WINDOW_HPP_INCLUDED
 #define BOROV_ENGINE_WINDOW_HPP_INCLUDED
 
-#include <wtypes.h>
+#include <windows.h>
 
 namespace borov_engine {
 
-struct Dimensions {
-    LONG width;
-    LONG height;
-};
-
 class Window {
   public:
+    struct Dimensions {
+        LONG width;
+        LONG height;
+    };
+
     explicit Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instanceHandle = nullptr);
 
     [[nodiscard]] HWND GetRawHandle() const;
