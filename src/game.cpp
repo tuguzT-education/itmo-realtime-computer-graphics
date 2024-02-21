@@ -54,7 +54,7 @@ void Game::Run() {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        // If windows signals to end the application then exit out.
+        // If Windows signals to end the application then exit out.
         if (msg.message == WM_QUIT) {
             break;
         }
@@ -70,6 +70,10 @@ void Game::Run() {
 }
 
 #undef sprintf_s
+
+void Game::Exit() {
+    window_.Destroy();
+}
 
 void Game::InitializeDevice() {
     std::array feature_level{D3D_FEATURE_LEVEL_11_1};

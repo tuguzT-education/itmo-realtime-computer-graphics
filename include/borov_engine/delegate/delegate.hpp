@@ -80,13 +80,13 @@ Raw delegate payload: 10
 #include "shared_ptr_delegate.hpp"
 #include "delegate_handle.hpp"
 
-namespace borov_engine::delegate {
-
 #define DECLARE_DELEGATE(name, ...) \
-using name = Delegate<void, __VA_ARGS__>
+using name = ::borov_engine::delegate::Delegate<void, __VA_ARGS__>
 
 #define DECLARE_DELEGATE_RETURN(name, return_type, ...) \
-using name = Delegate<return_type, __VA_ARGS__>
+using name = ::borov_engine::delegate::Delegate<return_type, __VA_ARGS__>
+
+namespace borov_engine::delegate {
 
 // The allocation size of delegate data.
 // Delegates larger than this will be heap allocated.
@@ -125,71 +125,14 @@ class DelegateBase {
     alloc::InlineAllocator<kDelegateInlineAllocationSize> allocator_;
 };
 
-DelegateBase::DelegateBase() noexcept: handle_{}, allocator_{} {}
-
 constexpr DelegateBase::DelegateBase(std::nullptr_t) noexcept: handle_{nullptr}, allocator_{} {}
-
-DelegateBase::~DelegateBase() {
-    Release();
-}
-
-DelegateBase &DelegateBase::operator=(const DelegateBase &other) {
-    Release();
-    handle_ = other.handle_;
-    allocator_ = other.allocator_;
-    return *this;
-}
-
-DelegateBase::DelegateBase(DelegateBase &&other) noexcept
-    : handle_{std::move(other.handle_)},
-      allocator_{std::move(other.allocator_)} {}
-
-DelegateBase &DelegateBase::operator=(DelegateBase &&other) noexcept {
-    Release();
-    handle_ = std::move(other.handle_);
-    allocator_ = std::move(other.allocator_);
-    return *this;
-}
-
-const void *DelegateBase::GetOwner() const {
-    if (!IsBound()) {
-        return nullptr;
-    }
-    return GetDelegate()->GetOwner();
-}
 
 constexpr DelegateHandle DelegateBase::GetHandle() const {
     return handle_;
 }
 
-void DelegateBase::ClearIfBoundTo(void *object) {
-    if (IsBoundTo(object)) {
-        Release();
-    }
-}
-
-void DelegateBase::Clear() {
-    Release();
-}
-
 constexpr bool DelegateBase::IsBound() const {
     return allocator_.HasAllocation();
-}
-
-bool DelegateBase::IsBoundTo(void *object) const {
-    if (object == nullptr || !IsBound()) {
-        return false;
-    }
-    return GetDelegate()->GetOwner() == object;
-}
-
-void DelegateBase::Release() {
-    if (!IsBound()) {
-        return;
-    }
-    handle_.Reset();
-    std::destroy_at(GetDelegate());
-    allocator_.Free();
 }
 
 constexpr DelegateKindBase *DelegateBase::GetDelegate() const {
@@ -283,7 +226,7 @@ template<typename R, typename... Args>
 template<typename... Payload>
 Delegate<R, Args...> Delegate<R, Args...>::CreateStatic(StaticFn<Payload...> function, Payload... payload) {
     Delegate handler;
-    handler.Bind < StaticKind < Payload...>>(function, std::forward<Payload>(payload)...);
+    handler.Bind<StaticKind<Payload...>>(function, std::forward<Payload>(payload)...);
     return handler;
 }
 
@@ -291,7 +234,7 @@ template<typename R, typename... Args>
 template<typename T, typename... Payload>
 Delegate<R, Args...> Delegate<R, Args...>::CreateRaw(T *object, RawFn<T, Payload...> function, Payload... payload) {
     Delegate handler;
-    handler.Bind < RawKind < T, Payload...>>(object, function, std::forward<Payload>(payload)...);
+    handler.Bind<RawKind<T, Payload...>>(object, function, std::forward<Payload>(payload)...);
     return handler;
 }
 
@@ -301,7 +244,7 @@ Delegate<R, Args...> Delegate<R, Args...>::CreateRaw(T *object,
                                                      ConstRawFn<T, Payload...> function,
                                                      Payload... payload) {
     Delegate handler;
-    handler.Bind < ConstRawKind < T, Payload...>>(object, function, std::forward<Payload>(payload)...);
+    handler.Bind<ConstRawKind<T, Payload...>>(object, function, std::forward<Payload>(payload)...);
     return handler;
 }
 
@@ -311,7 +254,7 @@ Delegate<R, Args...> Delegate<R, Args...>::CreateSharedPtr(const std::shared_ptr
                                                            SharedPtrFn<T, Payload...> function,
                                                            Payload... payload) {
     Delegate handler;
-    handler.Bind < SharedPtrKind < T, Payload...>>(object, function, std::forward<Payload>(payload)...);
+    handler.Bind<SharedPtrKind<T, Payload...>>(object, function, std::forward<Payload>(payload)...);
     return handler;
 }
 
@@ -321,7 +264,7 @@ Delegate<R, Args...> Delegate<R, Args...>::CreateSharedPtr(const std::shared_ptr
                                                            ConstSharedPtrFn<T, Payload...> function,
                                                            Payload... payload) {
     Delegate handler;
-    handler.Bind < ConstSharedPtrKind < T, Payload...>>(object, function, std::forward<Payload>(payload)...);
+    handler.Bind<ConstSharedPtrKind<T, Payload...>>(object, function, std::forward<Payload>(payload)...);
     return handler;
 }
 

@@ -8,17 +8,17 @@
 #include "delegate.hpp"
 
 #define DECLARE_MULTICAST_DELEGATE(name, ...) \
-using name = MulticastDelegate<__VA_ARGS__>; \
-using name ## Delegate = MulticastDelegate<__VA_ARGS__>::DelegateT
+using name = ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__>; \
+using name ## Delegate = ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__>::DelegateT
 
-#define DECLARE_EVENT(name, ownerType, ...) \
-class name : public MulticastDelegate<__VA_ARGS__> \
+#define DECLARE_EVENT(name, owner_type, ...) \
+class name : public ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__> \
 { \
 private: \
-    friend class ownerType; \
-    using MulticastDelegate::Broadcast; \
-    using MulticastDelegate::RemoveAll; \
-    using MulticastDelegate::Remove; \
+    friend class owner_type; \
+    using ::borov_engine::delegate::MulticastDelegate::Broadcast; \
+    using ::borov_engine::delegate::MulticastDelegate::RemoveAll; \
+    using ::borov_engine::delegate::MulticastDelegate::Remove; \
 };
 
 namespace borov_engine::delegate {

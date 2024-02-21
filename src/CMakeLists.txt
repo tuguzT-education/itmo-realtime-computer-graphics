@@ -23,17 +23,22 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/check_result.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/d3d_ptr.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/window.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/input_key.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/input_device.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/game.fwd
         ${PROJECT_SOURCE_DIR}/include/borov_engine/game.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/timer.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp)
 set(SOURCE_LIST
+        delegate/delegate_kind.cpp
         delegate/delegate_handle.cpp
+        delegate/delegate.cpp
         detail/err_handling_api.cpp
         detail/string_api_set.cpp
         detail/check_result.cpp
         window.cpp
+        input_device.cpp
         game.cpp
         timer.cpp
         component.cpp

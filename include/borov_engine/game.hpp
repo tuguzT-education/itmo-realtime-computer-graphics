@@ -22,6 +22,7 @@ class Game {
     explicit Game(Window &window);
 
     void Run();
+    void Exit();
 
   private:
     friend class Component;

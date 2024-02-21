@@ -14,7 +14,7 @@ class Window {
         LONG height;
     };
 
-    explicit Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instanceHandle = nullptr);
+    explicit Window(LPCTSTR name, LONG width, LONG height, HINSTANCE instance_handle = nullptr);
 
     [[nodiscard]] HWND GetRawHandle() const;
     [[nodiscard]] HINSTANCE GetRawInstanceHandle() const;
@@ -26,9 +26,15 @@ class Window {
     [[nodiscard]] Dimensions GetClientDimensions() const;
 
     bool SetTitle(LPCTSTR title);
+    void Destroy();
 
   private:
-    HWND handle;
+    friend class InputDevice;
+
+    static LRESULT CALLBACK WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPARAM l_param);
+
+    HWND handle_;
+    InputDevice *input_device_;
 };
 
 }
