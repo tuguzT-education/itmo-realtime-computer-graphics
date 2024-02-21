@@ -9,7 +9,9 @@
 
 namespace borov_engine {
 
-Game::Game(Window &window) : window_{window} {
+constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{6500};
+
+Game::Game(Window &window) : window_{window}, time_per_update_{default_time_per_update} {
     auto [width, height] = window.GetClientDimensions();
     initial_width_ = width;
     initial_height_ = height;
@@ -41,15 +43,21 @@ Game::Game(Window &window) : window_{window} {
     components_.push_back(std::move(triangle_component));
 }
 
+const Timer::Duration &Game::TimePerUpdate() const {
+    return time_per_update_;
+}
+
+Timer::Duration &Game::TimePerUpdate() {
+    return time_per_update_;
+}
+
 void Game::Run() {
+    auto lag = Timer::Duration::zero();
     while (true) {
         window_.ProcessQueueMessages();
         if (window_.IsDestroyed()) {
             break;
         }
-
-        timer_.Tick();
-        Draw();
 
         if (float fps = timer_.FramesPerSecond(); fps > 0) {
             static std::string text;
@@ -58,6 +66,17 @@ void Game::Run() {
             window_.SetTitle(text);
             text.clear();
         }
+
+        timer_.Tick();
+        lag += timer_.CurrentTickTimePoint() - timer_.PreviousTickTimePoint();
+
+        while (lag >= time_per_update_) {
+            float delta_time = Timer::SecondsFrom(time_per_update_);
+            Update(delta_time);
+            lag -= time_per_update_;
+        }
+
+        Draw();
     }
 }
 
@@ -133,6 +152,12 @@ void Game::InitializeRenderTargetView() {
 
     result = device_->CreateRenderTargetView(back_buffer.Get(), nullptr, &render_target_view_);
     detail::CheckResult(result, "Failed to create render target view");
+}
+
+void Game::Update(float delta_time) {
+    for (const auto &component : components_) {
+        component->Update(delta_time);
+    }
 }
 
 void Game::Draw() {

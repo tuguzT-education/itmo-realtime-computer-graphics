@@ -21,6 +21,9 @@ class Game {
   public:
     explicit Game(Window &window);
 
+    [[nodiscard]] const Timer::Duration &TimePerUpdate() const;
+    [[nodiscard]] Timer::Duration &TimePerUpdate();
+
     void Run();
     void Exit();
 
@@ -31,10 +34,12 @@ class Game {
     void InitializeSwapChain(const Window &window);
     void InitializeRenderTargetView();
 
+    void Update(float delta_time);
     void Draw();
 
     Timer timer_;
     Window &window_;
+    Timer::Duration time_per_update_;
     LONG initial_width_;
     LONG initial_height_;
     std::vector<std::unique_ptr<Component>> components_;

@@ -17,6 +17,7 @@ class Window {
     };
 
     explicit Window(std::string_view name, LONG width, LONG height, HINSTANCE instance_handle = nullptr);
+    ~Window();
 
     [[nodiscard]] HWND GetRawHandle() const;
     [[nodiscard]] HINSTANCE GetRawInstanceHandle() const;

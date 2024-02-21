@@ -52,6 +52,10 @@ Window::Window(std::string_view name,
     ShowCursor(true);
 }
 
+Window::~Window() {
+    Destroy();
+}
+
 HWND Window::GetRawHandle() const {
     return handle_;
 }
