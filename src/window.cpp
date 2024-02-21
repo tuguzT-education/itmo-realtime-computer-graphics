@@ -145,7 +145,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
             }
 
             lpb.clear();
-            return DefWindowProc(hwnd, u_message, w_param, l_param);
+            break;
         }
         case WM_CLOSE: {
             DestroyWindow(hwnd);

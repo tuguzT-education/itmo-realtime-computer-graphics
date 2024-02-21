@@ -42,15 +42,18 @@ Game::Game(Window &window) : window_{window} {
 }
 
 void Game::Run() {
-    MSG msg{};
+    MSG msg;
     while (true) {
-        // Handle the windows messages.
+        bool needs_to_quit = false;
         while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+            if (msg.message == WM_QUIT) {
+                needs_to_quit = true;
+                break;
+            }
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        // If Windows signals to end the application then exit out.
-        if (msg.message == WM_QUIT) {
+        if (needs_to_quit) {
             break;
         }
 
