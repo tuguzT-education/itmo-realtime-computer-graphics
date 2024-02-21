@@ -24,6 +24,8 @@ class Game {
     [[nodiscard]] const Timer::Duration &TimePerUpdate() const;
     [[nodiscard]] Timer::Duration &TimePerUpdate();
 
+    [[nodiscard]] bool IsRunning() const;
+
     void Run();
     void Exit();
 
@@ -42,6 +44,8 @@ class Game {
     Timer::Duration time_per_update_;
     LONG initial_width_;
     LONG initial_height_;
+    bool should_exit_;
+    bool is_running_;
     std::vector<std::unique_ptr<Component>> components_;
 
     detail::D3DPtr<ID3D11RenderTargetView> render_target_view_;

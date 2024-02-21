@@ -11,7 +11,7 @@ namespace borov_engine {
 
 constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{6500};
 
-Game::Game(Window &window) : window_{window}, time_per_update_{default_time_per_update} {
+Game::Game(Window &window) : window_{window}, time_per_update_{default_time_per_update}, should_exit_{}, is_running_{} {
     auto [width, height] = window.GetClientDimensions();
     initial_width_ = width;
     initial_height_ = height;
@@ -51,9 +51,18 @@ Timer::Duration &Game::TimePerUpdate() {
     return time_per_update_;
 }
 
+bool Game::IsRunning() const {
+    return is_running_;
+}
+
 void Game::Run() {
+    if (is_running_) {
+        return;
+    }
+    is_running_ = true;
+
     auto lag = Timer::Duration::zero();
-    while (true) {
+    while (!should_exit_) {
         window_.ProcessQueueMessages();
         if (window_.IsDestroyed()) {
             break;
@@ -78,10 +87,13 @@ void Game::Run() {
 
         Draw();
     }
+
+    is_running_ = false;
+    should_exit_ = false;
 }
 
 void Game::Exit() {
-    window_.Destroy();
+    should_exit_ = true;
 }
 
 void Game::InitializeDevice() {
