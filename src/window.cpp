@@ -96,6 +96,10 @@ bool Window::IsDestroyed() const {
     return is_destroyed_;
 }
 
+bool Window::IsFocused() const {
+    return handle_ == GetFocus();
+}
+
 bool Window::SetTitle(std::string_view title) {
     std::basic_string<TCHAR> t_title = detail::MultiByteToTChar(CP_UTF8, 0, title);
     LPCTSTR c_title = t_title.c_str();
@@ -134,6 +138,9 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
         case WM_INPUT: {
             InputDevice *input_device = window->input_device_;
             if (input_device == nullptr) {
+                break;
+            }
+            if (!window->IsFocused()) {
                 break;
             }
 

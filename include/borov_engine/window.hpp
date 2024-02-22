@@ -29,6 +29,7 @@ class Window {
     [[nodiscard]] Dimensions GetClientDimensions() const;
 
     [[nodiscard]] bool IsDestroyed() const;
+    [[nodiscard]] bool IsFocused() const;
 
     bool SetTitle(std::string_view title);
     void ProcessQueueMessages();
