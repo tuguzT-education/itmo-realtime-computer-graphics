@@ -23,15 +23,13 @@ int main() {
     };
     input_device.GetOnInputKeyDown().AddLambda(exit_on_escape_key);
 
-    std::atomic_bool stop_thread{};
-    std::jthread thread{[&] {
+    std::jthread thread{[&](const std::stop_token &stop_token) {
         borov_engine::Window other_window{"New window", 800, 800};
-        while (!other_window.IsDestroyed() && !stop_thread) {
+        while (!other_window.IsDestroyed() && !stop_token.stop_requested()) {
             other_window.ProcessQueueMessages();
         }
     }};
 
     game.Run();
-    stop_thread = true;
     return 0;
 }
