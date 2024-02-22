@@ -63,7 +63,7 @@ void TriangleComponent::Draw() {
 
     std::array vertex_buffers = {vertex_buffer_.Get()};
     std::array<UINT, vertex_buffers.size()> strides{sizeof(Vertex)};
-    std::array<UINT, vertex_buffers.size()> offsets{0u};
+    std::array<UINT, vertex_buffers.size()> offsets{0};
 
     device_context->RSSetState(rasterizer_state_.Get());
     device_context->IASetInputLayout(input_layout_.Get());
@@ -73,7 +73,10 @@ void TriangleComponent::Draw() {
     device_context->VSSetShader(vertex_shader_.Get(), nullptr, 0);
     device_context->PSSetShader(index_shader_.Get(), nullptr, 0);
 
-    device_context->DrawIndexed(6, 0, 0);
+    D3D11_BUFFER_DESC index_buffer_desc;
+    index_buffer_->GetDesc(&index_buffer_desc);
+    UINT index_count = index_buffer_desc.ByteWidth / sizeof(Index);
+    device_context->DrawIndexed(index_count, 0, 0);
 }
 
 void TriangleComponent::InitializeVertexShader() {
