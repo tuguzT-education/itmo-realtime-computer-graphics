@@ -47,16 +47,30 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path,
 
 TriangleComponent::TriangleComponent(Game &game,
                                      std::span<Vertex> vertices,
-                                     std::span<Index> indices) : Component{game} {
+                                     std::span<Index> indices) : Component{game}, offset_{} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
+    InitializeConstantBuffer({});
 }
 
-void TriangleComponent::Update(float delta_time) {}
+auto TriangleComponent::GetOffset() const -> const Offset & {
+    return offset_;
+}
+
+auto TriangleComponent::GetOffset() -> Offset & {
+    return offset_;
+}
+
+void TriangleComponent::Update(float delta_time) {
+    offset_.x += 0.5f * delta_time;
+    if (offset_.x > 1.5f) {
+        offset_.x = -1.5f;
+    }
+}
 
 void TriangleComponent::Draw() {
     ID3D11DeviceContext *device_context = GetDeviceContext();
@@ -72,6 +86,13 @@ void TriangleComponent::Draw() {
     device_context->IASetVertexBuffers(0, vertex_buffers.size(), vertex_buffers.data(), strides.data(), offsets.data());
     device_context->VSSetShader(vertex_shader_.Get(), nullptr, 0);
     device_context->PSSetShader(index_shader_.Get(), nullptr, 0);
+
+    D3D11_MAPPED_SUBRESOURCE subresource{};
+    device_context->Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+    std::memcpy(subresource.pData, &offset_, sizeof(Offset));
+    device_context->Unmap(constant_buffer_.Get(), 0);
+
+    device_context->VSSetConstantBuffers(0, 1, constant_buffer_.GetAddressOf());
 
     D3D11_BUFFER_DESC index_buffer_desc;
     index_buffer_->GetDesc(&index_buffer_desc);
@@ -95,13 +116,8 @@ void TriangleComponent::InitializeVertexShader() {
 }
 
 void TriangleComponent::InitializeIndexShader() {
-    std::array shader_macros{
-        D3D_SHADER_MACRO{.Name = "TEST", .Definition = "1"},
-        D3D_SHADER_MACRO{.Name = "TCOLOR", .Definition = "float4(0.0f, 1.0f, 0.0f, 1.0f)"},
-        D3D_SHADER_MACRO{.Name = nullptr, .Definition = nullptr},
-    };
     index_byte_code_ = detail::CompileFromFile("resources/shaders/shader.hlsl",
-                                               shader_macros.data(),
+                                               nullptr,
                                                nullptr,
                                                "PSMain",
                                                "ps_5_0",
@@ -191,6 +207,21 @@ void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
 
     HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, &initial_data, &index_buffer_);
     detail::CheckResult(result, "Failed to create index buffer");
+}
+
+void TriangleComponent::InitializeConstantBuffer(Offset
+offset) {
+D3D11_BUFFER_DESC buffer_desc{
+    .ByteWidth = sizeof(Offset),
+    .Usage = D3D11_USAGE_DYNAMIC,
+    .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+    .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+    .MiscFlags = 0,
+    .StructureByteStride = 0,
+};
+HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, nullptr, &constant_buffer_);
+detail::CheckResult(result,
+"Failed to create constant buffer");
 }
 
 }
