@@ -37,7 +37,7 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path,
         const char *message = error_messages
                               ? static_cast<const char *>(error_messages->GetBufferPointer())
                               : "file is missing";
-        return std::format("Failed to compile vertex shader file '{}': {}", path, message);
+        return std::format("Failed to compile vertex shader file '{}':\n{}", path, message);
     });
 
     return shader;

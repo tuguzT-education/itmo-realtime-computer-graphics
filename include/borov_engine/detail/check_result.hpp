@@ -13,12 +13,12 @@ void CheckResult(HRESULT result, const char *message = nullptr);
 void CheckResult(HRESULT result, const std::string &message);
 
 template<typename F>
-concept StringFactory = requires(F factory) {
+concept StringFactory = requires(F &&factory) {
     { factory() } -> std::convertible_to<std::string>;
 };
 
 template<StringFactory F>
-void CheckResult(HRESULT result, F factory);
+void CheckResult(HRESULT result, F &&factory);
 
 }
 

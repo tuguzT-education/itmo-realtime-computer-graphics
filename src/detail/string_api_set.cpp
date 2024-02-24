@@ -74,4 +74,16 @@ std::basic_string<TCHAR> MultiByteToTChar([[maybe_unused]] UINT code_page,
 #endif
 }
 
+std::string TCharToMultiByte([[maybe_unused]] UINT code_page,
+                             [[maybe_unused]] DWORD dw_flags,
+                             std::basic_string_view<TCHAR> view,
+                             [[maybe_unused]] const char *default_char,
+                             [[maybe_unused]] bool *used_default_char) {
+#ifdef UNICODE
+    return WideCharToMultiByte(code_page, dw_flags, view, default_char, used_default_char);
+#else
+    return {view.data(), view.size()};
+#endif
+}
+
 }
