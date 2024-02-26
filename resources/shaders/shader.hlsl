@@ -1,37 +1,37 @@
 struct VS_IN
 {
-	float4 pos : POSITION0;
-	float4 col : COLOR0;
+	float3 position : POSITION0;
+	float4 color : COLOR0;
 };
 
 struct PS_IN
 {
-	float4 pos : SV_POSITION;
- 	float4 col : COLOR;
+	float4 position : SV_POSITION;
+ 	float4 color : COLOR;
 };
 
-struct ConstantData
+struct TransformData
 {
-    float4 offset;
+    float3 offset;
 };
 
-cbuffer ConstantBuffer : register(b0)
+cbuffer Transform : register(b0)
 {
-    ConstantData ConstData;
+    TransformData transform;
 }
 
-PS_IN VSMain(VS_IN input, uint vId : SV_VertexID)
+PS_IN VSMain(VS_IN input)
 {
 	PS_IN output = (PS_IN)0;
-	
-	output.pos = float4(input.pos.xyz + ConstData.offset.xyz, 1.0f);
-	output.col = input.col;
-	
+
+	output.position = float4(input.position + transform.offset, 1.0f);
+	output.color = input.color;
+
 	return output;
 }
 
-float4 PSMain( PS_IN input ) : SV_Target
+float4 PSMain(PS_IN input) : SV_Target
 {
-	float4 col = input.col;
-	return col;
+	float4 color = input.color;
+	return color;
 }

@@ -49,6 +49,6 @@ find_package(directxtk CONFIG REQUIRED)
 add_library(borov_engine ${SOURCE_LIST} ${HEADER_LIST})
 target_include_directories(borov_engine PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(borov_engine PUBLIC cxx_std_20)
-target_link_libraries(borov_engine PRIVATE
+target_link_libraries(borov_engine PUBLIC
         d3d11.lib dxgi.lib d3dcompiler.lib dxguid.lib
         Microsoft::DirectXTK)

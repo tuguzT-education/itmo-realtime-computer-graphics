@@ -135,7 +135,7 @@ void TriangleComponent::InitializeInputLayout() {
         D3D11_INPUT_ELEMENT_DESC{
             .SemanticName = "POSITION",
             .SemanticIndex = 0,
-            .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+            .Format = DXGI_FORMAT_R32G32B32_FLOAT,
             .InputSlot = 0,
             .AlignedByteOffset = 0,
             .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
@@ -211,14 +211,20 @@ void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
 
 void TriangleComponent::InitializeConstantBuffer(Offset offset) {
     D3D11_BUFFER_DESC buffer_desc{
-        .ByteWidth = sizeof(Offset),
+        .ByteWidth = ((sizeof(offset) - 1) | 15) + 1,
         .Usage = D3D11_USAGE_DYNAMIC,
         .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
         .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
         .MiscFlags = 0,
         .StructureByteStride = 0,
     };
-    HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, nullptr, &constant_buffer_);
+    D3D11_SUBRESOURCE_DATA initial_data{
+        .pSysMem = &offset,
+        .SysMemPitch = 0,
+        .SysMemSlicePitch = 0,
+    };
+
+    HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, &initial_data, &constant_buffer_);
     detail::CheckResult(result, "Failed to create constant buffer");
 }
 

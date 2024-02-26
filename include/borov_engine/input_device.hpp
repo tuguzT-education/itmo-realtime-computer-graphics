@@ -3,7 +3,7 @@
 #ifndef BOROV_ENGINE_INPUT_DEVICE_HPP_INCLUDED
 #define BOROV_ENGINE_INPUT_DEVICE_HPP_INCLUDED
 
-#include <directxmath.h>
+#include <SimpleMath.h>
 
 #include <unordered_set>
 
@@ -16,8 +16,8 @@ namespace borov_engine {
 class InputDevice {
   public:
     struct MouseMoveData {
-        DirectX::XMFLOAT2 position;
-        DirectX::XMFLOAT2 offset;
+        DirectX::SimpleMath::Vector2 position;
+        DirectX::SimpleMath::Vector2 offset;
         int wheel_delta;
     };
 

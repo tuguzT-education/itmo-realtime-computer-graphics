@@ -4,6 +4,8 @@
 #include <iostream>
 #include <format>
 
+#include <SimpleMath.h>
+
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/triangle_component.hpp"
 
@@ -24,20 +26,20 @@ Game::Game(Window &window)
 
     std::array vertices{
         TriangleComponent::Vertex{
-            .position = {0.5f, 0.5f, 0.5f, 1.0f},
-            .color = {1.0f, 0.0f, 0.0f, 1.0f},
+            {0.5f, 0.5f, 0.5f, 1.0f},
+            {1.0f, 0.0f, 0.0f, 1.0f},
         },
         TriangleComponent::Vertex{
-            .position = {-0.5f, -0.5f, 0.5f, 1.0f},
-            .color = {0.0f, 0.0f, 1.0f, 1.0f},
+            {-0.5f, -0.5f, 0.5f, 1.0f},
+            {0.0f, 0.0f, 1.0f, 1.0f},
         },
         TriangleComponent::Vertex{
-            .position = {0.5f, -0.5f, 0.5f, 1.0f},
-            .color = {0.0f, 1.0f, 0.0f, 1.0f},
+            {0.5f, -0.5f, 0.5f, 1.0f},
+            {0.0f, 1.0f, 0.0f, 1.0f},
         },
         TriangleComponent::Vertex{
-            .position = {-0.5f, 0.5f, 0.5f, 1.0f},
-            .color = {1.0f, 1.0f, 1.0f, 1.0f},
+            {-0.5f, 0.5f, 0.5f, 1.0f},
+            {1.0f, 1.0f, 1.0f, 1.0f},
         },
     };
     std::array indices{0, 1, 2, 1, 0, 3};
@@ -205,8 +207,8 @@ void Game::Draw() {
 
     float start_time = timer_.StartTime();
     float red = start_time - std::floor(start_time);
-    DirectX::XMFLOAT4 color{red, 0.1f, 0.1f, 1.0f};
-    device_context_->ClearRenderTargetView(render_target_view_.Get(), &color.x);
+    DirectX::SimpleMath::Color color{red, 0.1f, 0.1f, 1.0f};
+    device_context_->ClearRenderTargetView(render_target_view_.Get(), color);
 
     for (const auto &component : components_) {
         component->Draw();

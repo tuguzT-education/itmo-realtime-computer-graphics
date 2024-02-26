@@ -5,7 +5,8 @@
 
 #include "component.hpp"
 
-#include <directxmath.h>
+#include <SimpleMath.h>
+#include <VertexTypes.h>
 
 #include <span>
 
@@ -15,12 +16,9 @@ namespace borov_engine {
 
 class TriangleComponent : public Component {
   public:
-    struct Vertex {
-        DirectX::XMFLOAT4 position;
-        DirectX::XMFLOAT4 color;
-    };
+    using Vertex = DirectX::VertexPositionColor;
     using Index = int;
-    using Offset = DirectX::XMFLOAT4;
+    using Offset = DirectX::SimpleMath::Vector3;
 
     explicit TriangleComponent(Game &game,
                                std::span<Vertex> vertices,
