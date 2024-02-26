@@ -11,11 +11,13 @@ namespace borov_engine {
 
 constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{6500};
 
-Game::Game(Window &window) : window_{window}, time_per_update_{default_time_per_update}, should_exit_{}, is_running_{} {
-    auto [width, height] = window.GetClientDimensions();
-    initial_width_ = width;
-    initial_height_ = height;
-
+Game::Game(Window &window)
+    : window_{window},
+      time_per_update_{default_time_per_update},
+      target_width_{},
+      target_height_{},
+      should_exit_{},
+      is_running_{} {
     InitializeDevice();
     InitializeSwapChain(window);
     InitializeRenderTargetView();
@@ -157,12 +159,24 @@ void Game::InitializeSwapChain(const Window &window) {
 
 void Game::InitializeRenderTargetView() {
     HRESULT result;
+    detail::D3DPtr<ID3D11Resource> resource;
 
-    detail::D3DPtr<ID3D11Texture2D> back_buffer;
-    result = swap_chain_->GetBuffer(0, IID_ID3D11Texture2D, &back_buffer);
-    detail::CheckResult(result, "Failed to create back buffer");
+    if (swap_chain_) {
+        detail::D3DPtr<ID3D11Texture2D> back_buffer;
+        result = swap_chain_->GetBuffer(0, IID_ID3D11Texture2D, &back_buffer);
+        detail::CheckResult(result, "Failed to create back buffer");
 
-    result = device_->CreateRenderTargetView(back_buffer.Get(), nullptr, &render_target_view_);
+        D3D11_TEXTURE2D_DESC back_buffer_desc;
+        back_buffer->GetDesc(&back_buffer_desc);
+        target_width_ = back_buffer_desc.Width;
+        target_height_ = back_buffer_desc.Height;
+
+        resource = back_buffer;
+    } else {
+        throw std::runtime_error{"Failed to find any source to create render target from"};
+    }
+
+    result = device_->CreateRenderTargetView(resource.Get(), nullptr, &render_target_view_);
     detail::CheckResult(result, "Failed to create render target view");
 }
 
@@ -176,17 +190,18 @@ void Game::Draw() {
     device_context_->ClearState();
 
     D3D11_VIEWPORT viewport{
-        .TopLeftX = 0,
-        .TopLeftY = 0,
-        .Width = static_cast<FLOAT>(initial_width_),
-        .Height = static_cast<FLOAT>(initial_height_),
-        .MinDepth = 0,
+        .TopLeftX = 0.0f,
+        .TopLeftY = 0.0f,
+        .Width = static_cast<FLOAT>(target_width_),
+        .Height = static_cast<FLOAT>(target_height_),
+        .MinDepth = 0.0f,
         .MaxDepth = 1.0f,
     };
     std::array viewports{viewport};
     device_context_->RSSetViewports(viewports.size(), viewports.data());
 
-    device_context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), nullptr);
+    std::array render_targets{render_target_view_.Get()};
+    device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), nullptr);
 
     float start_time = timer_.StartTime();
     float red = start_time - std::floor(start_time);
@@ -197,7 +212,8 @@ void Game::Draw() {
         component->Draw();
     }
 
-    device_context_->OMSetRenderTargets(0, nullptr, nullptr);
+    std::array<ID3D11RenderTargetView *, 0> no_render_targets;
+    device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
 
     swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }

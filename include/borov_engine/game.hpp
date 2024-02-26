@@ -42,8 +42,8 @@ class Game {
     Timer timer_;
     Window &window_;
     Timer::Duration time_per_update_;
-    LONG initial_width_;
-    LONG initial_height_;
+    UINT target_width_;
+    UINT target_height_;
     bool should_exit_;
     bool is_running_;
     std::vector<std::unique_ptr<Component>> components_;

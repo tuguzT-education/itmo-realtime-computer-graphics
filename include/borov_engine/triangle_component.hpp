@@ -27,7 +27,7 @@ class TriangleComponent : public Component {
                                std::span<Index> indices);
 
     [[nodiscard]] const Offset &GetOffset() const;
-    [[nodiscard]] Offset& GetOffset();
+    [[nodiscard]] Offset &GetOffset();
 
     void Update(float delta_time) override;
     void Draw() override;

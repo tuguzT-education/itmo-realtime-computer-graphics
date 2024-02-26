@@ -209,19 +209,17 @@ void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
     detail::CheckResult(result, "Failed to create index buffer");
 }
 
-void TriangleComponent::InitializeConstantBuffer(Offset
-offset) {
-D3D11_BUFFER_DESC buffer_desc{
-    .ByteWidth = sizeof(Offset),
-    .Usage = D3D11_USAGE_DYNAMIC,
-    .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-    .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
-    .MiscFlags = 0,
-    .StructureByteStride = 0,
-};
-HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, nullptr, &constant_buffer_);
-detail::CheckResult(result,
-"Failed to create constant buffer");
+void TriangleComponent::InitializeConstantBuffer(Offset offset) {
+    D3D11_BUFFER_DESC buffer_desc{
+        .ByteWidth = sizeof(Offset),
+        .Usage = D3D11_USAGE_DYNAMIC,
+        .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+        .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+        .MiscFlags = 0,
+        .StructureByteStride = 0,
+    };
+    HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, nullptr, &constant_buffer_);
+    detail::CheckResult(result, "Failed to create constant buffer");
 }
 
 }
