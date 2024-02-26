@@ -4,11 +4,6 @@
 
 #include <iostream>
 
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxgi.lib")
-#pragma comment(lib, "d3dcompiler.lib")
-#pragma comment(lib, "dxguid.lib")
-
 int main() {
     borov_engine::Window window{"Application", 800, 800};
     borov_engine::InputDevice input_device{window};
