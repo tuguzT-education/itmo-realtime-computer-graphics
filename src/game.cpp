@@ -60,14 +60,6 @@ void Game::Run() {
             break;
         }
 
-        if (float fps = timer_.FramesPerSecond(); fps > 0) {
-            static std::string text;
-
-            std::format_to(std::back_inserter(text), "FPS: {}", fps);
-            window_.SetTitle(text);
-            text.clear();
-        }
-
         timer_.Tick();
         lag += timer_.CurrentTickTimePoint() - timer_.PreviousTickTimePoint();
 
@@ -135,7 +127,7 @@ void Game::InitializeSwapChain(const Window &window) {
         },
         .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
         .BufferCount = 2,
-        .OutputWindow = window.GetRawHandle(),
+        .OutputWindow = window.RawHandle(),
         .Windowed = true,
         .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
         .Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH,

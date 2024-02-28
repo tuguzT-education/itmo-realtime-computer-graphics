@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "clear_screen_component.hpp"
+#include "window_title_component.hpp"
 
 int main() {
     borov_engine::Window window{"Application", 800, 800};
@@ -22,6 +23,7 @@ int main() {
     input.GetOnInputKeyDown().AddLambda(exit_on_escape_key);
 
     game.AddComponent<ClearScreenComponent>();
+    game.AddComponent<WindowTitleComponent>();
 
     std::array vertices{
         borov_engine::TriangleComponent::Vertex{

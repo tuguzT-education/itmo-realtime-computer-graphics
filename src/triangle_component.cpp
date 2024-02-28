@@ -73,7 +73,7 @@ void TriangleComponent::Update(float delta_time) {
 }
 
 void TriangleComponent::Draw() {
-    ID3D11DeviceContext *device_context = GetDeviceContext();
+    ID3D11DeviceContext *device_context = DeviceContext();
 
     std::array vertex_buffers = {vertex_buffer_.Get()};
     std::array<UINT, vertex_buffers.size()> strides{sizeof(Vertex)};
@@ -109,9 +109,9 @@ void TriangleComponent::InitializeVertexShader() {
                                                 D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
                                                 0);
 
-    HRESULT result = GetDevice()->CreateVertexShader(vertex_byte_code_->GetBufferPointer(),
-                                                     vertex_byte_code_->GetBufferSize(),
-                                                     nullptr, &vertex_shader_);
+    HRESULT result = Device()->CreateVertexShader(vertex_byte_code_->GetBufferPointer(),
+                                                  vertex_byte_code_->GetBufferSize(),
+                                                  nullptr, &vertex_shader_);
     detail::CheckResult(result, "Failed to create vertex shader from byte code");
 }
 
@@ -124,9 +124,9 @@ void TriangleComponent::InitializeIndexShader() {
                                                D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
                                                0);
 
-    HRESULT result = GetDevice()->CreatePixelShader(index_byte_code_->GetBufferPointer(),
-                                                    index_byte_code_->GetBufferSize(),
-                                                    nullptr, &index_shader_);
+    HRESULT result = Device()->CreatePixelShader(index_byte_code_->GetBufferPointer(),
+                                                 index_byte_code_->GetBufferSize(),
+                                                 nullptr, &index_shader_);
     detail::CheckResult(result, "Failed to create index shader from byte code");
 }
 
@@ -152,7 +152,7 @@ void TriangleComponent::InitializeInputLayout() {
         },
     };
 
-    HRESULT result = GetDevice()->CreateInputLayout(
+    HRESULT result = Device()->CreateInputLayout(
         input_elements.data(),
         input_elements.size(),
         vertex_byte_code_->GetBufferPointer(),
@@ -167,7 +167,7 @@ void TriangleComponent::InitializeRasterizerState() {
         .CullMode = D3D11_CULL_NONE,
     };
 
-    HRESULT result = GetDevice()->CreateRasterizerState(&rasterizer_desc, &rasterizer_state_);
+    HRESULT result = Device()->CreateRasterizerState(&rasterizer_desc, &rasterizer_state_);
     detail::CheckResult(result, "Failed to create rasterizer state");
 }
 
@@ -186,7 +186,7 @@ void TriangleComponent::InitializeVertexBuffer(std::span<Vertex> vertices) {
         .SysMemSlicePitch = 0,
     };
 
-    HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, &initial_data, &vertex_buffer_);
+    HRESULT result = Device()->CreateBuffer(&buffer_desc, &initial_data, &vertex_buffer_);
     detail::CheckResult(result, "Failed to create vertex buffer");
 }
 
@@ -205,7 +205,7 @@ void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
         .SysMemSlicePitch = 0,
     };
 
-    HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, &initial_data, &index_buffer_);
+    HRESULT result = Device()->CreateBuffer(&buffer_desc, &initial_data, &index_buffer_);
     detail::CheckResult(result, "Failed to create index buffer");
 }
 
@@ -224,7 +224,7 @@ void TriangleComponent::InitializeConstantBuffer(Offset offset) {
         .SysMemSlicePitch = 0,
     };
 
-    HRESULT result = GetDevice()->CreateBuffer(&buffer_desc, &initial_data, &constant_buffer_);
+    HRESULT result = Device()->CreateBuffer(&buffer_desc, &initial_data, &constant_buffer_);
     detail::CheckResult(result, "Failed to create constant buffer");
 }
 

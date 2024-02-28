@@ -17,13 +17,13 @@ Input::Input(Window &window) : window_{window}, mouse_move_data_{} {
             .usUsagePage = HID_USAGE_PAGE_GENERIC,
             .usUsage = HID_USAGE_GENERIC_MOUSE,
             .dwFlags = 0, // adds HID mouse and also ignores legacy mouse messages
-            .hwndTarget = window.GetRawHandle(),
+            .hwndTarget = window.RawHandle(),
         },
         RAWINPUTDEVICE{
             .usUsagePage = HID_USAGE_PAGE_GENERIC,
             .usUsage = HID_USAGE_GENERIC_KEYBOARD,
             .dwFlags = 0, // adds HID keyboard and also ignores legacy keyboard messages
-            .hwndTarget = window.GetRawHandle(),
+            .hwndTarget = window.RawHandle(),
         },
     };
 
@@ -117,7 +117,7 @@ void Input::OnRawMouse(const RAWMOUSE &data) {
 
     POINT point;
     ::GetCursorPos(&point);
-    ::ScreenToClient(window_.GetRawHandle(), &point);
+    ::ScreenToClient(window_.RawHandle(), &point);
 
     mouse_move_data_ = {
         .position = {static_cast<float>(point.x), static_cast<float>(point.y)},

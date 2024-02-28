@@ -5,7 +5,7 @@
 
 #include <windows.h>
 
-#include <string_view>
+#include <string>
 
 #include "math.hpp"
 
@@ -16,16 +16,18 @@ class Window {
     explicit Window(std::string_view name, LONG width, LONG height, HINSTANCE instance_handle = nullptr);
     ~Window();
 
-    [[nodiscard]] HWND GetRawHandle() const;
-    [[nodiscard]] HINSTANCE GetRawInstanceHandle() const;
+    [[nodiscard]] HWND RawHandle() const;
+    [[nodiscard]] HINSTANCE RawInstanceHandle() const;
 
-    [[nodiscard]] Rectangle GetDimensions() const;
-    [[nodiscard]] Rectangle GetClientDimensions() const;
+    [[nodiscard]] Rectangle Dimensions() const;
+    [[nodiscard]] Rectangle ClientDimensions() const;
 
     [[nodiscard]] bool IsDestroyed() const;
     [[nodiscard]] bool IsFocused() const;
 
-    bool SetTitle(std::string_view title);
+    [[nodiscard]] std::string Title() const;
+    bool Title(std::string_view title);
+
     void ProcessQueueMessages();
     void Destroy();
 

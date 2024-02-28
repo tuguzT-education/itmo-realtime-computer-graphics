@@ -56,21 +56,21 @@ Window::~Window() {
     Destroy();
 }
 
-HWND Window::GetRawHandle() const {
+HWND Window::RawHandle() const {
     return handle_;
 }
 
-HINSTANCE Window::GetRawInstanceHandle() const {
+HINSTANCE Window::RawInstanceHandle() const {
     return (HINSTANCE) GetWindowLongPtr(handle_, GWLP_HINSTANCE);
 }
 
-Rectangle Window::GetDimensions() const {
+Rectangle Window::Dimensions() const {
     RECT rect{};
     GetWindowRect(handle_, &rect);
     return Rectangle{rect};
 }
 
-Rectangle Window::GetClientDimensions() const {
+Rectangle Window::ClientDimensions() const {
     RECT rect{};
     ::GetClientRect(handle_, &rect);
     return Rectangle{rect};
@@ -84,7 +84,14 @@ bool Window::IsFocused() const {
     return handle_ == GetFocus();
 }
 
-bool Window::SetTitle(std::string_view title) {
+std::string Window::Title() const {
+    auto size = GetWindowTextLength(handle_);
+    std::basic_string<TCHAR> title(size, TEXT('\0'));
+    GetWindowText(handle_, title.data(), size + 1);
+    return detail::TCharToMultiByte(CP_UTF8, 0, title);
+}
+
+bool Window::Title(std::string_view title) {
     std::basic_string<TCHAR> t_title = detail::MultiByteToTChar(CP_UTF8, 0, title);
     LPCTSTR c_title = t_title.c_str();
     return SetWindowText(handle_, c_title);

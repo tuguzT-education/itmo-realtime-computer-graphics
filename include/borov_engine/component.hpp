@@ -18,17 +18,17 @@ class Component {
     virtual void Draw() = 0;
 
   protected:
-    [[nodiscard]] Input *GetInput();
-    [[nodiscard]] const Input *GetInput() const;
+    [[nodiscard]] borov_engine::Input *Input();
+    [[nodiscard]] const borov_engine::Input *Input() const;
 
-    [[nodiscard]] Window *GetWindow();
-    [[nodiscard]] const Window *GetWindow() const;
+    [[nodiscard]] borov_engine::Window *Window();
+    [[nodiscard]] const borov_engine::Window *Window() const;
 
-    [[nodiscard]] ID3D11DeviceContext *GetDeviceContext();
-    [[nodiscard]] const ID3D11DeviceContext *GetDeviceContext() const;
+    [[nodiscard]] ID3D11DeviceContext *DeviceContext();
+    [[nodiscard]] const ID3D11DeviceContext *DeviceContext() const;
 
-    [[nodiscard]] ID3D11Device *GetDevice();
-    [[nodiscard]] const ID3D11Device *GetDevice() const;
+    [[nodiscard]] ID3D11Device *Device();
+    [[nodiscard]] const ID3D11Device *Device() const;
 
     [[nodiscard]] const Color &ClearScreenColor() const;
     [[nodiscard]] Color &ClearScreenColor();
