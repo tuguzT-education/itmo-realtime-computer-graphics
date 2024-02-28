@@ -52,3 +52,5 @@ target_compile_features(borov_engine PUBLIC cxx_std_20)
 target_link_libraries(borov_engine PUBLIC
         d3d11.lib dxgi.lib d3dcompiler.lib dxguid.lib
         Microsoft::DirectXTK)
+
+message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
