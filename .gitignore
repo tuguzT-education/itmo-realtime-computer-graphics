@@ -484,3 +484,6 @@ fabric.properties
 
 # JetBrains config files
 .idea
+
+# VS Code config files
+.vscode

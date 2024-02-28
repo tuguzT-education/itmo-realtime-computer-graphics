@@ -4,13 +4,13 @@
 #include <vector>
 
 #include "borov_engine/detail/string_api_set.hpp"
-#include "borov_engine/input_device.hpp"
+#include "borov_engine/input.hpp"
 
 namespace borov_engine {
 
 Window::Window(std::string_view name,
                LONG width, LONG height,
-               HINSTANCE instance_handle) : input_device_{}, is_destroyed_{} {
+               HINSTANCE instance_handle) : input_{}, is_destroyed_{} {
     instance_handle = (instance_handle != nullptr)
                       ? instance_handle
                       : GetModuleHandle(nullptr);
@@ -136,8 +136,8 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
 
     switch (u_message) {
         case WM_INPUT: {
-            InputDevice *input_device = window->input_device_;
-            if (input_device == nullptr) {
+            Input *input = window->input_;
+            if (input == nullptr) {
                 break;
             }
             if (!window->IsFocused()) {
@@ -162,11 +162,11 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
             auto raw_input = (RAWINPUT *) lpb.data();
             switch (raw_input->header.dwType) {
                 case RIM_TYPEKEYBOARD: {
-                    input_device->OnRawKeyboard(raw_input->data.keyboard);
+                    input->OnRawKeyboard(raw_input->data.keyboard);
                     break;
                 }
                 case RIM_TYPEMOUSE: {
-                    input_device->OnRawMouse(raw_input->data.mouse);
+                    input->OnRawMouse(raw_input->data.mouse);
                     break;
                 }
                 default: {

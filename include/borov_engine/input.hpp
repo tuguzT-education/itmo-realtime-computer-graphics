@@ -13,7 +13,7 @@
 
 namespace borov_engine {
 
-class InputDevice {
+class Input {
   public:
     struct MouseMoveData {
         DirectX::SimpleMath::Vector2 position;
@@ -25,8 +25,8 @@ class InputDevice {
     DECLARE_MULTICAST_DELEGATE(OnInputKeyUp, InputKey);
     DECLARE_MULTICAST_DELEGATE(OnInputKeyDown, InputKey);
 
-    explicit InputDevice(Window &window);
-    ~InputDevice();
+    explicit Input(Window &window);
+    ~Input();
 
     [[nodiscard]] bool IsKeyDown(InputKey key) const;
 

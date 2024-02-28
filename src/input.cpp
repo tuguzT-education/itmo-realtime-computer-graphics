@@ -1,4 +1,4 @@
-#include "borov_engine/input_device.hpp"
+#include "borov_engine/input.hpp"
 
 #include <hidusage.h>
 
@@ -11,7 +11,7 @@
 
 namespace borov_engine {
 
-InputDevice::InputDevice(Window &window) : window_{window}, mouse_move_data_{} {
+Input::Input(Window &window) : window_{window}, mouse_move_data_{} {
     std::array raw_input_devices{
         RAWINPUTDEVICE{
             .usUsagePage = HID_USAGE_PAGE_GENERIC,
@@ -34,51 +34,51 @@ InputDevice::InputDevice(Window &window) : window_{window}, mouse_move_data_{} {
         throw std::runtime_error{message};
     }
 
-    assert(window.input_device_ == nullptr && "Input device already exists");
-    window.input_device_ = this;
+    assert(window.input_ == nullptr && "Input device already exists");
+    window.input_ = this;
 }
 
-InputDevice::~InputDevice() {
-    window_.input_device_ = nullptr;
+Input::~Input() {
+    window_.input_ = nullptr;
 }
 
-bool InputDevice::IsKeyDown(InputKey key) const {
+bool Input::IsKeyDown(InputKey key) const {
     return keys_.count(key) > 0;
 }
 
-auto InputDevice::GetMouseMoveData() const -> const MouseMoveData & {
+auto Input::GetMouseMoveData() const -> const MouseMoveData & {
     return mouse_move_data_;
 }
 
-auto InputDevice::GetMouseMoveData() -> MouseMoveData & {
+auto Input::GetMouseMoveData() -> MouseMoveData & {
     return mouse_move_data_;
 }
 
-auto InputDevice::GetOnMouseMove() const -> const OnMouseMove & {
+auto Input::GetOnMouseMove() const -> const OnMouseMove & {
     return on_mouse_move_;
 }
 
-auto InputDevice::GetOnMouseMove() -> OnMouseMove & {
+auto Input::GetOnMouseMove() -> OnMouseMove & {
     return on_mouse_move_;
 }
 
-auto InputDevice::GetOnInputKeyUp() const -> const OnInputKeyUp & {
+auto Input::GetOnInputKeyUp() const -> const OnInputKeyUp & {
     return on_input_key_up_;
 }
 
-auto InputDevice::GetOnInputKeyUp() -> OnInputKeyUp & {
+auto Input::GetOnInputKeyUp() -> OnInputKeyUp & {
     return on_input_key_up_;
 }
 
-auto InputDevice::GetOnInputKeyDown() const -> const OnInputKeyDown & {
+auto Input::GetOnInputKeyDown() const -> const OnInputKeyDown & {
     return on_input_key_up_;
 }
 
-auto InputDevice::GetOnInputKeyDown() -> OnInputKeyDown & {
+auto Input::GetOnInputKeyDown() -> OnInputKeyDown & {
     return on_input_key_up_;
 }
 
-void InputDevice::OnRawKeyboard(const RAWKEYBOARD &data) {
+void Input::OnRawKeyboard(const RAWKEYBOARD &data) {
     bool is_key_up = data.Flags & RI_KEY_BREAK;
 
     auto key = static_cast<InputKey>(data.VKey);
@@ -95,7 +95,7 @@ void InputDevice::OnRawKeyboard(const RAWKEYBOARD &data) {
     }
 }
 
-void InputDevice::OnRawMouse(const RAWMOUSE &data) {
+void Input::OnRawMouse(const RAWMOUSE &data) {
     if (data.usButtonFlags & RI_MOUSE_LEFT_BUTTON_DOWN) {
         AddPressedKey(InputKey::LeftButton);
     }
@@ -127,12 +127,12 @@ void InputDevice::OnRawMouse(const RAWMOUSE &data) {
     on_mouse_move_.Broadcast(mouse_move_data_);
 }
 
-void InputDevice::AddPressedKey(InputKey key) {
+void Input::AddPressedKey(InputKey key) {
     keys_.insert(key);
     on_input_key_down_.Broadcast(key);
 }
 
-void InputDevice::RemovePressedKey(InputKey key) {
+void Input::RemovePressedKey(InputKey key) {
     keys_.erase(key);
     on_input_key_up_.Broadcast(key);
 }

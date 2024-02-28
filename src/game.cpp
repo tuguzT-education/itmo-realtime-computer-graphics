@@ -13,8 +13,9 @@ namespace borov_engine {
 
 constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{6500};
 
-Game::Game(Window &window)
+Game::Game(Window &window, Input &input)
     : window_{window},
+      input_{input},
       time_per_update_{default_time_per_update},
       target_width_{},
       target_height_{},
@@ -46,6 +47,8 @@ Game::Game(Window &window)
     auto triangle_component = std::make_unique<TriangleComponent>(*this, vertices, indices);
     components_.push_back(std::move(triangle_component));
 }
+
+Game::~Game() = default;
 
 const Timer::Duration &Game::TimePerUpdate() const {
     return time_per_update_;

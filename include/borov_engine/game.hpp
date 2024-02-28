@@ -3,23 +3,22 @@
 #ifndef BOROV_ENGINE_GAME_HPP_INCLUDED
 #define BOROV_ENGINE_GAME_HPP_INCLUDED
 
-#include "game.fwd"
-
 #include <d3d11.h>
 
 #include <vector>
 #include <memory>
 
 #include "borov_engine/detail/d3d_ptr.hpp"
-#include "component.hpp"
 #include "window.hpp"
+#include "input.hpp"
 #include "timer.hpp"
 
 namespace borov_engine {
 
 class Game {
   public:
-    explicit Game(Window &window);
+    explicit Game(Window &window, Input &input);
+    ~Game();
 
     [[nodiscard]] const Timer::Duration &TimePerUpdate() const;
     [[nodiscard]] Timer::Duration &TimePerUpdate();
@@ -41,6 +40,7 @@ class Game {
 
     Timer timer_;
     Window &window_;
+    Input &input_;
     Timer::Duration time_per_update_;
     UINT target_width_;
     UINT target_height_;
