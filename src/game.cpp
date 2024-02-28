@@ -1,7 +1,6 @@
 #include "borov_engine/game.hpp"
 
 #include <array>
-#include <iostream>
 #include <format>
 
 #include <SimpleMath.h>
@@ -24,28 +23,6 @@ Game::Game(Window &window, Input &input)
     InitializeDevice();
     InitializeSwapChain(window);
     InitializeRenderTargetView();
-
-    std::array vertices{
-        TriangleComponent::Vertex{
-            {0.5f, 0.5f, 0.5f, 1.0f},
-            {1.0f, 0.0f, 0.0f, 1.0f},
-        },
-        TriangleComponent::Vertex{
-            {-0.5f, -0.5f, 0.5f, 1.0f},
-            {0.0f, 0.0f, 1.0f, 1.0f},
-        },
-        TriangleComponent::Vertex{
-            {0.5f, -0.5f, 0.5f, 1.0f},
-            {0.0f, 1.0f, 0.0f, 1.0f},
-        },
-        TriangleComponent::Vertex{
-            {-0.5f, 0.5f, 0.5f, 1.0f},
-            {1.0f, 1.0f, 1.0f, 1.0f},
-        },
-    };
-    std::array indices{0, 1, 2, 1, 0, 3};
-    auto triangle_component = std::make_unique<TriangleComponent>(*this, vertices, indices);
-    components_.push_back(std::move(triangle_component));
 }
 
 Game::~Game() = default;

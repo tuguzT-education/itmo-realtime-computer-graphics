@@ -1,7 +1,9 @@
 #include <borov_engine/window.hpp>
 #include <borov_engine/input.hpp>
 #include <borov_engine/game.hpp>
+#include <borov_engine/triangle_component.hpp>
 
+#include <array>
 #include <iostream>
 
 int main() {
@@ -16,6 +18,27 @@ int main() {
         }
     };
     input.GetOnInputKeyDown().AddLambda(exit_on_escape_key);
+
+    std::array vertices{
+        borov_engine::TriangleComponent::Vertex{
+            {0.5f, 0.5f, 0.5f, 1.0f},
+            {1.0f, 0.0f, 0.0f, 1.0f},
+        },
+        borov_engine::TriangleComponent::Vertex{
+            {-0.5f, -0.5f, 0.5f, 1.0f},
+            {0.0f, 0.0f, 1.0f, 1.0f},
+        },
+        borov_engine::TriangleComponent::Vertex{
+            {0.5f, -0.5f, 0.5f, 1.0f},
+            {0.0f, 1.0f, 0.0f, 1.0f},
+        },
+        borov_engine::TriangleComponent::Vertex{
+            {-0.5f, 0.5f, 0.5f, 1.0f},
+            {1.0f, 1.0f, 1.0f, 1.0f},
+        },
+    };
+    std::array indices{0, 1, 2, 1, 0, 3};
+    game.AddComponent<borov_engine::TriangleComponent>(vertices, indices);
 
     game.Run();
     return 0;

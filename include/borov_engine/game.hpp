@@ -25,6 +25,9 @@ class Game {
 
     [[nodiscard]] bool IsRunning() const;
 
+    template<typename T, typename ...Args>
+    void AddComponent(Args &&... args);
+
     void Run();
     void Exit();
 
@@ -55,5 +58,7 @@ class Game {
 };
 
 }
+
+#include "game.inl"
 
 #endif //BOROV_ENGINE_GAME_HPP_INCLUDED

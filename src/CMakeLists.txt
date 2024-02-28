@@ -26,6 +26,7 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/input_key.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/input.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/game.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/game.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/timer.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp)
