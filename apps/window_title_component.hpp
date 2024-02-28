@@ -1,9 +1,9 @@
 #pragma once
 
-#include <borov_engine/component.hpp>
-
 #ifndef APPS_WINDOW_TEXT_COMPONENT_HPP_INCLUDED
 #define APPS_WINDOW_TEXT_COMPONENT_HPP_INCLUDED
+
+#include <borov_engine/component.hpp>
 
 class WindowTitleComponent : public borov_engine::Component {
   public:

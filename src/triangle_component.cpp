@@ -61,16 +61,11 @@ const Vector3 &TriangleComponent::Offset() const {
     return offset_;
 }
 
-Vector3 &TriangleComponent::Offset() {
-    return offset_;
+void TriangleComponent::Offset(Vector3 offset) {
+    offset_ = offset;
 }
 
-void TriangleComponent::Update(float delta_time) {
-    offset_.x += 0.5f * delta_time;
-    if (offset_.x > 1.5f) {
-        offset_.x = -1.5f;
-    }
-}
+void TriangleComponent::Update(float delta_time) {}
 
 void TriangleComponent::Draw() {
     ID3D11DeviceContext *device_context = DeviceContext();
