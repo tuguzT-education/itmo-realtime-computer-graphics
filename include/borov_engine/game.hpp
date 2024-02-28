@@ -23,6 +23,9 @@ class Game {
     [[nodiscard]] const Timer::Duration &TimePerUpdate() const;
     [[nodiscard]] Timer::Duration &TimePerUpdate();
 
+    [[nodiscard]] const Color &ClearScreenColor() const;
+    [[nodiscard]] Color &ClearScreenColor();
+
     [[nodiscard]] bool IsRunning() const;
 
     template<typename T, typename ...Args>
@@ -45,6 +48,7 @@ class Game {
     Window &window_;
     Input &input_;
     Timer::Duration time_per_update_;
+    Color clear_screen_color_;
     UINT target_width_;
     UINT target_height_;
     bool should_exit_;

@@ -35,6 +35,14 @@ Timer::Duration &Game::TimePerUpdate() {
     return time_per_update_;
 }
 
+const Color &Game::ClearScreenColor() const {
+    return clear_screen_color_;
+}
+
+Color &Game::ClearScreenColor() {
+    return clear_screen_color_;
+}
+
 bool Game::IsRunning() const {
     return is_running_;
 }
@@ -185,10 +193,7 @@ void Game::Draw() {
     std::array render_targets{render_target_view_.Get()};
     device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), nullptr);
 
-    float start_time = timer_.StartTime();
-    float red = start_time - std::floor(start_time);
-    Color color{red, 0.1f, 0.1f, 1.0f};
-    device_context_->ClearRenderTargetView(render_target_view_.Get(), color);
+    device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_screen_color_);
 
     for (const auto &component : components_) {
         component->Draw();

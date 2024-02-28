@@ -38,4 +38,16 @@ const ID3D11Device *Component::GetDevice() const {
     return game_.get().device_.Get();
 }
 
+const Color &Component::ClearScreenColor() const {
+    return game_.get().ClearScreenColor();
+}
+
+Color &Component::ClearScreenColor() {
+    return game_.get().ClearScreenColor();
+}
+
+const Timer &Component::Timer() const {
+    return game_.get().timer_;
+}
+
 }

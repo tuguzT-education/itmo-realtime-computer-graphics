@@ -30,6 +30,11 @@ class Component {
     [[nodiscard]] ID3D11Device *GetDevice();
     [[nodiscard]] const ID3D11Device *GetDevice() const;
 
+    [[nodiscard]] const Color &ClearScreenColor() const;
+    [[nodiscard]] Color &ClearScreenColor();
+
+    [[nodiscard]] const Timer &Timer() const;
+
   private:
     std::reference_wrapper<Game> game_;
 };
