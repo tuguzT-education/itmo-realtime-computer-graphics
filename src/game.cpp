@@ -187,7 +187,7 @@ void Game::Draw() {
 
     float start_time = timer_.StartTime();
     float red = start_time - std::floor(start_time);
-    DirectX::SimpleMath::Color color{red, 0.1f, 0.1f, 1.0f};
+    Color color{red, 0.1f, 0.1f, 1.0f};
     device_context_->ClearRenderTargetView(render_target_view_.Get(), color);
 
     for (const auto &component : components_) {

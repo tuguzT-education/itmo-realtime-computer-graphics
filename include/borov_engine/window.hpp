@@ -7,26 +7,20 @@
 
 #include <string_view>
 
+#include "math.hpp"
+
 namespace borov_engine {
 
 class Window {
   public:
-    struct Dimensions {
-        LONG width;
-        LONG height;
-    };
-
     explicit Window(std::string_view name, LONG width, LONG height, HINSTANCE instance_handle = nullptr);
     ~Window();
 
     [[nodiscard]] HWND GetRawHandle() const;
     [[nodiscard]] HINSTANCE GetRawInstanceHandle() const;
 
-    [[nodiscard]] RECT GetRect() const;
-    [[nodiscard]] Dimensions GetDimensions() const;
-
-    [[nodiscard]] RECT GetClientRect() const;
-    [[nodiscard]] Dimensions GetClientDimensions() const;
+    [[nodiscard]] Rectangle GetDimensions() const;
+    [[nodiscard]] Rectangle GetClientDimensions() const;
 
     [[nodiscard]] bool IsDestroyed() const;
     [[nodiscard]] bool IsFocused() const;
