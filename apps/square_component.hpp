@@ -21,12 +21,11 @@ class SquareComponent : public borov_engine::TriangleComponent {
 SquareComponent::SquareComponent(borov_engine::Game &game) : TriangleComponent{game, vertices, indices} {}
 
 void SquareComponent::Update(float delta_time) {
-    borov_engine::Vector3 new_offset = Offset();
-    new_offset.x += 0.5f * delta_time;
-    if (new_offset.x > 1.5f) {
-        new_offset.x = -1.5f;
+    auto &offset = Offset();
+    offset.x += 0.5f * delta_time;
+    if (offset.x > 1.5f) {
+        offset.x -= 3.0f;
     }
-    Offset(new_offset);
 }
 
 std::array<SquareComponent::Vertex, 4> SquareComponent::vertices{

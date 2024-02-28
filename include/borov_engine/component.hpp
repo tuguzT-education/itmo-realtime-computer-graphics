@@ -30,8 +30,8 @@ class Component {
     [[nodiscard]] ID3D11Device *Device();
     [[nodiscard]] const ID3D11Device *Device() const;
 
-    [[nodiscard]] const Color &ClearScreenColor() const;
-    void ClearScreenColor(Color color);
+    [[nodiscard]] const math::Color &ClearColor() const;
+    [[nodiscard]] math::Color &ClearColor();
 
     [[nodiscard]] const Timer &Timer() const;
 

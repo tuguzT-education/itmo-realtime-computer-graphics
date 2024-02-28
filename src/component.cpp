@@ -38,12 +38,12 @@ const ID3D11Device *Component::Device() const {
     return game_.get().device_.Get();
 }
 
-const Color &Component::ClearScreenColor() const {
-    return game_.get().ClearScreenColor();
+const math::Color &Component::ClearColor() const {
+    return game_.get().ClearColor();
 }
 
-void Component::ClearScreenColor(Color color) {
-    game_.get().ClearScreenColor(color);
+math::Color & Component::ClearColor() {
+    return game_.get().ClearColor();
 }
 
 const Timer &Component::Timer() const {

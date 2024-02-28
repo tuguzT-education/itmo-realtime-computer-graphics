@@ -19,8 +19,8 @@ class Window {
     [[nodiscard]] HWND RawHandle() const;
     [[nodiscard]] HINSTANCE RawInstanceHandle() const;
 
-    [[nodiscard]] Rectangle Dimensions() const;
-    [[nodiscard]] Rectangle ClientDimensions() const;
+    [[nodiscard]] math::Rectangle Dimensions() const;
+    [[nodiscard]] math::Rectangle ClientDimensions() const;
 
     [[nodiscard]] bool IsDestroyed() const;
     [[nodiscard]] bool IsFocused() const;

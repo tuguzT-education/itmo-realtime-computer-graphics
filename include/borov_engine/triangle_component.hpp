@@ -23,8 +23,8 @@ class TriangleComponent : public Component {
                                std::span<Vertex> vertices,
                                std::span<Index> indices);
 
-    [[nodiscard]] const Vector3 &Offset() const;
-    void Offset(Vector3 offset);
+    [[nodiscard]] const math::Vector3 &Offset() const;
+    [[nodiscard]] math::Vector3 &Offset();
 
     void Update(float delta_time) override;
     void Draw() override;
@@ -36,13 +36,13 @@ class TriangleComponent : public Component {
     void InitializeRasterizerState();
     void InitializeVertexBuffer(std::span<Vertex> vertices);
     void InitializeIndexBuffer(std::span<Index> indices);
-    void InitializeConstantBuffer(Vector3 offset);
+    void InitializeConstantBuffer(math::Vector3 offset);
 
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;
 
     detail::D3DPtr<ID3D11Buffer> constant_buffer_;
-    Vector3 offset_;
+    math::Vector3 offset_;
 
     detail::D3DPtr<ID3D11Buffer> index_buffer_;
     detail::D3DPtr<ID3D11PixelShader> index_shader_;

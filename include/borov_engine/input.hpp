@@ -12,8 +12,8 @@
 namespace borov_engine {
 
 struct MouseMoveData {
-    Vector2 position;
-    Vector2 offset;
+    math::Vector2 position;
+    math::Vector2 offset;
     int wheel_delta;
 };
 
@@ -29,7 +29,7 @@ class Input {
     [[nodiscard]] bool IsKeyDown(InputKey key) const;
 
     [[nodiscard]] const borov_engine::MouseMoveData &MouseMoveData() const;
-    void MouseMoveData(borov_engine::MouseMoveData data);
+    [[nodiscard]] borov_engine::MouseMoveData &MouseMoveData();
 
     [[nodiscard]] const borov_engine::OnMouseMove &OnMouseMove() const;
     [[nodiscard]] borov_engine::OnMouseMove &OnMouseMove();

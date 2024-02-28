@@ -57,12 +57,12 @@ TriangleComponent::TriangleComponent(Game &game,
     InitializeConstantBuffer({});
 }
 
-const Vector3 &TriangleComponent::Offset() const {
+const math::Vector3 &TriangleComponent::Offset() const {
     return offset_;
 }
 
-void TriangleComponent::Offset(Vector3 offset) {
-    offset_ = offset;
+math::Vector3 &TriangleComponent::Offset() {
+    return offset_;
 }
 
 void TriangleComponent::Update(float delta_time) {}
@@ -204,7 +204,7 @@ void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
     detail::CheckResult(result, "Failed to create index buffer");
 }
 
-void TriangleComponent::InitializeConstantBuffer(Vector3 offset) {
+void TriangleComponent::InitializeConstantBuffer(math::Vector3 offset) {
     D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = ((sizeof(offset) - 1) | 15) + 1,
         .Usage = D3D11_USAGE_DYNAMIC,

@@ -50,8 +50,8 @@ const MouseMoveData &Input::MouseMoveData() const {
     return mouse_move_data_;
 }
 
-void Input::MouseMoveData(borov_engine::MouseMoveData data) {
-    mouse_move_data_ = data;
+borov_engine::MouseMoveData &Input::MouseMoveData() {
+    return mouse_move_data_;
 }
 
 const OnMouseMove &Input::OnMouseMove() const {

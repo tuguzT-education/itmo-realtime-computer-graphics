@@ -64,16 +64,16 @@ HINSTANCE Window::RawInstanceHandle() const {
     return (HINSTANCE) GetWindowLongPtr(handle_, GWLP_HINSTANCE);
 }
 
-Rectangle Window::Dimensions() const {
+math::Rectangle Window::Dimensions() const {
     RECT rect{};
     GetWindowRect(handle_, &rect);
-    return Rectangle{rect};
+    return math::Rectangle{rect};
 }
 
-Rectangle Window::ClientDimensions() const {
+math::Rectangle Window::ClientDimensions() const {
     RECT rect{};
     ::GetClientRect(handle_, &rect);
-    return Rectangle{rect};
+    return math::Rectangle{rect};
 }
 
 bool Window::IsDestroyed() const {

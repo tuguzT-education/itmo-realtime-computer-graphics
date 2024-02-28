@@ -5,7 +5,7 @@
 
 #include <SimpleMath.h>
 
-namespace borov_engine {
+namespace borov_engine::math {
 
 using Vector2 = DirectX::SimpleMath::Vector2;
 using Vector3 = DirectX::SimpleMath::Vector3;

@@ -23,8 +23,8 @@ class Game {
     [[nodiscard]] const Timer::Duration &TimePerUpdate() const;
     void TimePerUpdate(Timer::Duration time_per_update);
 
-    [[nodiscard]] const Color &ClearScreenColor() const;
-    void ClearScreenColor(Color color);
+    [[nodiscard]] const math::Color &ClearColor() const;
+    [[nodiscard]] math::Color &ClearColor();
 
     [[nodiscard]] bool IsRunning() const;
 
@@ -48,7 +48,7 @@ class Game {
     Window &window_;
     Input &input_;
     Timer::Duration time_per_update_;
-    Color clear_screen_color_;
+    math::Color clear_color_;
     UINT target_width_;
     UINT target_height_;
     bool should_exit_;
