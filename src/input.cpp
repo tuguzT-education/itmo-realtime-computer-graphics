@@ -30,7 +30,7 @@ Input::Input(Window &window) : window_{window}, mouse_move_data_{} {
     if (!RegisterRawInputDevices(raw_input_devices.data(),
                                  raw_input_devices.size(),
                                  sizeof(decltype(raw_input_devices)::value_type))) {
-        std::string message = detail::GetLastError();
+        std::string message = detail::LastError();
         throw std::runtime_error{message};
     }
 
@@ -46,35 +46,35 @@ bool Input::IsKeyDown(InputKey key) const {
     return keys_.count(key) > 0;
 }
 
-auto Input::GetMouseMoveData() const -> const MouseMoveData & {
+const MouseMoveData &Input::MouseMoveData() const {
     return mouse_move_data_;
 }
 
-auto Input::GetMouseMoveData() -> MouseMoveData & {
-    return mouse_move_data_;
+void Input::MouseMoveData(borov_engine::MouseMoveData data) {
+    mouse_move_data_ = data;
 }
 
-auto Input::GetOnMouseMove() const -> const OnMouseMove & {
+const OnMouseMove &Input::OnMouseMove() const {
     return on_mouse_move_;
 }
 
-auto Input::GetOnMouseMove() -> OnMouseMove & {
+OnMouseMove &Input::OnMouseMove() {
     return on_mouse_move_;
 }
 
-auto Input::GetOnInputKeyUp() const -> const OnInputKeyUp & {
+const OnInputKeyUp &Input::OnInputKeyUp() const {
     return on_input_key_up_;
 }
 
-auto Input::GetOnInputKeyUp() -> OnInputKeyUp & {
+OnInputKeyUp &Input::OnInputKeyUp() {
     return on_input_key_up_;
 }
 
-auto Input::GetOnInputKeyDown() const -> const OnInputKeyDown & {
+const OnInputKeyDown &Input::OnInputKeyDown() const {
     return on_input_key_up_;
 }
 
-auto Input::GetOnInputKeyDown() -> OnInputKeyDown & {
+OnInputKeyDown &Input::OnInputKeyDown() {
     return on_input_key_up_;
 }
 

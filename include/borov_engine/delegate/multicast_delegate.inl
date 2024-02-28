@@ -41,10 +41,10 @@ DelegateHandle MulticastDelegate<Args...>::Add(MulticastDelegate::DelegateT &&de
             continue;
         }
         item = std::move(delegate);
-        return item.GetHandle();
+        return item.Handle();
     }
     DelegateT &item = delegates_.emplace_back(std::move(delegate));
-    return item.GetHandle();
+    return item.Handle();
 }
 
 template<typename... Args>
@@ -105,7 +105,7 @@ bool MulticastDelegate<Args...>::IsBoundTo(const DelegateHandle &handle) const {
     }
 
     auto pred = [handle](const DelegateT &delegate) {
-        return delegate.GetHandle() == handle;
+        return delegate.Handle() == handle;
     };
     auto iter = std::find_if(delegates_.begin(), delegates_.end(), pred);
     return iter != delegates_.end();
@@ -126,7 +126,7 @@ void MulticastDelegate<Args...>::RemoveByOwner(void *owner) {
 
     for (std::size_t i = 0; i < delegates_.size(); ++i) {
         DelegateT &delegate = delegates_[i];
-        if (delegate.GetOwner() != owner) {
+        if (delegate.Owner() != owner) {
             continue;
         }
 
@@ -151,7 +151,7 @@ bool MulticastDelegate<Args...>::Remove(const DelegateHandle &handle) {
 
     for (std::size_t i = 0; i < delegates_.size(); ++i) {
         DelegateT &delegate = delegates_[i];
-        if (delegate.GetHandle() != handle) {
+        if (delegate.Handle() != handle) {
             continue;
         }
 
@@ -189,7 +189,7 @@ void MulticastDelegate<Args...>::Compress(std::size_t max_space) {
     std::size_t to_delete = 0;
     for (std::size_t i = 0; i < delegates_.size() - to_delete; ++i) {
         DelegateT &delegate = delegates_[i];
-        if (delegate.GetHandle().IsValid()) {
+        if (delegate.Handle().IsValid()) {
             continue;
         }
         std::swap(delegate, delegates_[to_delete]);

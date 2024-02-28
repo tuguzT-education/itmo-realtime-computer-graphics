@@ -7,7 +7,7 @@
 
 namespace borov_engine::detail {
 
-std::string GetLastError();
+std::string LastError();
 
 }
 

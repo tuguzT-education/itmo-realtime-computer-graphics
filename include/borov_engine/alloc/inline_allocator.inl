@@ -23,7 +23,7 @@ InlineAllocator<MaxStackSize>::~InlineAllocator() noexcept {
 template<std::size_t MaxStackSize>
 InlineAllocator<MaxStackSize>::InlineAllocator(const InlineAllocator &other) : size_{}, alloc_{} {
     if (other.HasAllocation()) {
-        std::memcpy(Allocate(other.size_), other.GetAllocation(), other.size_);
+        std::memcpy(Allocate(other.size_), other.Allocation(), other.size_);
     }
     size_ = other.size_;
 }
@@ -31,7 +31,7 @@ InlineAllocator<MaxStackSize>::InlineAllocator(const InlineAllocator &other) : s
 template<std::size_t MaxStackSize>
 InlineAllocator<MaxStackSize> &InlineAllocator<MaxStackSize>::operator=(const InlineAllocator &other) {
     if (other.HasAllocation()) {
-        std::memcpy(Allocate(other.size_), other.GetAllocation(), other.size_);
+        std::memcpy(Allocate(other.size_), other.Allocation(), other.size_);
     }
     size_ = other.size_;
     return *this;
@@ -82,7 +82,7 @@ void InlineAllocator<MaxStackSize>::Free() {
 }
 
 template<std::size_t MaxStackSize>
-constexpr void *InlineAllocator<MaxStackSize>::GetAllocation() const {
+constexpr void *InlineAllocator<MaxStackSize>::Allocation() const {
     if (HasAllocation()) {
         return HasHeapAllocation() ? alloc_ : (void *) buffer_;
     }
@@ -90,7 +90,7 @@ constexpr void *InlineAllocator<MaxStackSize>::GetAllocation() const {
 }
 
 template<std::size_t MaxStackSize>
-constexpr std::size_t InlineAllocator<MaxStackSize>::GetSize() const {
+constexpr std::size_t InlineAllocator<MaxStackSize>::Size() const {
     return size_;
 }
 

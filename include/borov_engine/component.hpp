@@ -31,7 +31,7 @@ class Component {
     [[nodiscard]] const ID3D11Device *Device() const;
 
     [[nodiscard]] const Color &ClearScreenColor() const;
-    [[nodiscard]] Color &ClearScreenColor();
+    void ClearScreenColor(Color color);
 
     [[nodiscard]] const Timer &Timer() const;
 

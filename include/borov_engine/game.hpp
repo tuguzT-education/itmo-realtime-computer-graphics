@@ -21,10 +21,10 @@ class Game {
     ~Game();
 
     [[nodiscard]] const Timer::Duration &TimePerUpdate() const;
-    [[nodiscard]] Timer::Duration &TimePerUpdate();
+    void TimePerUpdate(Timer::Duration time_per_update);
 
     [[nodiscard]] const Color &ClearScreenColor() const;
-    [[nodiscard]] Color &ClearScreenColor();
+    void ClearScreenColor(Color color);
 
     [[nodiscard]] bool IsRunning() const;
 

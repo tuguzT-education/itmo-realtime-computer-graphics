@@ -28,7 +28,7 @@ class MulticastDelegateBase {
     virtual ~MulticastDelegateBase() = default;
 };
 
-// Delegate that can be bound to by MULTIPLE objects
+// AllocatedDelegate that can be bound to by MULTIPLE objects
 template<typename... Args>
 class MulticastDelegate : public MulticastDelegateBase {
   public:

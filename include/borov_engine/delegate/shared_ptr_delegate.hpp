@@ -23,7 +23,7 @@ class SharedPtrDelegate<IsConst, T, R(Args...), Payload...> : public DelegateKin
 
     R Execute(Args &&... args) override;
 
-    [[nodiscard]] const void *GetOwner() const override;
+    [[nodiscard]] const void *Owner() const override;
 
   private:
     template<std::size_t... Is>

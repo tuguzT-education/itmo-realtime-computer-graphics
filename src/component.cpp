@@ -42,8 +42,8 @@ const Color &Component::ClearScreenColor() const {
     return game_.get().ClearScreenColor();
 }
 
-Color &Component::ClearScreenColor() {
-    return game_.get().ClearScreenColor();
+void Component::ClearScreenColor(Color color) {
+    game_.get().ClearScreenColor(color);
 }
 
 const Timer &Component::Timer() const {

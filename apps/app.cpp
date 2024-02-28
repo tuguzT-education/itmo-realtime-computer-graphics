@@ -20,7 +20,7 @@ int main() {
             game.Exit();
         }
     };
-    input.GetOnInputKeyDown().AddLambda(exit_on_escape_key);
+    input.OnInputKeyDown().AddLambda(exit_on_escape_key);
 
     game.AddComponent<ClearScreenComponent>();
     game.AddComponent<WindowTitleComponent>();

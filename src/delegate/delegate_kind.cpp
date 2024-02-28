@@ -2,7 +2,7 @@
 
 namespace borov_engine::delegate {
 
-const void *DelegateKindBase::GetOwner() const {
+const void *DelegateKindBase::Owner() const {
     return nullptr;
 }
 

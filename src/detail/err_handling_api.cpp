@@ -9,7 +9,7 @@
 
 namespace borov_engine::detail {
 
-std::string GetLastError() {
+std::string LastError() {
     DWORD last_error = ::GetLastError();
     if (last_error == 0) {
         return {};

@@ -57,11 +57,11 @@ TriangleComponent::TriangleComponent(Game &game,
     InitializeConstantBuffer({});
 }
 
-auto TriangleComponent::GetOffset() const -> const Offset & {
+const Vector3 &TriangleComponent::Offset() const {
     return offset_;
 }
 
-auto TriangleComponent::GetOffset() -> Offset & {
+Vector3 &TriangleComponent::Offset() {
     return offset_;
 }
 
@@ -89,7 +89,7 @@ void TriangleComponent::Draw() {
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
     device_context->Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-    std::memcpy(subresource.pData, &offset_, sizeof(Offset));
+    std::memcpy(subresource.pData, &offset_, sizeof(offset_));
     device_context->Unmap(constant_buffer_.Get(), 0);
 
     device_context->VSSetConstantBuffers(0, 1, constant_buffer_.GetAddressOf());
@@ -209,7 +209,7 @@ void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
     detail::CheckResult(result, "Failed to create index buffer");
 }
 
-void TriangleComponent::InitializeConstantBuffer(Offset offset) {
+void TriangleComponent::InitializeConstantBuffer(Vector3 offset) {
     D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = ((sizeof(offset) - 1) | 15) + 1,
         .Usage = D3D11_USAGE_DYNAMIC,

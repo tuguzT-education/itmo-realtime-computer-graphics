@@ -31,16 +31,16 @@ const Timer::Duration &Game::TimePerUpdate() const {
     return time_per_update_;
 }
 
-Timer::Duration &Game::TimePerUpdate() {
-    return time_per_update_;
+void Game::TimePerUpdate(Timer::Duration time_per_update) {
+    time_per_update_ = time_per_update;
 }
 
 const Color &Game::ClearScreenColor() const {
     return clear_screen_color_;
 }
 
-Color &Game::ClearScreenColor() {
-    return clear_screen_color_;
+void Game::ClearScreenColor(Color color) {
+    clear_screen_color_ = color;
 }
 
 bool Game::IsRunning() const {

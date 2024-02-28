@@ -2,7 +2,7 @@
 DOCUMENTATION
 
 ## Classes ##
-- ```Delegate<RetVal, Args>```
+- ```AllocatedDelegate<RetVal, Args>```
 - ```MulticastDelegate<Args>```
 
 ## Features ##
@@ -11,15 +11,15 @@ DOCUMENTATION
 	- Member functions
 	- Lambda's
 	- std::shared_ptr
-- Delegate object is allocated inline if it is under 32 bytes
+- AllocatedDelegate object is allocated inline if it is under 32 bytes
 - Add payload to delegate during bind-time
 - Move operations enable optimization
 
 ## Example Usage ##
 
-### Delegate ###
+### AllocatedDelegate ###
 
-Delegate<int, float> del;
+AllocatedDelegate<int, float> del;
 del.BindLambda([](float a, int payload)
 {
 	std::cout << "Lambda delegate parameter: " << a << std::endl;
@@ -104,9 +104,9 @@ class DelegateBase {
     DelegateBase(DelegateBase &&other) noexcept;
     DelegateBase &operator=(DelegateBase &&other) noexcept;
 
-    [[nodiscard]] const void *GetOwner() const;
+    [[nodiscard]] const void *Owner() const;
 
-    [[nodiscard]] constexpr DelegateHandle GetHandle() const;
+    [[nodiscard]] constexpr DelegateHandle Handle() const;
 
     void ClearIfBoundTo(void *object);
 
@@ -119,7 +119,7 @@ class DelegateBase {
   protected:
     void Release();
 
-    [[nodiscard]] constexpr DelegateKindBase *GetDelegate() const;
+    [[nodiscard]] constexpr DelegateKindBase *AllocatedDelegate() const;
 
     DelegateHandle handle_;
     alloc::InlineAllocator<kDelegateInlineAllocationSize> allocator_;
@@ -127,7 +127,7 @@ class DelegateBase {
 
 constexpr DelegateBase::DelegateBase(std::nullptr_t) noexcept: handle_{nullptr}, allocator_{} {}
 
-constexpr DelegateHandle DelegateBase::GetHandle() const {
+constexpr DelegateHandle DelegateBase::Handle() const {
     return handle_;
 }
 
@@ -135,11 +135,11 @@ constexpr bool DelegateBase::IsBound() const {
     return allocator_.HasAllocation();
 }
 
-constexpr DelegateKindBase *DelegateBase::GetDelegate() const {
-    return static_cast<DelegateKindBase *>(allocator_.GetAllocation());
+constexpr DelegateKindBase *DelegateBase::AllocatedDelegate() const {
+    return static_cast<DelegateKindBase *>(allocator_.Allocation());
 }
 
-// Delegate that can be bound to by just ONE object
+// AllocatedDelegate that can be bound to by just ONE object
 template<typename R, typename... Args>
 class Delegate : public DelegateBase {
   private:
@@ -321,9 +321,9 @@ void Delegate<R, Args...>::BindSharedPtr(std::shared_ptr<T> object,
 
 template<typename R, typename... Args>
 R Delegate<R, Args...>::Execute(Args... args) const {
-    assert(allocator_.HasAllocation() && "Delegate is not bound");
+    assert(allocator_.HasAllocation() && "AllocatedDelegate is not bound");
 
-    auto delegate = dynamic_cast<IDelegateT *>(GetDelegate());
+    auto delegate = dynamic_cast<IDelegateT *>(AllocatedDelegate());
     return delegate->Execute(std::forward<Args>(args)...);
 }
 
@@ -332,7 +332,7 @@ std::optional<R> Delegate<R, Args...>::ExecuteIfBound(Args... args) const {
     if (!IsBound()) {
         return std::nullopt;
     }
-    auto delegate = dynamic_cast<IDelegateT *>(GetDelegate());
+    auto delegate = dynamic_cast<IDelegateT *>(AllocatedDelegate());
     return delegate->Execute(std::forward<Args>(args)...);
 }
 
@@ -341,7 +341,7 @@ R Delegate<R, Args...>::ExecuteIfBound(Args... args) const requires(std::is_void
     if (!IsBound()) {
         return;
     }
-    auto delegate = dynamic_cast<IDelegateT *>(GetDelegate());
+    auto delegate = dynamic_cast<IDelegateT *>(AllocatedDelegate());
     return delegate->Execute(std::forward<Args>(args)...);
 }
 

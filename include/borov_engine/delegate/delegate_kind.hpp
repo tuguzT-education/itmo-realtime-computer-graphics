@@ -10,7 +10,7 @@ class DelegateKindBase {
     DelegateKindBase() = default;
     virtual ~DelegateKindBase() noexcept = default;
 
-    [[nodiscard]] virtual const void *GetOwner() const;
+    [[nodiscard]] virtual const void *Owner() const;
 };
 
 template<typename R, typename... Args>

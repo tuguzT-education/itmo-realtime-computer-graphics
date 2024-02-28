@@ -11,34 +11,34 @@
 
 namespace borov_engine {
 
+struct MouseMoveData {
+    Vector2 position;
+    Vector2 offset;
+    int wheel_delta;
+};
+
+DECLARE_MULTICAST_DELEGATE(OnMouseMove, const MouseMoveData &);
+DECLARE_MULTICAST_DELEGATE(OnInputKeyUp, InputKey);
+DECLARE_MULTICAST_DELEGATE(OnInputKeyDown, InputKey);
+
 class Input {
   public:
-    struct MouseMoveData {
-        Vector2 position;
-        Vector2 offset;
-        int wheel_delta;
-    };
-
-    DECLARE_MULTICAST_DELEGATE(OnMouseMove, const MouseMoveData &);
-    DECLARE_MULTICAST_DELEGATE(OnInputKeyUp, InputKey);
-    DECLARE_MULTICAST_DELEGATE(OnInputKeyDown, InputKey);
-
     explicit Input(Window &window);
     ~Input();
 
     [[nodiscard]] bool IsKeyDown(InputKey key) const;
 
-    [[nodiscard]] const MouseMoveData &GetMouseMoveData() const;
-    [[nodiscard]] MouseMoveData &GetMouseMoveData();
+    [[nodiscard]] const borov_engine::MouseMoveData &MouseMoveData() const;
+    void MouseMoveData(borov_engine::MouseMoveData data);
 
-    [[nodiscard]] const OnMouseMove &GetOnMouseMove() const;
-    [[nodiscard]] OnMouseMove &GetOnMouseMove();
+    [[nodiscard]] const borov_engine::OnMouseMove &OnMouseMove() const;
+    [[nodiscard]] borov_engine::OnMouseMove &OnMouseMove();
 
-    [[nodiscard]] const OnInputKeyUp &GetOnInputKeyUp() const;
-    [[nodiscard]] OnInputKeyUp &GetOnInputKeyUp();
+    [[nodiscard]] const borov_engine::OnInputKeyUp &OnInputKeyUp() const;
+    [[nodiscard]] borov_engine::OnInputKeyUp &OnInputKeyUp();
 
-    [[nodiscard]] const OnInputKeyDown &GetOnInputKeyDown() const;
-    [[nodiscard]] OnInputKeyDown &GetOnInputKeyDown();
+    [[nodiscard]] const borov_engine::OnInputKeyDown &OnInputKeyDown() const;
+    [[nodiscard]] borov_engine::OnInputKeyDown &OnInputKeyDown();
 
   private:
     friend class Window;
@@ -50,10 +50,10 @@ class Input {
     void RemovePressedKey(InputKey key);
 
     Window &window_;
-    MouseMoveData mouse_move_data_;
-    OnMouseMove on_mouse_move_;
-    OnInputKeyDown on_input_key_down_;
-    OnInputKeyUp on_input_key_up_;
+    borov_engine::MouseMoveData mouse_move_data_;
+    borov_engine::OnMouseMove on_mouse_move_;
+    borov_engine::OnInputKeyDown on_input_key_down_;
+    borov_engine::OnInputKeyUp on_input_key_up_;
     std::unordered_set<InputKey> keys_;
 };
 

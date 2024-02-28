@@ -23,9 +23,9 @@ class InlineAllocator {
 
     void Free();
 
-    [[nodiscard]] constexpr void *GetAllocation() const;
+    [[nodiscard]] constexpr void *Allocation() const;
 
-    [[nodiscard]] constexpr std::size_t GetSize() const;
+    [[nodiscard]] constexpr std::size_t Size() const;
 
     [[nodiscard]] constexpr bool HasAllocation() const;
 

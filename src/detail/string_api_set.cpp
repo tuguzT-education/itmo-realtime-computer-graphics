@@ -9,7 +9,7 @@ namespace borov_engine::detail {
 std::wstring MultiByteToWideChar(UINT code_page, DWORD dw_flags, std::string_view view) {
     int result = ::MultiByteToWideChar(code_page, dw_flags, view.data(), static_cast<int>(view.size()), nullptr, 0);
     if (result <= 0) {
-        std::string message = GetLastError();
+        std::string message = LastError();
         throw std::runtime_error{message};
     }
 
@@ -21,7 +21,7 @@ std::wstring MultiByteToWideChar(UINT code_page, DWORD dw_flags, std::string_vie
                                    string.data(),
                                    result);
     if (result <= 0) {
-        std::string message = GetLastError();
+        std::string message = LastError();
         throw std::runtime_error{message};
     }
 
@@ -39,7 +39,7 @@ std::string WideCharToMultiByte(UINT code_page, DWORD dw_flags, std::wstring_vie
                                        default_char,
                                        reinterpret_cast<LPBOOL>(used_default_char));
     if (result <= 0) {
-        std::string message = GetLastError();
+        std::string message = LastError();
         throw std::runtime_error{message};
     }
 
@@ -53,7 +53,7 @@ std::string WideCharToMultiByte(UINT code_page, DWORD dw_flags, std::wstring_vie
                                    default_char,
                                    reinterpret_cast<LPBOOL>(used_default_char));
     if (result <= 0) {
-        std::string message = GetLastError();
+        std::string message = LastError();
         throw std::runtime_error{message};
     }
 

@@ -17,7 +17,7 @@ R RawDelegate<IsConst, T, R(Args...), Payload...>::Execute(Args &&... args) {
 }
 
 template<bool IsConst, typename T, typename R, typename... Args, typename... Payload>
-const void *RawDelegate<IsConst, T, R(Args...), Payload...>::GetOwner() const {
+const void *RawDelegate<IsConst, T, R(Args...), Payload...>::Owner() const {
     return object_;
 }
 

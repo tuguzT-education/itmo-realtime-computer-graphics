@@ -26,11 +26,11 @@ DelegateBase &DelegateBase::operator=(DelegateBase &&other) noexcept {
     return *this;
 }
 
-const void *DelegateBase::GetOwner() const {
+const void *DelegateBase::Owner() const {
     if (!IsBound()) {
         return nullptr;
     }
-    return GetDelegate()->GetOwner();
+    return AllocatedDelegate()->Owner();
 }
 
 void DelegateBase::ClearIfBoundTo(void *object) {
@@ -47,7 +47,7 @@ bool DelegateBase::IsBoundTo(void *object) const {
     if (object == nullptr || !IsBound()) {
         return false;
     }
-    return GetDelegate()->GetOwner() == object;
+    return AllocatedDelegate()->Owner() == object;
 }
 
 void DelegateBase::Release() {
@@ -55,7 +55,7 @@ void DelegateBase::Release() {
         return;
     }
     handle_.Reset();
-    std::destroy_at(GetDelegate());
+    std::destroy_at(AllocatedDelegate());
     allocator_.Free();
 }
 
