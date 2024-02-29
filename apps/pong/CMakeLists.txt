@@ -1,4 +1,5 @@
-set(HEADER_LIST)
+set(HEADER_LIST
+        ball.hpp)
 set(SOURCE_LIST
         pong.cpp)
 
