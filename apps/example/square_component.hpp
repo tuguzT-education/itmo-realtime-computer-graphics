@@ -5,7 +5,7 @@
 
 #include <array>
 
-#include "borov_engine/triangle_component.hpp"
+#include <borov_engine/triangle_component.hpp>
 
 class SquareComponent : public borov_engine::TriangleComponent {
   public:
