@@ -30,7 +30,8 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/game.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/timer.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/component.hpp
-        ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp)
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp
+        ../include/borov_engine/box_component.hpp)
 set(SOURCE_LIST
         delegate/delegate_kind.cpp
         delegate/delegate_handle.cpp
@@ -43,7 +44,8 @@ set(SOURCE_LIST
         game.cpp
         timer.cpp
         component.cpp
-        triangle_component.cpp)
+        triangle_component.cpp
+        box_component.cpp)
 
 find_package(directxtk CONFIG REQUIRED)
 

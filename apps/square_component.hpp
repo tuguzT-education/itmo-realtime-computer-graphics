@@ -21,29 +21,29 @@ class SquareComponent : public borov_engine::TriangleComponent {
 SquareComponent::SquareComponent(borov_engine::Game &game) : TriangleComponent{game, vertices, indices} {}
 
 void SquareComponent::Update(float delta_time) {
-    auto &offset = Offset();
-    offset.x += 0.5f * delta_time;
-    if (offset.x > 1.5f) {
-        offset.x -= 3.0f;
+    auto &position = Position();
+    position.x += 0.5f * delta_time;
+    if (position.x > 1.5f) {
+        position.x -= 3.0f;
     }
 }
 
 std::array<SquareComponent::Vertex, 4> SquareComponent::vertices{
     borov_engine::TriangleComponent::Vertex{
-        {0.5f, 0.5f, 0.5f, 1.0f},
-        {1.0f, 0.0f, 0.0f, 1.0f},
+        borov_engine::math::Vector3{0.5f, 0.5f, 0.0f},
+        borov_engine::math::Color{1.0f, 0.0f, 0.0f, 1.0f},
     },
     borov_engine::TriangleComponent::Vertex{
-        {-0.5f, -0.5f, 0.5f, 1.0f},
-        {0.0f, 0.0f, 1.0f, 1.0f},
+        borov_engine::math::Vector3{-0.5f, -0.5f, 0.0f},
+        borov_engine::math::Color{0.0f, 0.0f, 1.0f, 1.0f},
     },
     borov_engine::TriangleComponent::Vertex{
-        {0.5f, -0.5f, 0.5f, 1.0f},
-        {0.0f, 1.0f, 0.0f, 1.0f},
+        borov_engine::math::Vector3{0.5f, -0.5f, 0.0f},
+        borov_engine::math::Color{0.0f, 1.0f, 0.0f, 1.0f},
     },
     borov_engine::TriangleComponent::Vertex{
-        {-0.5f, 0.5f, 0.5f, 1.0f},
-        {1.0f, 1.0f, 1.0f, 1.0f},
+        borov_engine::math::Vector3{-0.5f, 0.5f, 0.0f},
+        borov_engine::math::Color{1.0f, 1.0f, 1.0f, 1.0f},
     },
 };
 

@@ -10,21 +10,21 @@ struct PS_IN
  	float4 color : COLOR;
 };
 
-struct TransformData
+struct Transform
 {
-    float3 offset;
+    float3 position;
 };
 
-cbuffer Transform : register(b0)
+cbuffer TransformBuffer : register(b0)
 {
-    TransformData transform;
+    Transform transform;
 }
 
 PS_IN VSMain(VS_IN input)
 {
 	PS_IN output = (PS_IN)0;
 
-	output.position = float4(input.position + transform.offset, 1.0f);
+	output.position = float4(input.position + transform.position, 1.0f);
 	output.color = input.color;
 
 	return output;

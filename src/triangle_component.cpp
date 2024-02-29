@@ -47,22 +47,23 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path,
 
 TriangleComponent::TriangleComponent(Game &game,
                                      std::span<Vertex> vertices,
-                                     std::span<Index> indices) : Component{game}, offset_{} {
+                                     std::span<Index> indices,
+                                     math::Vector3 position) : Component{game}, position_{position} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
-    InitializeConstantBuffer({});
+    InitializeConstantBuffer(position);
 }
 
-const math::Vector3 &TriangleComponent::Offset() const {
-    return offset_;
+const math::Vector3 &TriangleComponent::Position() const {
+    return position_;
 }
 
-math::Vector3 &TriangleComponent::Offset() {
-    return offset_;
+math::Vector3 &TriangleComponent::Position() {
+    return position_;
 }
 
 void TriangleComponent::Update(float delta_time) {}
@@ -84,7 +85,7 @@ void TriangleComponent::Draw() {
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
     device_context->Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-    std::memcpy(subresource.pData, &offset_, sizeof(offset_));
+    std::memcpy(subresource.pData, &position_, sizeof(position_));
     device_context->Unmap(constant_buffer_.Get(), 0);
 
     device_context->VSSetConstantBuffers(0, 1, constant_buffer_.GetAddressOf());
@@ -204,9 +205,9 @@ void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
     detail::CheckResult(result, "Failed to create index buffer");
 }
 
-void TriangleComponent::InitializeConstantBuffer(math::Vector3 offset) {
+void TriangleComponent::InitializeConstantBuffer(math::Vector3 position) {
     D3D11_BUFFER_DESC buffer_desc{
-        .ByteWidth = ((sizeof(offset) - 1) | 15) + 1,
+        .ByteWidth = ((sizeof(position) - 1) | 15) + 1,
         .Usage = D3D11_USAGE_DYNAMIC,
         .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
         .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
@@ -214,7 +215,7 @@ void TriangleComponent::InitializeConstantBuffer(math::Vector3 offset) {
         .StructureByteStride = 0,
     };
     D3D11_SUBRESOURCE_DATA initial_data{
-        .pSysMem = &offset,
+        .pSysMem = &position,
         .SysMemPitch = 0,
         .SysMemSlicePitch = 0,
     };
