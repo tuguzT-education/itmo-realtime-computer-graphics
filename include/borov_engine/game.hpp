@@ -48,6 +48,8 @@ class Game {
     void Update(float delta_time);
     void Draw();
 
+    [[nodiscard]] std::span<std::unique_ptr<Component>> Components();
+
     Timer timer_;
     Window &window_;
     Input &input_;

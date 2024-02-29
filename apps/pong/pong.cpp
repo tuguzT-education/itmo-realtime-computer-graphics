@@ -4,6 +4,7 @@
 
 #include "ball.hpp"
 #include "player.hpp"
+#include "referee.hpp"
 
 int main() {
     borov_engine::Window window{"Pong", 800, 800};
@@ -32,6 +33,7 @@ int main() {
             .down = borov_engine::InputKey::Down,
         }
     );
+    game.AddComponent<Referee>();
 
     game.Run();
     return 0;
