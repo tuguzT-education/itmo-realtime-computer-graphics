@@ -1,5 +1,7 @@
 set(HEADER_LIST
-        ball.hpp)
+        direction.hpp
+        ball.hpp
+        player.hpp)
 set(SOURCE_LIST
         pong.cpp)
 
