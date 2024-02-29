@@ -3,7 +3,7 @@
 #ifndef APPS_CLEAR_SCREEN_COMPONENT_HPP_INCLUDED
 #define APPS_CLEAR_SCREEN_COMPONENT_HPP_INCLUDED
 
-#include <borov_engine/component.hpp>
+#include "borov_engine/component.hpp"
 
 class ClearScreenComponent : public borov_engine::Component {
   public:

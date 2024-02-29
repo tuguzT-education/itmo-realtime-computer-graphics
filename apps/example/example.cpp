@@ -1,6 +1,6 @@
-#include <borov_engine/window.hpp>
-#include <borov_engine/input.hpp>
-#include <borov_engine/game.hpp>
+#include "borov_engine/window.hpp"
+#include "borov_engine/input.hpp"
+#include "borov_engine/game.hpp"
 
 #include <iostream>
 
@@ -9,7 +9,7 @@
 #include "square_component.hpp"
 
 int main() {
-    borov_engine::Window window{"Application", 800, 800};
+    borov_engine::Window window{"Example", 800, 800};
     borov_engine::Input input{window};
     borov_engine::Game game{window, input};
 
