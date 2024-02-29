@@ -65,10 +65,10 @@ void Player::Update(float delta_time) {
 borov_engine::math::Vector3 Player::PositionFrom(::Direction direction) {
     switch (direction) {
         case Direction::Left: {
-            return {-0.95f, 0.0f, 0.0f};
+            return {-0.9f, 0.0f, 0.0f};
         }
         case Direction::Right: {
-            return {0.95f, 0.0f, 0.0f};
+            return {0.9f, 0.0f, 0.0f};
         }
     }
 }

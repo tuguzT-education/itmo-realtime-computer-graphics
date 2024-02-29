@@ -3,7 +3,7 @@
 #ifndef PONG_BALL_HPP_INCLUDED
 #define PONG_BALL_HPP_INCLUDED
 
-#include <borov_engine/box_component.hpp>
+#include "player.hpp"
 
 class Ball : public borov_engine::BoxComponent {
   public:
@@ -30,6 +30,19 @@ void Ball::Update(float delta_time) {
     }
     if (position.y < -1.0f || position.y > 1.0f) {
         velocity_.y = -velocity_.y;
+    }
+
+    for (auto &component : Components()) {
+        auto player = dynamic_cast<const Player *>(component.get());
+        if (player == nullptr) {
+            continue;
+        }
+
+        Box box = Collision();
+        Box player_box = player->Collision();
+        if (box.Intersects(player_box)) {
+            velocity_.x = -velocity_.x;
+        }
     }
 
     position += velocity_ * delta_time;

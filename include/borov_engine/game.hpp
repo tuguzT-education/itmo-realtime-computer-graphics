@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <memory>
+#include <span>
 
 #include "borov_engine/detail/d3d_ptr.hpp"
 #include "window.hpp"
@@ -16,6 +17,9 @@
 namespace borov_engine {
 
 class Game {
+  private:
+    friend class Component;
+
   public:
     explicit Game(Window &window, Input &input);
     ~Game();
@@ -31,12 +35,12 @@ class Game {
     template<typename T, typename ...Args>
     void AddComponent(Args &&... args);
 
+    [[nodiscard]] std::span<const std::unique_ptr<Component>> Components() const;
+
     void Run();
     void Exit();
 
   private:
-    friend class Component;
-
     void InitializeDevice();
     void InitializeSwapChain(const Window &window);
     void InitializeRenderTargetView();

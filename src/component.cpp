@@ -42,12 +42,20 @@ const math::Color &Component::ClearColor() const {
     return game_.get().ClearColor();
 }
 
-math::Color & Component::ClearColor() {
+math::Color &Component::ClearColor() {
     return game_.get().ClearColor();
 }
 
 const Timer &Component::Timer() const {
     return game_.get().timer_;
+}
+
+std::span<const std::unique_ptr<Component>> Component::Components() const {
+    return game_.get().Components();
+}
+
+void Component::Exit() {
+    game_.get().Exit();
 }
 
 }

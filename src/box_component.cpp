@@ -48,7 +48,7 @@ float BoxComponent::Height() const {
 
 BoxComponent::Box BoxComponent::Collision() const {
     math::Vector3 center = Position();
-    math::Vector3 extents = math::Vector3{Width(), Height(), 0.0f};
+    math::Vector3 extents = math::Vector3{Width() / 2, Height() / 2, 0.0f};
     return Box{center, extents};
 }
 
