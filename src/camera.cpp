@@ -6,6 +6,7 @@ namespace borov_engine {
 
 Camera::Camera(Game &game) :
     Component(game),
+    position_{math::Vector3::Backward},
     forward_{math::Vector3::Forward},
     up_{math::Vector3::Up},
     near_plane_{0.1f},
@@ -127,7 +128,7 @@ void Camera::Rotate(const math::Quaternion &quaternion) {
 }
 
 math::Matrix4x4 Camera::View() const {
-    return math::Matrix4x4::CreateWorld(position_, forward_, up_);
+    return math::Matrix4x4::CreateLookAt(position_, position_ + forward_, up_);
 }
 
 math::Matrix4x4 Camera::Projection(ProjectionType type) const {

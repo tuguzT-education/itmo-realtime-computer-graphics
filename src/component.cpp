@@ -22,6 +22,14 @@ const Window *Component::Window() const {
     return &game_.get().window_;
 }
 
+Camera *Component::Camera() {
+    return game_.get().camera_;
+}
+
+const Camera *Component::Camera() const {
+    return game_.get().camera_;
+}
+
 ID3D11DeviceContext &Component::DeviceContext() {
     return *game_.get().device_context_.Get();
 }

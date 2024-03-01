@@ -6,9 +6,9 @@
 namespace borov_engine {
 
 template<typename T, typename... Args>
-void Game::AddComponent(Args &&... args) {
-    auto component = std::make_unique<T>(*this, std::forward<Args>(args)...);
-    components_.push_back(std::move(component));
+T &Game::AddComponent(Args &&... args) {
+    auto &component = components_.emplace_back(std::make_unique<T>(*this, std::forward<Args>(args)...));
+    return dynamic_cast<T &>(*component);
 }
 
 ComponentConstView auto Game::Components() const {

@@ -2,11 +2,12 @@
 
 #include <array>
 #include <format>
+#include <numbers>
 
 #include <SimpleMath.h>
 
 #include "borov_engine/detail/check_result.hpp"
-#include "borov_engine/triangle_component.hpp"
+#include "borov_engine/camera.hpp"
 
 namespace borov_engine {
 
@@ -15,6 +16,7 @@ constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{65
 Game::Game(Window &window, Input &input)
     : window_{window},
       input_{input},
+      camera_{},
       time_per_update_{default_time_per_update},
       target_width_{},
       target_height_{},
@@ -23,6 +25,12 @@ Game::Game(Window &window, Input &input)
     InitializeDevice();
     InitializeSwapChain(window);
     InitializeRenderTargetView();
+
+    auto &camera = AddComponent<Camera>();
+    camera.Position() = math::Vector3::Backward * 2;
+    auto pi = std::numbers::pi_v<float>;
+    camera.Rotate(pi / 16, 0, pi / 8);
+    camera_ = &camera;
 }
 
 Game::~Game() = default;

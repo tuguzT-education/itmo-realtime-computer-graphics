@@ -18,6 +18,7 @@
 namespace borov_engine {
 
 class Component;
+class Camera;
 
 template<typename T>
 concept ComponentView = std::ranges::view<T>
@@ -41,7 +42,7 @@ class Game {
     [[nodiscard]] bool IsRunning() const;
 
     template<typename T, typename ...Args>
-    void AddComponent(Args &&... args);
+    T &AddComponent(Args &&... args);
 
     [[nodiscard]] ComponentConstView auto Components() const;
     [[nodiscard]] ComponentView auto Components();
@@ -62,6 +63,7 @@ class Game {
     Timer timer_;
     Window &window_;
     Input &input_;
+    Camera *camera_;
     Timer::Duration time_per_update_;
     math::Color clear_color_;
     UINT target_width_;

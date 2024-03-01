@@ -22,6 +22,9 @@ class Component {
     [[nodiscard]] borov_engine::Window *Window();
     [[nodiscard]] const borov_engine::Window *Window() const;
 
+    [[nodiscard]] borov_engine::Camera *Camera();
+    [[nodiscard]] const borov_engine::Camera *Camera() const;
+
     [[nodiscard]] ID3D11DeviceContext &DeviceContext();
     [[nodiscard]] const ID3D11DeviceContext &DeviceContext() const;
 

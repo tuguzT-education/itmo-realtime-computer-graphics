@@ -12,7 +12,7 @@ struct PS_IN
 
 struct Transform
 {
-    float3 position;
+    float4x4 wvp_matrix;
 };
 
 cbuffer TransformBuffer : register(b0)
@@ -24,7 +24,7 @@ PS_IN VSMain(VS_IN input)
 {
 	PS_IN output = (PS_IN)0;
 
-	output.position = float4(input.position + transform.position, 1.0f);
+	output.position = mul(transform.wvp_matrix, float4(input.position, 1.0f));
 	output.color = input.color;
 
 	return output;

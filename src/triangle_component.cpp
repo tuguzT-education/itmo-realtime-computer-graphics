@@ -7,7 +7,7 @@
 
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/detail/string_api_set.hpp"
-#include "borov_engine/game.hpp"
+#include "borov_engine/camera.hpp"
 
 namespace borov_engine {
 
@@ -55,7 +55,7 @@ TriangleComponent::TriangleComponent(Game &game,
     InitializeRasterizerState();
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
-    InitializeConstantBuffer(ConstantBuffer{.position = position});
+    InitializeConstantBuffer(ConstantBuffer{.matrix = math::Matrix4x4::CreateTranslation(position)});
 }
 
 const math::Vector3 &TriangleComponent::Position() const {
@@ -84,7 +84,11 @@ void TriangleComponent::Draw() {
     device_context.PSSetShader(index_shader_.Get(), nullptr, 0);
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
-    ConstantBuffer constant_buffer{.position = position_};
+    auto *camera = Camera();
+    math::Matrix4x4 translation = math::Matrix4x4::CreateTranslation(position_);
+    math::Matrix4x4 view = camera != nullptr ? camera->View() : math::Matrix4x4{};
+    math::Matrix4x4 projection = camera != nullptr ? camera->Perspective() : math::Matrix4x4{};
+    ConstantBuffer constant_buffer{.matrix = translation * view * projection};
     device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
     std::memcpy(subresource.pData, &constant_buffer, sizeof(constant_buffer));
     device_context.Unmap(constant_buffer_.Get(), 0);
