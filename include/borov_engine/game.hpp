@@ -10,7 +10,7 @@
 #include <ranges>
 #include <concepts>
 
-#include "borov_engine/detail/d3d_ptr.hpp"
+#include "detail/d3d_ptr.hpp"
 #include "window.hpp"
 #include "input.hpp"
 #include "timer.hpp"

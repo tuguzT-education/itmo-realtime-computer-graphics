@@ -31,13 +31,17 @@ class TriangleComponent : public Component {
     void Draw() override;
 
   private:
+    struct ConstantBuffer {
+        alignas(16) math::Vector3 position;
+    };
+
     void InitializeVertexShader();
     void InitializeIndexShader();
     void InitializeInputLayout();
     void InitializeRasterizerState();
     void InitializeVertexBuffer(std::span<Vertex> vertices);
     void InitializeIndexBuffer(std::span<Index> indices);
-    void InitializeConstantBuffer(math::Vector3 position);
+    void InitializeConstantBuffer(ConstantBuffer constant_buffer);
 
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;

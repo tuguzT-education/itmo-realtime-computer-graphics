@@ -22,16 +22,18 @@ class Component {
     [[nodiscard]] borov_engine::Window *Window();
     [[nodiscard]] const borov_engine::Window *Window() const;
 
-    [[nodiscard]] ID3D11DeviceContext *DeviceContext();
-    [[nodiscard]] const ID3D11DeviceContext *DeviceContext() const;
+    [[nodiscard]] ID3D11DeviceContext &DeviceContext();
+    [[nodiscard]] const ID3D11DeviceContext &DeviceContext() const;
 
-    [[nodiscard]] ID3D11Device *Device();
-    [[nodiscard]] const ID3D11Device *Device() const;
+    [[nodiscard]] ID3D11Device &Device();
+    [[nodiscard]] const ID3D11Device &Device() const;
 
     [[nodiscard]] const math::Color &ClearColor() const;
     [[nodiscard]] math::Color &ClearColor();
 
     [[nodiscard]] const Timer &Timer() const;
+    [[nodiscard]] UINT TargetWidth() const;
+    [[nodiscard]] UINT TargetHeight() const;
 
     [[nodiscard]] ComponentConstView auto Components() const;
     [[nodiscard]] ComponentView auto Components();

@@ -22,20 +22,20 @@ const Window *Component::Window() const {
     return &game_.get().window_;
 }
 
-ID3D11DeviceContext *Component::DeviceContext() {
-    return game_.get().device_context_.Get();
+ID3D11DeviceContext &Component::DeviceContext() {
+    return *game_.get().device_context_.Get();
 }
 
-const ID3D11DeviceContext *Component::DeviceContext() const {
-    return game_.get().device_context_.Get();
+const ID3D11DeviceContext &Component::DeviceContext() const {
+    return *game_.get().device_context_.Get();
 }
 
-ID3D11Device *Component::Device() {
-    return game_.get().device_.Get();
+ID3D11Device &Component::Device() {
+    return *game_.get().device_.Get();
 }
 
-const ID3D11Device *Component::Device() const {
-    return game_.get().device_.Get();
+const ID3D11Device &Component::Device() const {
+    return *game_.get().device_.Get();
 }
 
 const math::Color &Component::ClearColor() const {
@@ -48,6 +48,14 @@ math::Color &Component::ClearColor() {
 
 const Timer &Component::Timer() const {
     return game_.get().timer_;
+}
+
+UINT Component::TargetWidth() const {
+    return game_.get().target_width_;
+}
+
+UINT Component::TargetHeight() const {
+    return game_.get().target_height_;
 }
 
 void Component::Exit() {

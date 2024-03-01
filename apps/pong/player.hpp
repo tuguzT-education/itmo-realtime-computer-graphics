@@ -70,6 +70,9 @@ borov_engine::math::Vector3 Player::PositionFrom(::Direction direction) {
         case Direction::Right: {
             return {0.9f, 0.0f, 0.0f};
         }
+        default: {
+            return {};
+        }
     }
 }
 
