@@ -7,7 +7,8 @@
 
 #include <vector>
 #include <memory>
-#include <span>
+#include <ranges>
+#include <concepts>
 
 #include "borov_engine/detail/d3d_ptr.hpp"
 #include "window.hpp"
@@ -16,10 +17,17 @@
 
 namespace borov_engine {
 
-class Game {
-  private:
-    friend class Component;
+class Component;
 
+template<typename T>
+concept ComponentView = std::ranges::view<T>
+    && std::same_as<std::ranges::range_value_t<T>, std::reference_wrapper<Component>>;
+
+template<typename T>
+concept ComponentConstView = std::ranges::view<T>
+    && std::same_as<std::ranges::range_value_t<T>, std::reference_wrapper<const Component>>;
+
+class Game {
   public:
     explicit Game(Window &window, Input &input);
     ~Game();
@@ -35,20 +43,21 @@ class Game {
     template<typename T, typename ...Args>
     void AddComponent(Args &&... args);
 
-    [[nodiscard]] std::span<const std::unique_ptr<Component>> Components() const;
+    [[nodiscard]] ComponentConstView auto Components() const;
+    [[nodiscard]] ComponentView auto Components();
 
     void Run();
     void Exit();
 
   private:
+    friend class Component;
+
     void InitializeDevice();
     void InitializeSwapChain(const Window &window);
     void InitializeRenderTargetView();
 
     void Update(float delta_time);
     void Draw();
-
-    [[nodiscard]] std::span<std::unique_ptr<Component>> Components();
 
     Timer timer_;
     Window &window_;

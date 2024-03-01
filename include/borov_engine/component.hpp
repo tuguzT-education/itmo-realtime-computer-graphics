@@ -3,8 +3,6 @@
 #ifndef BOROV_ENGINE_CONTEXT_HPP_INCLUDED
 #define BOROV_ENGINE_CONTEXT_HPP_INCLUDED
 
-#include <functional>
-
 #include "game.hpp"
 
 namespace borov_engine {
@@ -35,8 +33,8 @@ class Component {
 
     [[nodiscard]] const Timer &Timer() const;
 
-    [[nodiscard]] std::span<const std::unique_ptr<Component>> Components() const;
-    [[nodiscard]] std::span<std::unique_ptr<Component>> Components();
+    [[nodiscard]] ComponentConstView auto Components() const;
+    [[nodiscard]] ComponentView auto Components();
 
     void Exit();
 
@@ -45,5 +43,7 @@ class Component {
 };
 
 }
+
+#include "component.inl"
 
 #endif //BOROV_ENGINE_CONTEXT_HPP_INCLUDED

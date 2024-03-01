@@ -47,14 +47,6 @@ bool Game::IsRunning() const {
     return is_running_;
 }
 
-std::span<const std::unique_ptr<Component>> Game::Components() const {
-    return components_;
-}
-
-std::span<std::unique_ptr<Component>> Game::Components() {
-    return components_;
-}
-
 void Game::Run() {
     if (is_running_) {
         return;

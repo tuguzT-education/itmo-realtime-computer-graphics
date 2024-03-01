@@ -23,9 +23,11 @@ Referee::Referee(borov_engine::Game &game) : Component(game), left_score_{}, rig
 
 void Referee::Update(float delta_time) {
     Ball *ball = nullptr;
-    for (auto &component : Components()) {
+    for (Component &component : Components()) {
         if (ball == nullptr) {
-            ball = dynamic_cast<Ball *>(component.get());
+            ball = dynamic_cast<Ball *>(&component);
+        } else {
+            break;
         }
     }
     if (ball == nullptr) {

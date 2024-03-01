@@ -50,14 +50,6 @@ const Timer &Component::Timer() const {
     return game_.get().timer_;
 }
 
-std::span<const std::unique_ptr<Component>> Component::Components() const {
-    return game_.get().Components();
-}
-
-std::span<std::unique_ptr<Component>> Component::Components() {
-    return game_.get().Components();
-}
-
 void Component::Exit() {
     game_.get().Exit();
 }
