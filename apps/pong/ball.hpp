@@ -22,7 +22,7 @@ class Ball : public borov_engine::BoxComponent {
 };
 
 Ball::Ball(borov_engine::Game &game)
-    : BoxComponent(game, 0.05f, 0.05f, borov_engine::math::Color{1.0f, 1.0f, 1.0f}),
+    : BoxComponent(game, 0.05f, 0.05f, 0.0f),
       velocity_{RandomVelocity()} {}
 
 void Ball::Reset() {

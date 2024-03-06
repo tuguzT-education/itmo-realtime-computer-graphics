@@ -13,15 +13,21 @@ class BoxComponent : public TriangleComponent {
   public:
     using Box = DirectX::BoundingBox;
 
-    explicit BoxComponent(Game &game, float width, float height, math::Color color, math::Vector3 position = {});
+    explicit BoxComponent(Game &game,
+                          float length, float height, float width,
+                          math::Color color = {1.0f, 1.0f, 1.0f},
+                          math::Vector3 position = {});
 
-    [[nodiscard]] float Width() const;
+    [[nodiscard]] float Length() const;
     [[nodiscard]] float Height() const;
+    [[nodiscard]] float Width() const;
+
     [[nodiscard]] Box Collision() const;
 
   private:
-    float width_;
+    float length_;
     float height_;
+    float width_;
 };
 
 }
