@@ -1,8 +1,9 @@
 set(HEADER_LIST
-        clear_screen_component.hpp
-        window_title_component.hpp
+        game.hpp
         square_component.hpp)
 set(SOURCE_LIST
+        game.cpp
+        square_component.cpp
         main.cpp)
 
 add_executable(example ${SOURCE_LIST} ${HEADER_LIST})

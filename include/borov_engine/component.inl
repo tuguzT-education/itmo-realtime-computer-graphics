@@ -5,7 +5,7 @@
 
 namespace borov_engine {
 
-ComponentConstView auto Component::Components() const {
+ConstComponentView auto Component::Components() const {
     const Game &game = game_.get();
     return game.Components();
 }

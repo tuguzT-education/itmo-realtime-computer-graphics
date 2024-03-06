@@ -38,7 +38,7 @@ class Component {
     [[nodiscard]] UINT TargetWidth() const;
     [[nodiscard]] UINT TargetHeight() const;
 
-    [[nodiscard]] ComponentConstView auto Components() const;
+    [[nodiscard]] ConstComponentView auto Components() const;
     [[nodiscard]] ComponentView auto Components();
 
     void Exit();

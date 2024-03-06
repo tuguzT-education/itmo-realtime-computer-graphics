@@ -1,5 +1,3 @@
-#include <borov_engine/window.hpp>
-#include <borov_engine/input.hpp>
 #include <borov_engine/game.hpp>
 
 int main() {

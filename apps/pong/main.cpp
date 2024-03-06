@@ -1,24 +1,11 @@
-#include <borov_engine/window.hpp>
-#include <borov_engine/input.hpp>
-#include <borov_engine/game.hpp>
-
-#include "ball.hpp"
+#include "game.hpp"
 #include "player.hpp"
-#include "referee.hpp"
 
 int main() {
     borov_engine::Window window{"Pong", 800, 800};
     borov_engine::Input input{window};
-    borov_engine::Game game{window, input};
 
-    auto exit_on_escape_key = [&](const auto key) {
-        if (key == borov_engine::InputKey::Escape) {
-            game.Exit();
-        }
-    };
-    input.OnInputKeyDown().AddLambda(exit_on_escape_key);
-
-    game.AddComponent<Ball>();
+    Game game{window, input};
     game.AddComponent<Player>(
         Direction::Left,
         Player::ControlKeys{
@@ -33,7 +20,6 @@ int main() {
             .down = borov_engine::InputKey::Down,
         }
     );
-    game.AddComponent<Referee>();
 
     game.Run();
     return 0;

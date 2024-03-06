@@ -4,8 +4,6 @@
 #include <format>
 #include <numbers>
 
-#include <SimpleMath.h>
-
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/camera.hpp"
 
@@ -13,7 +11,7 @@ namespace borov_engine {
 
 constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{6500};
 
-Game::Game(Window &window, Input &input)
+Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     : window_{window},
       input_{input},
       camera_{},
@@ -39,8 +37,8 @@ const Timer::Duration &Game::TimePerUpdate() const {
     return time_per_update_;
 }
 
-void Game::TimePerUpdate(Timer::Duration time_per_update) {
-    time_per_update_ = time_per_update;
+Timer::Duration &Game::TimePerUpdate() {
+    return time_per_update_;
 }
 
 const math::Color &Game::ClearColor() const {
@@ -49,6 +47,26 @@ const math::Color &Game::ClearColor() const {
 
 math::Color &Game::ClearColor() {
     return clear_color_;
+}
+
+const Timer &Game::Timer() const {
+    return timer_;
+}
+
+const Window *Game::Window() const {
+    return &window_;
+}
+
+Window *Game::Window() {
+    return &window_;
+}
+
+const Input *Game::Input() const {
+    return &input_;
+}
+
+Input *Game::Input() {
+    return &input_;
 }
 
 bool Game::IsRunning() const {
@@ -77,7 +95,7 @@ void Game::Run() {
             lag -= time_per_update_;
         }
 
-        Draw();
+        DrawInternal();
     }
 
     is_running_ = false;
@@ -104,7 +122,7 @@ void Game::InitializeDevice() {
     detail::CheckResult(result, "Failed to create device");
 }
 
-void Game::InitializeSwapChain(const Window &window) {
+void Game::InitializeSwapChain(const borov_engine::Window &window) {
     HRESULT result;
 
     detail::D3DPtr<IDXGIDevice> dxgi_device;
@@ -177,17 +195,24 @@ void Game::Update(float delta_time) {
 }
 
 void Game::Draw() {
+    for (const auto &component : components_) {
+        component->Draw();
+    }
+}
+
+void Game::DrawInternal() {
     device_context_->ClearState();
 
-    D3D11_VIEWPORT viewport{
-        .TopLeftX = 0.0f,
-        .TopLeftY = 0.0f,
-        .Width = static_cast<FLOAT>(target_width_),
-        .Height = static_cast<FLOAT>(target_height_),
-        .MinDepth = 0.0f,
-        .MaxDepth = 1.0f,
+    std::array viewports{
+        D3D11_VIEWPORT{
+            .TopLeftX = 0.0f,
+            .TopLeftY = 0.0f,
+            .Width = static_cast<FLOAT>(target_width_),
+            .Height = static_cast<FLOAT>(target_height_),
+            .MinDepth = 0.0f,
+            .MaxDepth = 1.0f,
+        }
     };
-    std::array viewports{viewport};
     device_context_->RSSetViewports(viewports.size(), viewports.data());
 
     std::array render_targets{render_target_view_.Get()};
@@ -195,9 +220,7 @@ void Game::Draw() {
 
     device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
 
-    for (const auto &component : components_) {
-        component->Draw();
-    }
+    Draw();
 
     std::array<ID3D11RenderTargetView *, 0> no_render_targets;
     device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);

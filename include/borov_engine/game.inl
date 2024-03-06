@@ -11,7 +11,7 @@ T &Game::AddComponent(Args &&... args) {
     return dynamic_cast<T &>(*component);
 }
 
-ComponentConstView auto Game::Components() const {
+ConstComponentView auto Game::Components() const {
     auto unique_ptr_to_ref = [](const std::unique_ptr<Component> &component) {
         return std::cref(*component);
     };

@@ -71,11 +71,11 @@ OnInputKeyUp &Input::OnInputKeyUp() {
 }
 
 const OnInputKeyDown &Input::OnInputKeyDown() const {
-    return on_input_key_up_;
+    return on_input_key_down_;
 }
 
 OnInputKeyDown &Input::OnInputKeyDown() {
-    return on_input_key_up_;
+    return on_input_key_down_;
 }
 
 void Input::OnRawKeyboard(const RAWKEYBOARD &data) {

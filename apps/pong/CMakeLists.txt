@@ -1,9 +1,12 @@
 set(HEADER_LIST
         direction.hpp
-        ball.hpp
         player.hpp
-        referee.hpp)
+        ball.hpp
+        game.hpp)
 set(SOURCE_LIST
+        player.cpp
+        ball.cpp
+        game.cpp
         main.cpp)
 
 add_executable(pong ${SOURCE_LIST} ${HEADER_LIST})

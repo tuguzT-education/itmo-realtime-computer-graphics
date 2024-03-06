@@ -20,13 +20,15 @@ namespace borov_engine {
 class Component;
 class Camera;
 
-template<typename T>
-concept ComponentView = std::ranges::view<T>
-    && std::same_as<std::ranges::range_value_t<T>, std::reference_wrapper<Component>>;
+template<typename View, typename T>
+concept RefView = std::ranges::view<View>
+    && std::same_as<std::ranges::range_value_t<View>, std::reference_wrapper<T>>;
 
 template<typename T>
-concept ComponentConstView = std::ranges::view<T>
-    && std::same_as<std::ranges::range_value_t<T>, std::reference_wrapper<const Component>>;
+concept ComponentView = RefView<T, Component>;
+
+template<typename T>
+concept ConstComponentView = RefView<T, const Component>;
 
 class Game {
   public:
@@ -34,43 +36,53 @@ class Game {
     ~Game();
 
     [[nodiscard]] const Timer::Duration &TimePerUpdate() const;
-    void TimePerUpdate(Timer::Duration time_per_update);
+    [[nodiscard]] Timer::Duration &TimePerUpdate();
 
     [[nodiscard]] const math::Color &ClearColor() const;
     [[nodiscard]] math::Color &ClearColor();
+
+    [[nodiscard]] const borov_engine::Timer &Timer() const;
+    [[nodiscard]] const borov_engine::Window *Window() const;
+    [[nodiscard]] const borov_engine::Input *Input() const;
 
     [[nodiscard]] bool IsRunning() const;
 
     template<typename T, typename ...Args>
     T &AddComponent(Args &&... args);
 
-    [[nodiscard]] ComponentConstView auto Components() const;
+    [[nodiscard]] ConstComponentView auto Components() const;
     [[nodiscard]] ComponentView auto Components();
 
     void Run();
     void Exit();
 
+  protected:
+    [[nodiscard]] borov_engine::Window *Window();
+    [[nodiscard]] borov_engine::Input *Input();
+
+    virtual void Update(float delta_time);
+    virtual void Draw();
+
   private:
     friend class Component;
 
     void InitializeDevice();
-    void InitializeSwapChain(const Window &window);
+    void InitializeSwapChain(const borov_engine::Window &window);
     void InitializeRenderTargetView();
+    void DrawInternal();
 
-    void Update(float delta_time);
-    void Draw();
-
-    Timer timer_;
-    Window &window_;
-    Input &input_;
+    borov_engine::Window &window_;
+    borov_engine::Input &input_;
     Camera *camera_;
+    std::vector<std::unique_ptr<Component>> components_;
+
+    borov_engine::Timer timer_;
     Timer::Duration time_per_update_;
     math::Color clear_color_;
     UINT target_width_;
     UINT target_height_;
     bool should_exit_;
     bool is_running_;
-    std::vector<std::unique_ptr<Component>> components_;
 
     detail::D3DPtr<ID3D11RenderTargetView> render_target_view_;
     detail::D3DPtr<IDXGISwapChain> swap_chain_;
