@@ -29,7 +29,7 @@ class Player : public borov_engine::BoxComponent {
 };
 
 Player::Player(borov_engine::Game &game, ::Direction direction, ControlKeys controls)
-    : BoxComponent(game, 0.05f, 0.3f, 0.0f, borov_engine::math::Color{1.0f, 1.0f, 1.0f}, PositionFrom(direction)),
+    : BoxComponent(game, 0.05f, 0.3f, 0.05f, borov_engine::math::Color{1.0f, 1.0f, 1.0f}, PositionFrom(direction)),
       direction_{direction},
       controls_{controls} {}
 
