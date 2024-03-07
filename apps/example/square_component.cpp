@@ -31,7 +31,7 @@ SquareComponent::SquareComponent(borov_engine::Game &game)
     : TriangleComponent{game, detail::vertices, detail::indices} {}
 
 void SquareComponent::Update(float delta_time) {
-    auto &position = Position();
+    auto &position = Transform().position;
     position.x += 0.5f * delta_time;
     if (position.x > 1.5f) {
         position.x -= 3.0f;

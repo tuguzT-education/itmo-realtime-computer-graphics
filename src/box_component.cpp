@@ -45,12 +45,12 @@ inline T &Unmove(T &&t) {
 }
 
 BoxComponent::BoxComponent(Game &game,
-                           float length, float height, float width,
-                           math::Color color, math::Vector3 position)
+                           float length, float height, float width, math::Color color,
+                           borov_engine::Transform transform)
     : TriangleComponent(game,
                         detail::Unmove(detail::BoxVertices(length, height, width, color)),
                         detail::Unmove(detail::BoxIndices()),
-                        position),
+                        transform),
       length_{length},
       height_{height},
       width_{width} {}
@@ -68,9 +68,10 @@ float BoxComponent::Width() const {
 }
 
 BoxComponent::Box BoxComponent::Collision() const {
-    math::Vector3 center = Position();
-    math::Vector3 extents = {Length() / 2, Height() / 2, Width() / 2};
-    return Box{center, extents};
+    math::Vector3 center = Transform().position;
+    math::Vector3 extents = math::Vector3{Length() / 2, Height() / 2, Width() / 2} * Transform().scale;
+    math::Quaternion orientation = math::Quaternion::CreateFromYawPitchRoll(Transform().rotation);
+    return Box{center, extents, orientation};
 }
 
 }

@@ -11,7 +11,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
 void Game::Update(float delta_time) {
     borov_engine::Game::Update(delta_time);
 
-    const auto &position = ball_.Position();
+    const auto &position = ball_.Transform().position;
     if (position.x < -0.975f) {
         std::cout << "One point to the RIGHT!";
         right_score_++;

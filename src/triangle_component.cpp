@@ -48,22 +48,24 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path,
 TriangleComponent::TriangleComponent(Game &game,
                                      std::span<Vertex> vertices,
                                      std::span<Index> indices,
-                                     math::Vector3 position) : Component{game}, position_{position} {
+                                     borov_engine::Transform transform)
+    : Component{game},
+      transform_{transform} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
-    InitializeConstantBuffer(ConstantBuffer{.wvp_matrix = math::Matrix4x4::CreateTranslation(position)});
+    InitializeConstantBuffer(ConstantBuffer{.wvp_matrix = transform.World()});
 }
 
-const math::Vector3 &TriangleComponent::Position() const {
-    return position_;
+const Transform &TriangleComponent::Transform() const {
+    return transform_;
 }
 
-math::Vector3 &TriangleComponent::Position() {
-    return position_;
+Transform &TriangleComponent::Transform() {
+    return transform_;
 }
 
 void TriangleComponent::Update(float delta_time) {}
@@ -85,7 +87,7 @@ void TriangleComponent::Draw() {
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
     auto *camera = Camera();
-    math::Matrix4x4 world = math::Matrix4x4::CreateTranslation(position_);
+    math::Matrix4x4 world = transform_.World();
     math::Matrix4x4 view = camera != nullptr ? camera->View() : math::Matrix4x4::Identity;
     math::Matrix4x4 projection = camera != nullptr ? camera->Projection() : math::Matrix4x4::Identity;
     ConstantBuffer constant_buffer{.wvp_matrix = world * view * projection};

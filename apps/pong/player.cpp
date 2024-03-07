@@ -1,7 +1,7 @@
 #include "player.hpp"
 
 Player::Player(borov_engine::Game &game, ::Direction direction, ControlKeys controls)
-    : BoxComponent(game, 0.05f, 0.3f, 0.05f, {1.0f, 1.0f, 1.0f}, PositionFrom(direction)),
+    : BoxComponent(game, 0.05f, 0.3f, 0.05f, {1.0f, 1.0f, 1.0f}, {.position = PositionFrom(direction)}),
       direction_{direction},
       controls_{controls} {}
 
@@ -21,7 +21,7 @@ void Player::Update(float delta_time) {
         return;
     }
 
-    auto &position = Position();
+    auto &position = Transform().position;
     auto y = static_cast<float>(input->IsKeyDown(controls_.up) - input->IsKeyDown(controls_.down));
     math::Vector3 movement = math::Vector3::Up * y;
     float speed = 2.0f;

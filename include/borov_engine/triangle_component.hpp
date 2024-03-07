@@ -9,7 +9,7 @@
 
 #include <span>
 
-#include "math.hpp"
+#include "transform.hpp"
 #include "detail/d3d_ptr.hpp"
 
 namespace borov_engine {
@@ -22,10 +22,10 @@ class TriangleComponent : public Component {
     explicit TriangleComponent(Game &game,
                                std::span<Vertex> vertices,
                                std::span<Index> indices,
-                               math::Vector3 position = {});
+                               Transform transform = {});
 
-    [[nodiscard]] const math::Vector3 &Position() const;
-    [[nodiscard]] math::Vector3 &Position();
+    [[nodiscard]] const borov_engine::Transform &Transform() const;
+    [[nodiscard]] borov_engine::Transform &Transform();
 
     void Update(float delta_time) override;
     void Draw() override;
@@ -43,11 +43,12 @@ class TriangleComponent : public Component {
     void InitializeIndexBuffer(std::span<Index> indices);
     void InitializeConstantBuffer(ConstantBuffer constant_buffer);
 
+    borov_engine::Transform transform_;
+
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;
 
     detail::D3DPtr<ID3D11Buffer> constant_buffer_;
-    math::Vector3 position_;
 
     detail::D3DPtr<ID3D11Buffer> index_buffer_;
     detail::D3DPtr<ID3D11PixelShader> index_shader_;

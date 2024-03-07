@@ -11,12 +11,12 @@ namespace borov_engine {
 
 class BoxComponent : public TriangleComponent {
   public:
-    using Box = DirectX::BoundingBox;
+    using Box = DirectX::BoundingOrientedBox;
 
     explicit BoxComponent(Game &game,
                           float length, float height, float width,
                           math::Color color = {1.0f, 1.0f, 1.0f},
-                          math::Vector3 position = {});
+                          borov_engine::Transform transform = {});
 
     [[nodiscard]] float Length() const;
     [[nodiscard]] float Height() const;

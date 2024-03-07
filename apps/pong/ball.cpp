@@ -9,7 +9,7 @@ Ball::Ball(borov_engine::Game &game)
       velocity_{RandomVelocity()} {}
 
 void Ball::Reset() {
-    Position() = borov_engine::math::Vector3{};
+    Transform().position = borov_engine::math::Vector3::Zero;
     velocity_ = RandomVelocity();
 }
 
@@ -18,7 +18,7 @@ void Ball::Update(float delta_time) {
     velocity_.Normalize(normal);
     velocity_ += normal * (0.05f * delta_time);
 
-    auto &position = Position();
+    auto &position = Transform().position;
     if (position.x < -0.975f || position.x > 0.975f) {
         velocity_.x = -velocity_.x;
     }
