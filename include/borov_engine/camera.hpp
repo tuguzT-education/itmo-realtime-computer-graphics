@@ -50,8 +50,8 @@ class Camera : public Component {
     [[nodiscard]] float VerticalFOV() const;
     bool VerticalFOV(float vertical_fov);
 
-    [[nodiscard]] float Zoom() const;
-    bool Zoom(float zoom);
+    [[nodiscard]] float OrthographicUnits() const;
+    bool OrthographicUnits(float orthographic_units);
 
     void Rotate(const math::Matrix4x4 &rotation_matrix);
     void Rotate(float yaw, float pitch, float roll);
@@ -74,7 +74,7 @@ class Camera : public Component {
     float near_plane_;
     float far_plane_;
     float horizontal_fov_;
-    float zoom_;
+    float orthographic_units_;
     CameraProjectionType projection_type_;
 };
 

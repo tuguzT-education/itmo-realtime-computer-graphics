@@ -7,6 +7,11 @@ class Game : public borov_engine::Game {
     explicit Game(borov_engine::Window &window, borov_engine::Input &input)
         : borov_engine::Game(window, input) {
         input.OnMouseMove().AddRaw(this, &Game::OnMouseMove);
+
+        auto camera = Camera();
+        if (camera != nullptr) {
+            camera->ProjectionType() = borov_engine::CameraProjectionType::Perspective;
+        }
     }
 
     ~Game() override {

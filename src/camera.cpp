@@ -12,7 +12,7 @@ Camera::Camera(Game &game) :
     near_plane_{0.1f},
     far_plane_{1000.0f},
     horizontal_fov_{std::numbers::pi_v<float> / 2.0f},
-    zoom_{0.5f},
+    orthographic_units_{2.0f},
     projection_type_{CameraProjectionType::Orthographic} {}
 
 const math::Vector3 &Camera::Position() const {
@@ -134,15 +134,15 @@ bool Camera::VerticalFOV(float vertical_fov) {
     return true;
 }
 
-float Camera::Zoom() const {
-    return zoom_;
+float Camera::OrthographicUnits() const {
+    return orthographic_units_;
 }
 
-bool Camera::Zoom(float zoom) {
-    if (zoom <= 0.0) {
+bool Camera::OrthographicUnits(float orthographic_units) {
+    if (orthographic_units <= 0.0) {
         return false;
     }
-    zoom_ = zoom;
+    orthographic_units_ = orthographic_units;
     return true;
 }
 
@@ -192,9 +192,8 @@ math::Matrix4x4 Camera::Perspective() const {
 }
 
 math::Matrix4x4 Camera::Orthographic() const {
-    float inverse_zoom = 1.0f / zoom_;
-    return math::Matrix4x4::CreateOrthographic(inverse_zoom,
-                                               inverse_zoom * InverseAspectRatio(),
+    return math::Matrix4x4::CreateOrthographic(orthographic_units_,
+                                               orthographic_units_ * InverseAspectRatio(),
                                                near_plane_,
                                                far_plane_);
 }
