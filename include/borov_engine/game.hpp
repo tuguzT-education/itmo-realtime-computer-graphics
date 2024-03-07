@@ -33,7 +33,7 @@ concept ConstComponentView = RefView<T, const Component>;
 class Game {
   public:
     explicit Game(Window &window, Input &input);
-    ~Game();
+    virtual ~Game();
 
     [[nodiscard]] const Timer::Duration &TimePerUpdate() const;
     [[nodiscard]] Timer::Duration &TimePerUpdate();
