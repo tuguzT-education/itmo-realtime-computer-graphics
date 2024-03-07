@@ -12,7 +12,8 @@ Camera::Camera(Game &game) :
     near_plane_{0.1f},
     far_plane_{1000.0f},
     horizontal_fov_{std::numbers::pi_v<float> / 2.0f},
-    projection_type_{CameraProjectionType::Perspective} {}
+    zoom_{0.5f},
+    projection_type_{CameraProjectionType::Orthographic} {}
 
 const math::Vector3 &Camera::Position() const {
     return position_;
@@ -101,7 +102,12 @@ bool Camera::FarPlane(float far_plane) {
 float Camera::AspectRatio() const {
     auto width = static_cast<float>(TargetWidth());
     auto height = static_cast<float>(TargetHeight());
-    return width / height;
+    return (height != 0.0f) ? (width / height) : 0.0f;
+}
+
+float Camera::InverseAspectRatio() const {
+    float aspect_ratio = AspectRatio();
+    return (aspect_ratio != 0.0f) ? (1.0f / aspect_ratio) : 0.0f;
 }
 
 float Camera::HorizontalFOV() const {
@@ -117,7 +123,7 @@ bool Camera::HorizontalFOV(float horizontal_fov) {
 }
 
 float Camera::VerticalFOV() const {
-    return 2.0f * std::atan(std::tan(horizontal_fov_ / 2.0f) / AspectRatio());
+    return 2.0f * std::atan(std::tan(horizontal_fov_ / 2.0f) * InverseAspectRatio());
 }
 
 bool Camera::VerticalFOV(float vertical_fov) {
@@ -125,6 +131,18 @@ bool Camera::VerticalFOV(float vertical_fov) {
         return false;
     }
     horizontal_fov_ = 2.0f * std::atan(std::tan(vertical_fov / 2.0f) * AspectRatio());
+    return true;
+}
+
+float Camera::Zoom() const {
+    return zoom_;
+}
+
+bool Camera::Zoom(float zoom) {
+    if (zoom <= 0.0) {
+        return false;
+    }
+    zoom_ = zoom;
     return true;
 }
 
@@ -167,13 +185,18 @@ math::Matrix4x4 Camera::Projection() const {
 }
 
 math::Matrix4x4 Camera::Perspective() const {
-    return math::Matrix4x4::CreatePerspectiveFieldOfView(horizontal_fov_, AspectRatio(), near_plane_, far_plane_);
+    return math::Matrix4x4::CreatePerspectiveFieldOfView(horizontal_fov_,
+                                                         AspectRatio(),
+                                                         near_plane_,
+                                                         far_plane_);
 }
 
 math::Matrix4x4 Camera::Orthographic() const {
-    auto width = static_cast<float>(TargetWidth());
-    auto height = static_cast<float>(TargetHeight());
-    return math::Matrix4x4::CreateOrthographic(width, height, near_plane_, far_plane_);
+    float inverse_zoom = 1.0f / zoom_;
+    return math::Matrix4x4::CreateOrthographic(inverse_zoom,
+                                               inverse_zoom * InverseAspectRatio(),
+                                               near_plane_,
+                                               far_plane_);
 }
 
 void Camera::Update(float delta_time) {}

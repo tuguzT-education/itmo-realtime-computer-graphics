@@ -14,18 +14,18 @@ Player::ControlKeys Player::Controls() const {
 }
 
 void Player::Update(float delta_time) {
+    namespace math = borov_engine::math;
+
     auto *input = Input();
     if (input == nullptr) {
         return;
     }
 
     auto &position = Position();
-    if (input->IsKeyDown(controls_.up)) {
-        position += borov_engine::math::Vector3::Up * (2.0f * delta_time);
-    }
-    if (input->IsKeyDown(controls_.down)) {
-        position += borov_engine::math::Vector3::Down * (2.0f * delta_time);
-    }
+    auto y = static_cast<float>(input->IsKeyDown(controls_.up) - input->IsKeyDown(controls_.down));
+    math::Vector3 movement = math::Vector3::Up * y;
+    float speed = 2.0f;
+    position += speed * movement * delta_time;
 
     if (position.y > 0.85f) {
         position.y = 0.85f;
@@ -37,10 +37,10 @@ void Player::Update(float delta_time) {
 borov_engine::math::Vector3 Player::PositionFrom(::Direction direction) {
     switch (direction) {
         case Direction::Left: {
-            return {-0.9f, 0.0f, 0.0f};
+            return {-0.975f, 0.0f, 0.0f};
         }
         case Direction::Right: {
-            return {0.9f, 0.0f, 0.0f};
+            return {0.975f, 0.0f, 0.0f};
         }
         default: {
             return {};

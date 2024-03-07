@@ -4,19 +4,16 @@
 
 Game::Game(borov_engine::Window &window, borov_engine::Input &input) : borov_engine::Game(window, input),
                                                                        initial_title_{window.Title()} {
-    auto exit_on_escape_key = [](const auto key) {
-        std::cout << "Key: " << static_cast<std::uint16_t>(key) << std::endl;
-    };
-    input.OnInputKeyDown().AddLambda(exit_on_escape_key);
+    input.OnInputKeyDown().AddRaw(this, &Game::OnKeyDown);
 }
 
-void Game::Update(float delta_time) {
-    borov_engine::Game::Update(delta_time);
-
+Game::~Game() {
     auto input = Input();
-    if (input != nullptr && input->IsKeyDown(borov_engine::InputKey::Escape)) {
-        Exit();
+    if (input == nullptr) {
+        return;
     }
+
+    input->OnInputKeyDown().RemoveByOwner(this);
 }
 
 void Game::Draw() {
@@ -33,4 +30,11 @@ void Game::Draw() {
     }
 
     borov_engine::Game::Draw();
+}
+
+void Game::OnKeyDown(borov_engine::InputKey key) {
+    std::cout << "Key: " << static_cast<std::uint16_t>(key) << std::endl;
+    if (key == borov_engine::InputKey::Escape) {
+        Exit();
+    }
 }

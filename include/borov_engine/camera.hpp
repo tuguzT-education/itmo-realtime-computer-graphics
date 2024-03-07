@@ -42,12 +42,16 @@ class Camera : public Component {
     bool FarPlane(float far_plane);
 
     [[nodiscard]] float AspectRatio() const;
+    [[nodiscard]] float InverseAspectRatio() const;
 
     [[nodiscard]] float HorizontalFOV() const;
     bool HorizontalFOV(float horizontal_fov);
 
     [[nodiscard]] float VerticalFOV() const;
     bool VerticalFOV(float vertical_fov);
+
+    [[nodiscard]] float Zoom() const;
+    bool Zoom(float zoom);
 
     void Rotate(const math::Matrix4x4 &rotation_matrix);
     void Rotate(float yaw, float pitch, float roll);
@@ -70,6 +74,7 @@ class Camera : public Component {
     float near_plane_;
     float far_plane_;
     float horizontal_fov_;
+    float zoom_;
     CameraProjectionType projection_type_;
 };
 

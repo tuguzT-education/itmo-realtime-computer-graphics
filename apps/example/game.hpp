@@ -8,12 +8,14 @@
 class Game final : public borov_engine::Game {
   public:
     explicit Game(borov_engine::Window &window, borov_engine::Input &input);
+    ~Game() override;
 
   protected:
-    void Update(float delta_time) override;
     void Draw() override;
 
   private:
+    void OnKeyDown(borov_engine::InputKey key);
+
     std::string initial_title_;
 };
 

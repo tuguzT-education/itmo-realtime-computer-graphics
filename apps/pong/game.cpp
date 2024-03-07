@@ -12,10 +12,10 @@ void Game::Update(float delta_time) {
     borov_engine::Game::Update(delta_time);
 
     const auto &position = ball_.Position();
-    if (position.x < -0.86f) {
+    if (position.x < -0.975f) {
         std::cout << "One point to the RIGHT!";
         right_score_++;
-    } else if (position.x > 0.86f) {
+    } else if (position.x > 0.975f) {
         std::cout << "One point to the LEFT!";
         left_score_++;
     } else {
@@ -23,7 +23,7 @@ void Game::Update(float delta_time) {
     }
 
     ball_.Reset();
-    std::cout << "\n\tLEFT: " << left_score_
+    std::cout << "\n\tLEFT:  " << left_score_
               << "\n\tRIGHT: " << right_score_
               << "\n\n";
 }

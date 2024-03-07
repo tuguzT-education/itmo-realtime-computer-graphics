@@ -19,10 +19,10 @@ void Ball::Update(float delta_time) {
     velocity_ += normal * (0.05f * delta_time);
 
     auto &position = Position();
-    if (position.x < -1.0f || position.x > 1.0f) {
+    if (position.x < -0.975f || position.x > 0.975f) {
         velocity_.x = -velocity_.x;
     }
-    if (position.y < -1.0f || position.y > 1.0f) {
+    if (position.y < -0.975f || position.y > 0.975f) {
         velocity_.y = -velocity_.y;
     }
 
