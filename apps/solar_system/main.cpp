@@ -5,7 +5,7 @@
 class Game : public borov_engine::Game {
   public:
     explicit Game(borov_engine::Window &window, borov_engine::Input &input)
-        : borov_engine::Game(window, input) {
+        : borov_engine::Game(window, input), wheel_delta_{} {
         input.OnMouseMove().AddRaw(this, &Game::OnMouseMove);
 
         auto camera = Camera();
@@ -35,9 +35,12 @@ class Game : public borov_engine::Game {
             float speed = input->IsKeyDown(InputKey::LeftShift) ? 2.0f : 1.0f;
             camera->Position() += direction * speed * delta_time;
 
-            float yaw = -mouse_offset_.x * delta_time;
+            float yaw = -mouse_offset_.x * 0.005f;
             camera->Rotate(yaw, 0.0f, 0.0f);
+            float fov = camera->HorizontalFOV() * (1 + static_cast<float>(wheel_delta_) * 0.05f);
+            camera->HorizontalFOV(fov);
             mouse_offset_ = math::Vector2::Zero;
+            wheel_delta_ = 0;
         }
 
         borov_engine::Game::Update(delta_time);
@@ -46,9 +49,11 @@ class Game : public borov_engine::Game {
   private:
     void OnMouseMove(borov_engine::MouseMoveData data) {
         mouse_offset_ += data.offset;
+        wheel_delta_ += data.wheel_delta;
     }
 
     borov_engine::math::Vector2 mouse_offset_;
+    std::int16_t wheel_delta_;
 };
 
 int main() {

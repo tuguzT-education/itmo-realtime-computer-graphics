@@ -14,7 +14,7 @@ namespace borov_engine {
 struct MouseMoveData {
     math::Vector2 position;
     math::Vector2 offset;
-    int wheel_delta;
+    std::int16_t wheel_delta;
 };
 
 DECLARE_MULTICAST_DELEGATE(OnMouseMove, MouseMoveData);
