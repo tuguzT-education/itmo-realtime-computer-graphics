@@ -9,8 +9,9 @@
 namespace borov_engine {
 
 Window::Window(std::string_view name,
-               LONG width, LONG height,
-               HINSTANCE instance_handle) : input_{}, is_destroyed_{} {
+               std::int32_t width, std::int32_t height,
+               std::int32_t min_width, std::int32_t min_height,
+               HINSTANCE instance_handle) : input_{}, is_destroyed_{}, min_width_{min_width}, min_height_{min_height} {
     instance_handle = (instance_handle != nullptr)
                       ? instance_handle
                       : GetModuleHandle(nullptr);
@@ -76,6 +77,22 @@ math::Rectangle Window::ClientDimensions() const {
     return math::Rectangle{rect};
 }
 
+std::int32_t Window::MinWidth() const {
+    return min_width_;
+}
+
+std::int32_t &Window::MinWidth() {
+    return min_width_;
+}
+
+std::int32_t Window::MinHeight() const {
+    return min_height_;
+}
+
+std::int32_t &Window::MinHeight() {
+    return min_height_;
+}
+
 bool Window::IsDestroyed() const {
     return is_destroyed_;
 }
@@ -95,6 +112,14 @@ bool Window::Title(std::string_view title) {
     std::basic_string<TCHAR> t_title = detail::MultiByteToTChar(CP_UTF8, 0, title);
     LPCTSTR c_title = t_title.c_str();
     return SetWindowText(handle_, c_title);
+}
+
+const OnWindowResize &Window::OnResize() const {
+    return on_resize_;
+}
+
+OnWindowResize &Window::OnResize() {
+    return on_resize_;
 }
 
 void Window::ProcessQueueMessages() {
@@ -135,7 +160,7 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
                 break;
             }
 
-            static std::vector<BYTE> lpb;
+            static std::vector<BYTE> raw_input_bytes;
 
             UINT size;
             auto h_raw_input = (HRAWINPUT) l_param;
@@ -144,13 +169,13 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
                 throw std::runtime_error{"Failed to obtain raw input"};
             }
 
-            lpb.reserve(size);
-            result = ::GetRawInputData(h_raw_input, RID_INPUT, lpb.data(), &size, sizeof(RAWINPUTHEADER));
+            raw_input_bytes.reserve(size);
+            result = ::GetRawInputData(h_raw_input, RID_INPUT, raw_input_bytes.data(), &size, sizeof(RAWINPUTHEADER));
             if (result != size) {
                 throw std::runtime_error{"Failed to obtain raw input: GetRawInputData does not return correct size"};
             }
 
-            auto raw_input = (RAWINPUT *) lpb.data();
+            auto raw_input = (RAWINPUT *) raw_input_bytes.data();
             switch (raw_input->header.dwType) {
                 case RIM_TYPEKEYBOARD: {
                     input->OnRawKeyboard(raw_input->data.keyboard);
@@ -165,11 +190,25 @@ LRESULT CALLBACK Window::WndProc(HWND hwnd, UINT u_message, WPARAM w_param, LPAR
                 }
             }
 
-            lpb.clear();
+            raw_input_bytes.clear();
+            break;
+        }
+        case WM_GETMINMAXINFO: {
+            auto min_max_info = (LPMINMAXINFO) l_param;
+            min_max_info->ptMinTrackSize = {
+                .x = window->min_width_,
+                .y = window->min_height_,
+            };
+            break;
+        }
+        case WM_SIZE: {
+            LONG width = LOWORD(l_param);
+            LONG height = HIWORD(l_param);
+            window->on_resize_.Broadcast(WindowResizeData{width, height});
             break;
         }
         case WM_CLOSE: {
-            DestroyWindow(hwnd);
+            window->Destroy();
             break;
         }
         case WM_DESTROY: {

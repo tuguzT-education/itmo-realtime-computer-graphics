@@ -17,7 +17,7 @@ namespace borov_engine {
 class TriangleComponent : public Component {
   public:
     using Vertex = DirectX::VertexPositionColor;
-    using Index = int;
+    using Index = std::uint32_t;
 
     explicit TriangleComponent(Game &game,
                                std::span<Vertex> vertices,

@@ -17,7 +17,7 @@ struct MouseMoveData {
     int wheel_delta;
 };
 
-DECLARE_MULTICAST_DELEGATE(OnMouseMove, const MouseMoveData &);
+DECLARE_MULTICAST_DELEGATE(OnMouseMove, MouseMoveData);
 DECLARE_MULTICAST_DELEGATE(OnInputKeyUp, InputKey);
 DECLARE_MULTICAST_DELEGATE(OnInputKeyDown, InputKey);
 
@@ -27,9 +27,6 @@ class Input {
     ~Input();
 
     [[nodiscard]] bool IsKeyDown(InputKey key) const;
-
-    [[nodiscard]] const borov_engine::MouseMoveData &MouseMoveData() const;
-    [[nodiscard]] borov_engine::MouseMoveData &MouseMoveData();
 
     [[nodiscard]] const borov_engine::OnMouseMove &OnMouseMove() const;
     [[nodiscard]] borov_engine::OnMouseMove &OnMouseMove();
@@ -50,7 +47,6 @@ class Input {
     void RemovePressedKey(InputKey key);
 
     Window &window_;
-    borov_engine::MouseMoveData mouse_move_data_;
     borov_engine::OnMouseMove on_mouse_move_;
     borov_engine::OnInputKeyDown on_input_key_down_;
     borov_engine::OnInputKeyUp on_input_key_up_;

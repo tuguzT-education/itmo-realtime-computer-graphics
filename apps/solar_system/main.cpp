@@ -44,7 +44,7 @@ class Game : public borov_engine::Game {
     }
 
   private:
-    void OnMouseMove(const borov_engine::MouseMoveData &data) {
+    void OnMouseMove(borov_engine::MouseMoveData data) {
         mouse_offset_ += data.offset;
     }
 

@@ -11,7 +11,7 @@
 
 namespace borov_engine {
 
-Input::Input(Window &window) : window_{window}, mouse_move_data_{} {
+Input::Input(Window &window) : window_{window} {
     std::array raw_input_devices{
         RAWINPUTDEVICE{
             .usUsagePage = HID_USAGE_PAGE_GENERIC,
@@ -44,14 +44,6 @@ Input::~Input() {
 
 bool Input::IsKeyDown(InputKey key) const {
     return keys_.count(key) > 0;
-}
-
-const MouseMoveData &Input::MouseMoveData() const {
-    return mouse_move_data_;
-}
-
-borov_engine::MouseMoveData &Input::MouseMoveData() {
-    return mouse_move_data_;
 }
 
 const OnMouseMove &Input::OnMouseMove() const {
@@ -140,12 +132,12 @@ void Input::OnRawMouse(const RAWMOUSE &data) {
     ::GetCursorPos(&point);
     ::ScreenToClient(window_.RawHandle(), &point);
 
-    mouse_move_data_ = {
+    MouseMoveData mouse_move_data{
         .position = {static_cast<float>(point.x), static_cast<float>(point.y)},
         .offset = {static_cast<float>(data.lLastX), static_cast<float>(data.lLastY)},
         .wheel_delta = data.usButtonData,
     };
-    on_mouse_move_.Broadcast(mouse_move_data_);
+    on_mouse_move_.Broadcast(mouse_move_data);
 }
 
 void Input::AddPressedKey(InputKey key) {

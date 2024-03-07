@@ -24,9 +24,12 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     InitializeRenderTargetView();
 
     camera_ = &AddComponent<borov_engine::Camera>();
+    window_.OnResize().AddRaw(this, &Game::OnWindowResize);
 }
 
-Game::~Game() = default;
+Game::~Game() {
+    window_.OnResize().RemoveByOwner(this);
+}
 
 const Timer::Duration &Game::TimePerUpdate() const {
     return time_per_update_;
@@ -206,8 +209,8 @@ void Game::DrawInternal() {
         D3D11_VIEWPORT{
             .TopLeftX = 0.0f,
             .TopLeftY = 0.0f,
-            .Width = static_cast<FLOAT>(target_width_),
-            .Height = static_cast<FLOAT>(target_height_),
+            .Width = static_cast<float>(target_width_),
+            .Height = static_cast<float>(target_height_),
             .MinDepth = 0.0f,
             .MaxDepth = 1.0f,
         }
@@ -225,6 +228,19 @@ void Game::DrawInternal() {
     device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
 
     swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+}
+
+void Game::OnWindowResize([[maybe_unused]] WindowResizeData data) {
+    if (!swap_chain_) {
+        return;
+    }
+
+    render_target_view_.Reset();
+
+    HRESULT result = swap_chain_->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+    detail::CheckResult(result, "Failed to resize swap chain buffers");
+
+    InitializeRenderTargetView();
 }
 
 }

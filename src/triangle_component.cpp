@@ -74,8 +74,8 @@ void TriangleComponent::Draw() {
     ID3D11DeviceContext &device_context = DeviceContext();
 
     std::array vertex_buffers = {vertex_buffer_.Get()};
-    std::array<UINT, vertex_buffers.size()> strides{sizeof(Vertex)};
-    std::array<UINT, vertex_buffers.size()> offsets{0};
+    std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
+    std::array<std::uint32_t, vertex_buffers.size()> offsets{0};
 
     device_context.RSSetState(rasterizer_state_.Get());
     device_context.IASetInputLayout(input_layout_.Get());
@@ -88,14 +88,15 @@ void TriangleComponent::Draw() {
     D3D11_MAPPED_SUBRESOURCE subresource{};
     auto *camera = Camera();
     math::Matrix4x4 world = transform_.World();
-    math::Matrix4x4 view = camera != nullptr ? camera->View() : math::Matrix4x4::Identity;
-    math::Matrix4x4 projection = camera != nullptr ? camera->Projection() : math::Matrix4x4::Identity;
+    math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
+    math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
     ConstantBuffer constant_buffer{.wvp_matrix = world * view * projection};
     device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
     std::memcpy(subresource.pData, &constant_buffer, sizeof(constant_buffer));
     device_context.Unmap(constant_buffer_.Get(), 0);
 
-    device_context.VSSetConstantBuffers(0, 1, constant_buffer_.GetAddressOf());
+    std::array constant_buffers{constant_buffer_.Get()};
+    device_context.VSSetConstantBuffers(0, constant_buffers.size(), constant_buffers.data());
 
     D3D11_BUFFER_DESC index_buffer_desc;
     index_buffer_->GetDesc(&index_buffer_desc);
@@ -176,7 +177,7 @@ void TriangleComponent::InitializeRasterizerState() {
 
 void TriangleComponent::InitializeVertexBuffer(std::span<Vertex> vertices) {
     D3D11_BUFFER_DESC buffer_desc{
-        .ByteWidth = static_cast<UINT>(vertices.size_bytes()),
+        .ByteWidth = static_cast<std::uint32_t>(vertices.size_bytes()),
         .Usage = D3D11_USAGE_DEFAULT,
         .BindFlags = D3D11_BIND_VERTEX_BUFFER,
         .CPUAccessFlags = 0,
@@ -195,7 +196,7 @@ void TriangleComponent::InitializeVertexBuffer(std::span<Vertex> vertices) {
 
 void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
     D3D11_BUFFER_DESC buffer_desc{
-        .ByteWidth = static_cast<UINT>(indices.size_bytes()),
+        .ByteWidth = static_cast<std::uint32_t>(indices.size_bytes()),
         .Usage = D3D11_USAGE_DEFAULT,
         .BindFlags = D3D11_BIND_INDEX_BUFFER,
         .CPUAccessFlags = 0,

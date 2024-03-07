@@ -70,7 +70,9 @@ class Game {
     void InitializeDevice();
     void InitializeSwapChain(const borov_engine::Window &window);
     void InitializeRenderTargetView();
+
     void DrawInternal();
+    void OnWindowResize(WindowResizeData data);
 
     borov_engine::Window &window_;
     borov_engine::Input &input_;
@@ -80,8 +82,8 @@ class Game {
     borov_engine::Timer timer_;
     Timer::Duration time_per_update_;
     math::Color clear_color_;
-    UINT target_width_;
-    UINT target_height_;
+    std::uint32_t target_width_;
+    std::uint32_t target_height_;
     bool should_exit_;
     bool is_running_;
 
