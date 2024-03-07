@@ -7,17 +7,24 @@
 
 namespace borov_engine {
 
+enum class CameraProjectionType : std::uint8_t {
+    Perspective,
+    Orthographic,
+};
+
 class Camera : public Component {
   public:
-    enum class ProjectionType {
-        Perspective,
-        Orthographic,
-    };
-
     explicit Camera(Game &game);
 
     [[nodiscard]] const math::Vector3 &Position() const;
     [[nodiscard]] math::Vector3 &Position();
+
+    [[nodiscard]] const CameraProjectionType &ProjectionType() const;
+    [[nodiscard]] CameraProjectionType &ProjectionType();
+
+    [[nodiscard]] math::Vector3 Forward() const;
+    [[nodiscard]] math::Vector3 Up() const;
+    [[nodiscard]] math::Vector3 Right() const;
 
     [[nodiscard]] math::Matrix4x4 Rotation() const;
     [[nodiscard]] math::Vector3 EulerRotation() const;
@@ -48,7 +55,7 @@ class Camera : public Component {
     void Rotate(const math::Quaternion &quaternion);
 
     [[nodiscard]] math::Matrix4x4 View() const;
-    [[nodiscard]] math::Matrix4x4 Projection(ProjectionType type = ProjectionType::Perspective) const;
+    [[nodiscard]] math::Matrix4x4 Projection() const;
 
     [[nodiscard]] math::Matrix4x4 Perspective() const;
     [[nodiscard]] math::Matrix4x4 Orthographic() const;
@@ -63,6 +70,7 @@ class Camera : public Component {
     float near_plane_;
     float far_plane_;
     float horizontal_fov_;
+    CameraProjectionType projection_type_;
 };
 
 }

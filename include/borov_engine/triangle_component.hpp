@@ -32,7 +32,7 @@ class TriangleComponent : public Component {
 
   private:
     struct ConstantBuffer {
-        alignas(16) math::Matrix4x4 matrix;
+        alignas(16) math::Matrix4x4 wvp_matrix;
     };
 
     void InitializeVertexShader();

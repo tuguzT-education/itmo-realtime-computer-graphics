@@ -48,7 +48,8 @@ borov_engine::math::Vector3 Ball::RandomVelocity() {
     static std::uniform_real_distribution distribution{-1.0f, 1.0f};
 
     float x = distribution(engine);
-    float y = distribution(engine) / 2;
+    x += x > 0.0f ? 1.0f : -1.0f;
+    float y = distribution(engine);
     borov_engine::math::Vector3 vector{x, y, 0.0f};
     vector.Normalize();
     return vector;

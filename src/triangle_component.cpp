@@ -55,7 +55,7 @@ TriangleComponent::TriangleComponent(Game &game,
     InitializeRasterizerState();
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
-    InitializeConstantBuffer(ConstantBuffer{.matrix = math::Matrix4x4::CreateTranslation(position)});
+    InitializeConstantBuffer(ConstantBuffer{.wvp_matrix = math::Matrix4x4::CreateTranslation(position)});
 }
 
 const math::Vector3 &TriangleComponent::Position() const {
@@ -85,10 +85,10 @@ void TriangleComponent::Draw() {
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
     auto *camera = Camera();
-    math::Matrix4x4 translation = math::Matrix4x4::CreateTranslation(position_);
-    math::Matrix4x4 view = camera != nullptr ? camera->View() : math::Matrix4x4{};
-    math::Matrix4x4 projection = camera != nullptr ? camera->Perspective() : math::Matrix4x4{};
-    ConstantBuffer constant_buffer{.matrix = translation * view * projection};
+    math::Matrix4x4 world = math::Matrix4x4::CreateTranslation(position_);
+    math::Matrix4x4 view = camera != nullptr ? camera->View() : math::Matrix4x4::Identity;
+    math::Matrix4x4 projection = camera != nullptr ? camera->Projection() : math::Matrix4x4::Identity;
+    ConstantBuffer constant_buffer{.wvp_matrix = world * view * projection};
     device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
     std::memcpy(subresource.pData, &constant_buffer, sizeof(constant_buffer));
     device_context.Unmap(constant_buffer_.Get(), 0);

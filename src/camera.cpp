@@ -11,7 +11,8 @@ Camera::Camera(Game &game) :
     up_{math::Vector3::Up},
     near_plane_{0.1f},
     far_plane_{1000.0f},
-    horizontal_fov_{std::numbers::pi_v<float> / 2.0f} {}
+    horizontal_fov_{std::numbers::pi_v<float> / 2.0f},
+    projection_type_{CameraProjectionType::Perspective} {}
 
 const math::Vector3 &Camera::Position() const {
     return position_;
@@ -19,6 +20,26 @@ const math::Vector3 &Camera::Position() const {
 
 math::Vector3 &Camera::Position() {
     return position_;
+}
+
+const CameraProjectionType &Camera::ProjectionType() const {
+    return projection_type_;
+}
+
+CameraProjectionType &Camera::ProjectionType() {
+    return projection_type_;
+}
+
+math::Vector3 Camera::Forward() const {
+    return forward_;
+}
+
+math::Vector3 Camera::Up() const {
+    return up_;
+}
+
+math::Vector3 Camera::Right() const {
+    return forward_.Cross(up_);
 }
 
 math::Matrix4x4 Camera::Rotation() const {
@@ -131,16 +152,16 @@ math::Matrix4x4 Camera::View() const {
     return math::Matrix4x4::CreateLookAt(position_, position_ + forward_, up_);
 }
 
-math::Matrix4x4 Camera::Projection(ProjectionType type) const {
-    switch (type) {
-        case ProjectionType::Perspective: {
+math::Matrix4x4 Camera::Projection() const {
+    switch (projection_type_) {
+        case CameraProjectionType::Perspective: {
             return Perspective();
         }
-        case ProjectionType::Orthographic: {
+        case CameraProjectionType::Orthographic: {
             return Orthographic();
         }
         default: {
-            return math::Matrix4x4{};
+            return math::Matrix4x4::Identity;
         }
     }
 }

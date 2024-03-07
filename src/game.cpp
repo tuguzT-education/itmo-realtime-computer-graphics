@@ -2,7 +2,6 @@
 
 #include <array>
 #include <format>
-#include <numbers>
 
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/camera.hpp"
@@ -24,11 +23,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     InitializeSwapChain(window);
     InitializeRenderTargetView();
 
-    auto &camera = AddComponent<Camera>();
-    camera.Position() = math::Vector3::Backward * 2;
-    auto pi = std::numbers::pi_v<float>;
-    camera.Rotate(pi / 16, 0, pi / 8);
-    camera_ = &camera;
+    camera_ = &AddComponent<borov_engine::Camera>();
 }
 
 Game::~Game() = default;
@@ -67,6 +62,10 @@ const Input *Game::Input() const {
 
 Input *Game::Input() {
     return &input_;
+}
+
+Camera *Game::Camera() {
+    return camera_;
 }
 
 bool Game::IsRunning() const {

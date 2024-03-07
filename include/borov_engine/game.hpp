@@ -59,6 +59,7 @@ class Game {
   protected:
     [[nodiscard]] borov_engine::Window *Window();
     [[nodiscard]] borov_engine::Input *Input();
+    [[nodiscard]] borov_engine::Camera *Camera();
 
     virtual void Update(float delta_time);
     virtual void Draw();
@@ -73,7 +74,7 @@ class Game {
 
     borov_engine::Window &window_;
     borov_engine::Input &input_;
-    Camera *camera_;
+    borov_engine::Camera *camera_;
     std::vector<std::unique_ptr<Component>> components_;
 
     borov_engine::Timer timer_;

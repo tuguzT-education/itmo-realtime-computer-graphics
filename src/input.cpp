@@ -82,10 +82,31 @@ void Input::OnRawKeyboard(const RAWKEYBOARD &data) {
     bool is_key_up = data.Flags & RI_KEY_BREAK;
 
     auto key = static_cast<InputKey>(data.VKey);
-    if (data.MakeCode == 42) {
-        key = InputKey::LeftShift;
-    } else if (data.MakeCode == 54) {
-        key = InputKey::RightShift;
+    switch (data.MakeCode) {
+        case 0x001D: {
+            key = InputKey::LeftControl;
+            break;
+        }
+        case 0x002A: {
+            key = InputKey::LeftShift;
+            break;
+        }
+        case 0x0038: {
+            key = InputKey::LeftAlt;
+            break;
+        }
+        case 0xE01D: {
+            key = InputKey::RightControl;
+            break;
+        }
+        case 0x0036: {
+            key = InputKey::RightShift;
+            break;
+        }
+        case 0xE038: {
+            key = InputKey::RightAlt;
+            break;
+        }
     }
 
     if (is_key_up) {
