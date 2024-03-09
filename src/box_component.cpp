@@ -70,7 +70,7 @@ float BoxComponent::Width() const {
 BoxComponent::Box BoxComponent::Collision() const {
     math::Vector3 center = Transform().position;
     math::Vector3 extents = math::Vector3{Length() / 2, Height() / 2, Width() / 2} * Transform().scale;
-    math::Quaternion orientation = math::Quaternion::CreateFromYawPitchRoll(Transform().rotation);
+    math::Quaternion orientation = Transform().rotation;
     return Box{center, extents, orientation};
 }
 

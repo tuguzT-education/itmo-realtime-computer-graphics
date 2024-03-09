@@ -19,21 +19,15 @@ class Camera : public Component {
     [[nodiscard]] const math::Vector3 &Position() const;
     [[nodiscard]] math::Vector3 &Position();
 
+    [[nodiscard]] const math::Quaternion &Rotation() const;
+    [[nodiscard]] math::Quaternion &Rotation();
+
     [[nodiscard]] const CameraProjectionType &ProjectionType() const;
     [[nodiscard]] CameraProjectionType &ProjectionType();
 
     [[nodiscard]] math::Vector3 Forward() const;
     [[nodiscard]] math::Vector3 Up() const;
     [[nodiscard]] math::Vector3 Right() const;
-
-    [[nodiscard]] math::Matrix4x4 Rotation() const;
-    [[nodiscard]] math::Vector3 EulerRotation() const;
-    [[nodiscard]] math::Quaternion QuaternionRotation() const;
-
-    void Rotation(const math::Matrix4x4 &rotation_matrix);
-    void Rotation(float yaw, float pitch, float roll);
-    void Rotation(const math::Vector3 &euler_angles);
-    void Rotation(const math::Quaternion &quaternion);
 
     [[nodiscard]] float NearPlane() const;
     bool NearPlane(float near_plane);
@@ -53,11 +47,6 @@ class Camera : public Component {
     [[nodiscard]] float OrthographicUnits() const;
     bool OrthographicUnits(float orthographic_units);
 
-    void Rotate(const math::Matrix4x4 &rotation_matrix);
-    void Rotate(float yaw, float pitch, float roll);
-    void Rotate(const math::Vector3 &euler_angles);
-    void Rotate(const math::Quaternion &quaternion);
-
     [[nodiscard]] math::Matrix4x4 View() const;
     [[nodiscard]] math::Matrix4x4 Projection() const;
 
@@ -69,8 +58,7 @@ class Camera : public Component {
 
   private:
     math::Vector3 position_;
-    math::Vector3 forward_;
-    math::Vector3 up_;
+    math::Quaternion rotation_;
     float near_plane_;
     float far_plane_;
     float horizontal_fov_;

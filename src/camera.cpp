@@ -7,8 +7,7 @@ namespace borov_engine {
 Camera::Camera(Game &game) :
     Component(game),
     position_{math::Vector3::Backward},
-    forward_{math::Vector3::Forward},
-    up_{math::Vector3::Up},
+    rotation_{math::Quaternion::Identity},
     near_plane_{0.1f},
     far_plane_{1000.0f},
     horizontal_fov_{std::numbers::pi_v<float> / 2.0f},
@@ -23,6 +22,14 @@ math::Vector3 &Camera::Position() {
     return position_;
 }
 
+const math::Quaternion &Camera::Rotation() const {
+    return rotation_;
+}
+
+math::Quaternion &Camera::Rotation() {
+    return rotation_;
+}
+
 const CameraProjectionType &Camera::ProjectionType() const {
     return projection_type_;
 }
@@ -32,47 +39,15 @@ CameraProjectionType &Camera::ProjectionType() {
 }
 
 math::Vector3 Camera::Forward() const {
-    return forward_;
+    return math::Vector3::Transform(math::Vector3::Forward, rotation_);
 }
 
 math::Vector3 Camera::Up() const {
-    return up_;
+    return math::Vector3::Transform(math::Vector3::Up, rotation_);
 }
 
 math::Vector3 Camera::Right() const {
-    return forward_.Cross(up_);
-}
-
-math::Matrix4x4 Camera::Rotation() const {
-    return math::Matrix4x4::CreateWorld(math::Vector3{}, forward_, up_);
-}
-
-math::Vector3 Camera::EulerRotation() const {
-    return Rotation().ToEuler();
-}
-
-math::Quaternion Camera::QuaternionRotation() const {
-    return math::Quaternion::CreateFromRotationMatrix(Rotation());
-}
-
-void Camera::Rotation(const math::Matrix4x4 &rotation_matrix) {
-    math::Quaternion quaternion = math::Quaternion::CreateFromRotationMatrix(rotation_matrix);
-    Rotation(quaternion);
-}
-
-void Camera::Rotation(float yaw, float pitch, float roll) {
-    math::Quaternion quaternion = math::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
-    Rotation(quaternion);
-}
-
-void Camera::Rotation(const math::Vector3 &euler_angles) {
-    math::Quaternion quaternion = math::Quaternion::CreateFromYawPitchRoll(euler_angles);
-    Rotation(quaternion);
-}
-
-void Camera::Rotation(const math::Quaternion &quaternion) {
-    forward_ = math::Vector3::Transform(math::Vector3::Forward, quaternion);
-    up_ = math::Vector3::Transform(math::Vector3::Up, quaternion);
+    return math::Vector3::Transform(math::Vector3::Right, rotation_);
 }
 
 float Camera::NearPlane() const {
@@ -146,28 +121,11 @@ bool Camera::OrthographicUnits(float orthographic_units) {
     return true;
 }
 
-void Camera::Rotate(const math::Matrix4x4 &rotation_matrix) {
-    math::Quaternion quaternion = math::Quaternion::CreateFromRotationMatrix(rotation_matrix);
-    Rotate(quaternion);
-}
-
-void Camera::Rotate(float yaw, float pitch, float roll) {
-    math::Quaternion quaternion = math::Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
-    Rotate(quaternion);
-}
-
-void Camera::Rotate(const math::Vector3 &euler_angles) {
-    math::Quaternion quaternion = math::Quaternion::CreateFromYawPitchRoll(euler_angles);
-    Rotate(quaternion);
-}
-
-void Camera::Rotate(const math::Quaternion &quaternion) {
-    forward_ = math::Vector3::Transform(forward_, quaternion);
-    up_ = math::Vector3::Transform(up_, quaternion);
-}
-
 math::Matrix4x4 Camera::View() const {
-    return math::Matrix4x4::CreateLookAt(position_, position_ + forward_, up_);
+    math::Vector3 eye = position_;
+    math::Vector3 target = position_ + Forward();
+    math::Vector3 up = Up();
+    return math::Matrix4x4::CreateLookAt(eye, target, up);
 }
 
 math::Matrix4x4 Camera::Projection() const {
