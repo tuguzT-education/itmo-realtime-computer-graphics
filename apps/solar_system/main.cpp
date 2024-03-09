@@ -31,15 +31,16 @@ class Game : public borov_engine::Game {
             auto x = static_cast<float>(input->IsKeyDown(InputKey::D) - input->IsKeyDown(InputKey::A));
             auto y = static_cast<float>(input->IsKeyDown(InputKey::Space) - input->IsKeyDown(InputKey::LeftControl));
             auto z = static_cast<float>(input->IsKeyDown(InputKey::W) - input->IsKeyDown(InputKey::S));
-            math::Vector3 direction = camera->Right() * x + camera->Up() * y + camera->Forward() * z;
+            math::Vector3 direction = camera->Right() * x + math::Vector3::Up * y + camera->Forward() * z;
             float speed = input->IsKeyDown(InputKey::LeftShift) ? 2.0f : 1.0f;
             camera->Position() += direction * speed * delta_time;
 
             float yaw = -mouse_offset_.x * 0.005f;
-            camera->Rotate(yaw, 0.0f, 0.0f);
-            float fov = camera->HorizontalFOV() * (1 + static_cast<float>(wheel_delta_) * 0.05f);
+            float pitch = -mouse_offset_.y * 0.005f;
+            camera->Rotation(yaw, pitch, 0.0f);
+
+            float fov = camera->HorizontalFOV() * (1 + static_cast<float>(-wheel_delta_) * 0.05f);
             camera->HorizontalFOV(fov);
-            mouse_offset_ = math::Vector2::Zero;
             wheel_delta_ = 0;
         }
 
@@ -53,7 +54,7 @@ class Game : public borov_engine::Game {
     }
 
     borov_engine::math::Vector2 mouse_offset_;
-    std::int16_t wheel_delta_;
+    std::int32_t wheel_delta_;
 };
 
 int main() {

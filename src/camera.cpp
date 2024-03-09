@@ -72,7 +72,7 @@ void Camera::Rotation(const math::Vector3 &euler_angles) {
 
 void Camera::Rotation(const math::Quaternion &quaternion) {
     forward_ = math::Vector3::Transform(math::Vector3::Forward, quaternion);
-    up_ = math::Vector3::Transform(math::Vector3::Forward, quaternion);
+    up_ = math::Vector3::Transform(math::Vector3::Up, quaternion);
 }
 
 float Camera::NearPlane() const {

@@ -135,7 +135,7 @@ void Input::OnRawMouse(const RAWMOUSE &data) {
     MouseMoveData mouse_move_data{
         .position = {static_cast<float>(point.x), static_cast<float>(point.y)},
         .offset = {static_cast<float>(data.lLastX), static_cast<float>(data.lLastY)},
-        .wheel_delta = static_cast<std::int16_t>(static_cast<std::int16_t>(data.usButtonData) / WHEEL_DELTA),
+        .wheel_delta = static_cast<std::int16_t>(data.usButtonData) / WHEEL_DELTA,
     };
     on_mouse_move_.Broadcast(mouse_move_data);
 }
