@@ -39,7 +39,7 @@ class Game : public borov_engine::Game {
             float pitch = -mouse_offset_.y * 0.005f;
             camera->Rotation() = math::Quaternion::CreateFromYawPitchRoll(yaw, pitch, 0.0f);
 
-            float fov = camera->HorizontalFOV() * (1 + static_cast<float>(-wheel_delta_) * 0.05f);
+            float fov = camera->HorizontalFOV() + static_cast<float>(-wheel_delta_) * 0.005f;
             camera->HorizontalFOV(fov);
             wheel_delta_ = 0;
         }
