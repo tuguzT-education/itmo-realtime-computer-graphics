@@ -13,7 +13,7 @@ class BoxComponent : public TriangleComponent {
   public:
     using Box = DirectX::BoundingOrientedBox;
 
-    explicit BoxComponent(Game &game,
+    explicit BoxComponent(borov_engine::Game &game,
                           float length, float height, float width,
                           math::Color color = {1.0f, 1.0f, 1.0f},
                           borov_engine::Transform transform = {});

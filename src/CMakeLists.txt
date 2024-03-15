@@ -30,8 +30,9 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/game.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/timer.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/component.hpp
-        ${PROJECT_SOURCE_DIR}/include/borov_engine/component.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/camera.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/camera_manager.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/viewport.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/transform.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/box_component.hpp)
@@ -48,6 +49,8 @@ set(SOURCE_LIST
         timer.cpp
         component.cpp
         camera.cpp
+        camera_manager.cpp
+        viewport.cpp
         transform.cpp
         triangle_component.cpp
         box_component.cpp)

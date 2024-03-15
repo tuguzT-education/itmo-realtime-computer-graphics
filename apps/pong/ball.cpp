@@ -26,7 +26,7 @@ void Ball::Update(float delta_time) {
         velocity_.y = -velocity_.y;
     }
 
-    for (const Component &component : Components()) {
+    for (const Component &component : Game().Components()) {
         auto player = dynamic_cast<const Player *>(&component);
         if (player == nullptr) {
             continue;

@@ -19,7 +19,7 @@ class TriangleComponent : public Component {
     using Vertex = DirectX::VertexPositionColor;
     using Index = std::uint32_t;
 
-    explicit TriangleComponent(Game &game,
+    explicit TriangleComponent(borov_engine::Game &game,
                                std::span<Vertex> vertices,
                                std::span<Index> indices,
                                Transform transform = {});
@@ -28,7 +28,7 @@ class TriangleComponent : public Component {
     [[nodiscard]] borov_engine::Transform &Transform();
 
     void Update(float delta_time) override;
-    void Draw() override;
+    void Draw(const Camera *camera) override;
 
   private:
     struct ConstantBuffer {

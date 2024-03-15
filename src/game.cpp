@@ -4,7 +4,7 @@
 #include <format>
 
 #include "borov_engine/detail/check_result.hpp"
-#include "borov_engine/camera.hpp"
+#include "borov_engine/camera_manager.hpp"
 
 namespace borov_engine {
 
@@ -13,7 +13,6 @@ constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{65
 Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     : window_{window},
       input_{input},
-      camera_{},
       time_per_update_{default_time_per_update},
       target_width_{},
       target_height_{},
@@ -23,7 +22,6 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     InitializeSwapChain(window);
     InitializeRenderTargetView();
 
-    camera_ = &AddComponent<borov_engine::Camera>();
     window_.OnResize().AddRaw(this, &Game::OnWindowResize);
 }
 
@@ -47,6 +45,36 @@ math::Color &Game::ClearColor() {
     return clear_color_;
 }
 
+const CameraManager *Game::CameraManager() const {
+    return camera_manager_.get();
+}
+
+CameraManager *Game::CameraManager() {
+    return camera_manager_.get();
+}
+
+const Camera *Game::MainCamera() const {
+    if (camera_manager_ == nullptr) {
+        return nullptr;
+    }
+    return camera_manager_->MainCamera();
+}
+
+Camera *Game::MainCamera() {
+    if (camera_manager_ == nullptr) {
+        return nullptr;
+    }
+    return camera_manager_->MainCamera();
+}
+
+std::uint32_t Game::TargetWidth() const {
+    return target_width_;
+}
+
+std::uint32_t Game::TargetHeight() const {
+    return target_height_;
+}
+
 const Timer &Game::Timer() const {
     return timer_;
 }
@@ -67,8 +95,18 @@ Input *Game::Input() {
     return &input_;
 }
 
-Camera *Game::Camera() {
-    return camera_;
+void Game::Viewports(std::span<Viewport> viewports) {
+    if (viewports.empty()) {
+        Viewport target_viewport{
+            0.0f, 0.0f,
+            static_cast<float>(target_width_),
+            static_cast<float>(target_height_),
+            0.0f, 1.0f,
+            MainCamera(),
+        };
+        viewports = {std::addressof(target_viewport), 1};
+    }
+    viewports_.assign(viewports.begin(), viewports.end());
 }
 
 bool Game::IsRunning() const {
@@ -188,34 +226,53 @@ void Game::InitializeRenderTargetView() {
 
     result = device_->CreateRenderTargetView(resource.Get(), nullptr, &render_target_view_);
     detail::CheckResult(result, "Failed to create render target view");
+
+    Viewports({});
 }
 
 void Game::Update(float delta_time) {
+    if (camera_manager_ != nullptr) {
+        camera_manager_->Update(delta_time);
+    }
+
     for (const auto &component : components_) {
         component->Update(delta_time);
     }
 }
 
 void Game::Draw() {
-    for (const auto &component : components_) {
-        component->Draw();
+    if (camera_manager_ != nullptr) {
+        camera_manager_->Draw(nullptr);
     }
+
+    for (const auto &viewport : viewports_) {
+        device_context_->RSSetViewports(1, viewport.Get11());
+
+        Camera *camera = viewport.camera;
+        if (camera != nullptr) {
+            camera->Width(viewport.width);
+            camera->Height(viewport.height);
+        }
+
+        for (const auto &component : components_) {
+            component->Draw(camera);
+        }
+    }
+}
+
+void Game::OnTargetResize() {
+    render_target_view_.Reset();
+
+    if (swap_chain_ != nullptr) {
+        HRESULT result = swap_chain_->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        detail::CheckResult(result, "Failed to resize swap chain buffers");
+    }
+
+    InitializeRenderTargetView();
 }
 
 void Game::DrawInternal() {
     device_context_->ClearState();
-
-    std::array viewports{
-        D3D11_VIEWPORT{
-            .TopLeftX = 0.0f,
-            .TopLeftY = 0.0f,
-            .Width = static_cast<float>(target_width_),
-            .Height = static_cast<float>(target_height_),
-            .MinDepth = 0.0f,
-            .MaxDepth = 1.0f,
-        }
-    };
-    device_context_->RSSetViewports(viewports.size(), viewports.data());
 
     std::array render_targets{render_target_view_.Get()};
     device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), nullptr);
@@ -231,16 +288,7 @@ void Game::DrawInternal() {
 }
 
 void Game::OnWindowResize([[maybe_unused]] WindowResizeData data) {
-    if (!swap_chain_) {
-        return;
-    }
-
-    render_target_view_.Reset();
-
-    HRESULT result = swap_chain_->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
-    detail::CheckResult(result, "Failed to resize swap chain buffers");
-
-    InitializeRenderTargetView();
+    OnTargetResize();
 }
 
 }

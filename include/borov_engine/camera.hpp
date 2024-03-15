@@ -3,7 +3,7 @@
 #ifndef BOROV_ENGINE_CAMERA_HPP_INCLUDED
 #define BOROV_ENGINE_CAMERA_HPP_INCLUDED
 
-#include "component.hpp"
+#include "math.hpp"
 
 namespace borov_engine {
 
@@ -12,9 +12,9 @@ enum class CameraProjectionType : std::uint8_t {
     Orthographic,
 };
 
-class Camera : public Component {
+class Camera final {
   public:
-    explicit Camera(Game &game);
+    explicit Camera();
 
     [[nodiscard]] const math::Vector3 &Position() const;
     [[nodiscard]] math::Vector3 &Position();
@@ -28,6 +28,12 @@ class Camera : public Component {
     [[nodiscard]] math::Vector3 Forward() const;
     [[nodiscard]] math::Vector3 Up() const;
     [[nodiscard]] math::Vector3 Right() const;
+
+    [[nodiscard]] float Width() const;
+    bool Width(float width);
+
+    [[nodiscard]] float Height() const;
+    bool Height(float height);
 
     [[nodiscard]] float NearPlane() const;
     bool NearPlane(float near_plane);
@@ -53,12 +59,11 @@ class Camera : public Component {
     [[nodiscard]] math::Matrix4x4 Perspective() const;
     [[nodiscard]] math::Matrix4x4 Orthographic() const;
 
-    void Update(float delta_time) override;
-    void Draw() override;
-
   private:
     math::Vector3 position_;
     math::Quaternion rotation_;
+    float width_;
+    float height_;
     float near_plane_;
     float far_plane_;
     float horizontal_fov_;

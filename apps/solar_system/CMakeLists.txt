@@ -1,5 +1,9 @@
-set(HEADER_LIST)
+set(HEADER_LIST
+        camera_manager.hpp
+        game.hpp)
 set(SOURCE_LIST
+        camera_manager.cpp
+        game.cpp
         main.cpp)
 
 add_executable(solar_system ${SOURCE_LIST} ${HEADER_LIST})

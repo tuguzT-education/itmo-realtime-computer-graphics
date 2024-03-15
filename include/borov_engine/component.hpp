@@ -9,21 +9,15 @@ namespace borov_engine {
 
 class Component {
   public:
-    explicit Component(Game &game);
+    explicit Component(borov_engine::Game &game);
     virtual ~Component();
 
     virtual void Update(float delta_time) = 0;
-    virtual void Draw() = 0;
+    virtual void Draw(const Camera *camera) = 0;
 
   protected:
-    [[nodiscard]] borov_engine::Input *Input();
-    [[nodiscard]] const borov_engine::Input *Input() const;
-
-    [[nodiscard]] borov_engine::Window *Window();
-    [[nodiscard]] const borov_engine::Window *Window() const;
-
-    [[nodiscard]] borov_engine::Camera *Camera();
-    [[nodiscard]] const borov_engine::Camera *Camera() const;
+    [[nodiscard]] borov_engine::Game &Game();
+    [[nodiscard]] const borov_engine::Game &Game() const;
 
     [[nodiscard]] ID3D11DeviceContext &DeviceContext();
     [[nodiscard]] const ID3D11DeviceContext &DeviceContext() const;
@@ -31,24 +25,10 @@ class Component {
     [[nodiscard]] ID3D11Device &Device();
     [[nodiscard]] const ID3D11Device &Device() const;
 
-    [[nodiscard]] const math::Color &ClearColor() const;
-    [[nodiscard]] math::Color &ClearColor();
-
-    [[nodiscard]] const Timer &Timer() const;
-    [[nodiscard]] UINT TargetWidth() const;
-    [[nodiscard]] UINT TargetHeight() const;
-
-    [[nodiscard]] ConstComponentView auto Components() const;
-    [[nodiscard]] ComponentView auto Components();
-
-    void Exit();
-
   private:
-    std::reference_wrapper<Game> game_;
+    std::reference_wrapper<borov_engine::Game> game_;
 };
 
 }
-
-#include "component.inl"
 
 #endif //BOROV_ENGINE_CONTEXT_HPP_INCLUDED

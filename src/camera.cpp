@@ -4,15 +4,16 @@
 
 namespace borov_engine {
 
-Camera::Camera(Game &game) :
-    Component(game),
-    position_{math::Vector3::Backward},
-    rotation_{math::Quaternion::Identity},
-    near_plane_{0.1f},
-    far_plane_{1000.0f},
-    horizontal_fov_{std::numbers::pi_v<float> / 2.0f},
-    orthographic_units_{2.0f},
-    projection_type_{CameraProjectionType::Orthographic} {}
+Camera::Camera()
+    : position_{math::Vector3::Backward},
+      rotation_{math::Quaternion::Identity},
+      width_{},
+      height_{},
+      near_plane_{0.1f},
+      far_plane_{1000.0f},
+      horizontal_fov_{std::numbers::pi_v<float> / 2.0f},
+      orthographic_units_{2.0f},
+      projection_type_{CameraProjectionType::Orthographic} {}
 
 const math::Vector3 &Camera::Position() const {
     return position_;
@@ -50,6 +51,30 @@ math::Vector3 Camera::Right() const {
     return math::Vector3::Transform(math::Vector3::Right, rotation_);
 }
 
+float Camera::Width() const {
+    return width_;
+}
+
+bool Camera::Width(float width) {
+    if (width < 0.0f) {
+        return false;
+    }
+    width_ = width;
+    return true;
+}
+
+float Camera::Height() const {
+    return height_;
+}
+
+bool Camera::Height(float height) {
+    if (height < 0.0f) {
+        return false;
+    }
+    height_ = height;
+    return true;
+}
+
 float Camera::NearPlane() const {
     return near_plane_;
 }
@@ -75,9 +100,7 @@ bool Camera::FarPlane(float far_plane) {
 }
 
 float Camera::AspectRatio() const {
-    auto width = static_cast<float>(TargetWidth());
-    auto height = static_cast<float>(TargetHeight());
-    return (height != 0.0f) ? (width / height) : 0.0f;
+    return (height_ != 0.0f) ? (width_ / height_) : 0.0f;
 }
 
 float Camera::InverseAspectRatio() const {
@@ -155,9 +178,5 @@ math::Matrix4x4 Camera::Orthographic() const {
                                                near_plane_,
                                                far_plane_);
 }
-
-void Camera::Update(float delta_time) {}
-
-void Camera::Draw() {}
 
 }

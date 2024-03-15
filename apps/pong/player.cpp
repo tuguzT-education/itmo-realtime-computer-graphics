@@ -16,7 +16,7 @@ Player::ControlKeys Player::Controls() const {
 void Player::Update(float delta_time) {
     namespace math = borov_engine::math;
 
-    auto *input = Input();
+    auto *input = Game().Input();
     if (input == nullptr) {
         return;
     }

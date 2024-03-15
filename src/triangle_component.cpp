@@ -45,7 +45,7 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path,
 
 }
 
-TriangleComponent::TriangleComponent(Game &game,
+TriangleComponent::TriangleComponent(borov_engine::Game &game,
                                      std::span<Vertex> vertices,
                                      std::span<Index> indices,
                                      borov_engine::Transform transform)
@@ -70,7 +70,7 @@ Transform &TriangleComponent::Transform() {
 
 void TriangleComponent::Update(float delta_time) {}
 
-void TriangleComponent::Draw() {
+void TriangleComponent::Draw(const Camera *camera) {
     ID3D11DeviceContext &device_context = DeviceContext();
 
     std::array vertex_buffers = {vertex_buffer_.Get()};
@@ -86,7 +86,6 @@ void TriangleComponent::Draw() {
     device_context.PSSetShader(index_shader_.Get(), nullptr, 0);
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
-    auto *camera = Camera();
     math::Matrix4x4 world = transform_.World();
     math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
     math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;

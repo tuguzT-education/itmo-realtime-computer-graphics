@@ -14,11 +14,12 @@
 #include "window.hpp"
 #include "input.hpp"
 #include "timer.hpp"
+#include "viewport.hpp"
 
 namespace borov_engine {
 
 class Component;
-class Camera;
+class CameraManager;
 
 template<typename View, typename T>
 concept RefView = std::ranges::view<View>
@@ -29,6 +30,12 @@ concept ComponentView = RefView<T, Component>;
 
 template<typename T>
 concept ConstComponentView = RefView<T, const Component>;
+
+template<typename T>
+concept ViewportView = RefView<T, Viewport>;
+
+template<typename T>
+concept ConstViewportView = RefView<T, const Viewport>;
 
 class Game {
   public:
@@ -41,9 +48,25 @@ class Game {
     [[nodiscard]] const math::Color &ClearColor() const;
     [[nodiscard]] math::Color &ClearColor();
 
+    [[nodiscard]] const borov_engine::CameraManager *CameraManager() const;
+    [[nodiscard]] borov_engine::CameraManager *CameraManager();
+
+    template<typename T, typename ...Args>
+    T &CameraManager(Args &&... args);
+
+    [[nodiscard]] const Camera *MainCamera() const;
+    [[nodiscard]] Camera *MainCamera();
+
+    [[nodiscard]] std::uint32_t TargetWidth() const;
+    [[nodiscard]] std::uint32_t TargetHeight() const;
+
     [[nodiscard]] const borov_engine::Timer &Timer() const;
+
     [[nodiscard]] const borov_engine::Window *Window() const;
+    [[nodiscard]] borov_engine::Window *Window();
+
     [[nodiscard]] const borov_engine::Input *Input() const;
+    [[nodiscard]] borov_engine::Input *Input();
 
     [[nodiscard]] bool IsRunning() const;
 
@@ -53,16 +76,17 @@ class Game {
     [[nodiscard]] ConstComponentView auto Components() const;
     [[nodiscard]] ComponentView auto Components();
 
+    [[nodiscard]] ConstViewportView auto Viewports() const;
+    [[nodiscard]] ViewportView auto Viewports();
+    void Viewports(std::span<Viewport> viewports);
+
     void Run();
     void Exit();
 
   protected:
-    [[nodiscard]] borov_engine::Window *Window();
-    [[nodiscard]] borov_engine::Input *Input();
-    [[nodiscard]] borov_engine::Camera *Camera();
-
     virtual void Update(float delta_time);
     virtual void Draw();
+    virtual void OnTargetResize();
 
   private:
     friend class Component;
@@ -76,7 +100,8 @@ class Game {
 
     borov_engine::Window &window_;
     borov_engine::Input &input_;
-    borov_engine::Camera *camera_;
+    std::vector<Viewport> viewports_;
+    std::unique_ptr<borov_engine::CameraManager> camera_manager_;
     std::vector<std::unique_ptr<Component>> components_;
 
     borov_engine::Timer timer_;

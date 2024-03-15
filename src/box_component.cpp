@@ -44,7 +44,7 @@ inline T &Unmove(T &&t) {
 
 }
 
-BoxComponent::BoxComponent(Game &game,
+BoxComponent::BoxComponent(borov_engine::Game &game,
                            float length, float height, float width, math::Color color,
                            borov_engine::Transform transform)
     : TriangleComponent(game,
