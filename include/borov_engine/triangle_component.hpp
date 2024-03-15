@@ -22,7 +22,7 @@ class TriangleComponent : public Component {
     explicit TriangleComponent(borov_engine::Game &game,
                                std::span<Vertex> vertices,
                                std::span<Index> indices,
-                               Transform transform = {});
+                               borov_engine::Transform transform = {});
 
     [[nodiscard]] const borov_engine::Transform &Transform() const;
     [[nodiscard]] borov_engine::Transform &Transform();
