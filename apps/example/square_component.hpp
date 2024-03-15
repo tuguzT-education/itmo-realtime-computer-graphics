@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef APPS_SQUARE_COMPONENT_HPP_INCLUDED
-#define APPS_SQUARE_COMPONENT_HPP_INCLUDED
+#ifndef EXAMPLE_SQUARE_COMPONENT_HPP_INCLUDED
+#define EXAMPLE_SQUARE_COMPONENT_HPP_INCLUDED
 
 #include <borov_engine/triangle_component.hpp>
 
@@ -12,4 +12,4 @@ class SquareComponent : public borov_engine::TriangleComponent {
     void Update(float delta_time) override;
 };
 
-#endif //APPS_SQUARE_COMPONENT_HPP_INCLUDED
+#endif //EXAMPLE_SQUARE_COMPONENT_HPP_INCLUDED

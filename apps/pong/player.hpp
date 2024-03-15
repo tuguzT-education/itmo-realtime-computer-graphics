@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef PONG_LEFT_PLAYER_HPP_INCLUDED
-#define PONG_LEFT_PLAYER_HPP_INCLUDED
+#ifndef PONG_PLAYER_HPP_INCLUDED
+#define PONG_PLAYER_HPP_INCLUDED
 
 #include <borov_engine/box_component.hpp>
 
@@ -28,4 +28,4 @@ class Player : public borov_engine::BoxComponent {
     static borov_engine::math::Vector3 PositionFrom(::Direction direction);
 };
 
-#endif //PONG_LEFT_PLAYER_HPP_INCLUDED
+#endif //PONG_PLAYER_HPP_INCLUDED
