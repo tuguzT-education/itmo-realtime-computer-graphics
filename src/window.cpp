@@ -23,6 +23,7 @@ Window::Window(std::string_view name,
         .style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC,
         .lpfnWndProc = WndProc,
         .hInstance = instance_handle,
+        .hCursor = LoadCursor(nullptr, IDC_ARROW),
         .hbrBackground = static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)),
         .lpszClassName = c_name,
     };
