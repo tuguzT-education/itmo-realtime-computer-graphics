@@ -17,6 +17,7 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/delegate.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/multicast_delegate.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/multicast_delegate.inl
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/erased_unique_ptr.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/err_handling_api.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/string_api_set.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/check_result.hpp
