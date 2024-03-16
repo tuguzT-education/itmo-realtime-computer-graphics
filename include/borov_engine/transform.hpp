@@ -13,6 +13,8 @@ struct Transform {
     alignas(16) math::Vector3 scale = math::Vector3::One;
 
     [[nodiscard]] math::Matrix4x4 World() const;
+
+    void RotateAround(const math::Vector3 &point, const math::Quaternion &rotate_by);
 };
 
 }

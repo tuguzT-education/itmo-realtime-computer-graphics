@@ -8,4 +8,10 @@ math::Matrix4x4 Transform::World() const {
         * math::Matrix4x4::CreateScale(scale);
 }
 
+void Transform::RotateAround(const math::Vector3 &point, const math::Quaternion &rotate_by) {
+    position -= point;
+    position = math::Vector3::Transform(position, rotate_by);
+    position += point;
+}
+
 }
