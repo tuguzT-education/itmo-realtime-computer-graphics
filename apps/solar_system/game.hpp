@@ -16,9 +16,15 @@ class Game : public borov_engine::Game {
   private:
     [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateSun();
     [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateMercury();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateVenus();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateEarth();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateMoon();
 
     borov_engine::GeometricPrimitiveComponent &sun_;
     borov_engine::GeometricPrimitiveComponent &mercury_;
+    borov_engine::GeometricPrimitiveComponent &venus_;
+    borov_engine::GeometricPrimitiveComponent &earth_;
+    borov_engine::GeometricPrimitiveComponent &moon_;
 };
 
 #endif //SOLAR_SYSTEM_GAME_HPP_INCLUDED
