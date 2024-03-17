@@ -11,6 +11,128 @@ struct overloaded : Ts ... {
 
 }
 
+HeapGeometricPrimitive CreateCube(ID3D11DeviceContext *device_context,
+                                  const CubeGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateCube(device_context,
+                                          arguments.size,
+                                          arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateBox(ID3D11DeviceContext *device_context,
+                                 const BoxGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateBox(device_context,
+                                         arguments.size,
+                                         arguments.right_handed_coords,
+                                         arguments.invert_normals);
+}
+
+HeapGeometricPrimitive CreateSphere(ID3D11DeviceContext *device_context,
+                                    const SphereGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateSphere(device_context,
+                                            arguments.diameter,
+                                            arguments.tessellation,
+                                            arguments.right_handed_coords,
+                                            arguments.invert_normals);
+}
+
+HeapGeometricPrimitive CreateGeoSphere(ID3D11DeviceContext *device_context,
+                                       const GeoSphereGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateGeoSphere(device_context,
+                                               arguments.diameter,
+                                               arguments.tessellation,
+                                               arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateCylinder(ID3D11DeviceContext *device_context,
+                                      const CylinderGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateCylinder(device_context,
+                                              arguments.height,
+                                              arguments.diameter,
+                                              arguments.tessellation,
+                                              arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateCone(ID3D11DeviceContext *device_context,
+                                  const ConeGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateCone(device_context,
+                                          arguments.diameter,
+                                          arguments.height,
+                                          arguments.tessellation,
+                                          arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateTorus(ID3D11DeviceContext *device_context,
+                                   const TorusGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateTorus(device_context,
+                                           arguments.diameter,
+                                           arguments.thickness,
+                                           arguments.tessellation,
+                                           arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateTetrahedron(ID3D11DeviceContext *device_context,
+                                         const TetrahedronGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateTetrahedron(device_context,
+                                                 arguments.size,
+                                                 arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateOctahedron(ID3D11DeviceContext *device_context,
+                                        const OctahedronGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateOctahedron(device_context,
+                                                arguments.size,
+                                                arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateDodecahedron(ID3D11DeviceContext *device_context,
+                                          const DodecahedronGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateDodecahedron(device_context,
+                                                  arguments.size,
+                                                  arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateIcosahedron(ID3D11DeviceContext *device_context,
+                                         const IcosahedronGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateIcosahedron(device_context,
+                                                 arguments.size,
+                                                 arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateTeapot(ID3D11DeviceContext *device_context,
+                                    const TeapotGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateTeapot(device_context,
+                                            arguments.size,
+                                            arguments.tessellation,
+                                            arguments.right_handed_coords);
+}
+
+HeapGeometricPrimitive CreateCustom(ID3D11DeviceContext *device_context,
+                                    const CustomGeometricPrimitiveArguments &arguments) {
+    return GeometricPrimitive::CreateCustom(device_context,
+                                            arguments.vertices,
+                                            arguments.indices);
+}
+
+HeapGeometricPrimitive CreatePrimitive(ID3D11DeviceContext *device_context,
+                                       const GeometricPrimitiveArguments &arguments) {
+    auto c = device_context;
+    return std::visit(detail::overloaded{
+        [c](const CubeGeometricPrimitiveArguments &arguments) { return CreateCube(c, arguments); },
+        [c](const BoxGeometricPrimitiveArguments &arguments) { return CreateBox(c, arguments); },
+        [c](const SphereGeometricPrimitiveArguments &arguments) { return CreateSphere(c, arguments); },
+        [c](const GeoSphereGeometricPrimitiveArguments &arguments) { return CreateGeoSphere(c, arguments); },
+        [c](const CylinderGeometricPrimitiveArguments &arguments) { return CreateCylinder(c, arguments); },
+        [c](const ConeGeometricPrimitiveArguments &arguments) { return CreateCone(c, arguments); },
+        [c](const TorusGeometricPrimitiveArguments &arguments) { return CreateTorus(c, arguments); },
+        [c](const TetrahedronGeometricPrimitiveArguments &arguments) { return CreateTetrahedron(c, arguments); },
+        [c](const OctahedronGeometricPrimitiveArguments &arguments) { return CreateOctahedron(c, arguments); },
+        [c](const DodecahedronGeometricPrimitiveArguments &arguments) { return CreateDodecahedron(c, arguments); },
+        [c](const IcosahedronGeometricPrimitiveArguments &arguments) { return CreateIcosahedron(c, arguments); },
+        [c](const TeapotGeometricPrimitiveArguments &arguments) { return CreateTeapot(c, arguments); },
+        [c](const CustomGeometricPrimitiveArguments &arguments) { return CreateCustom(c, arguments); },
+    }, arguments);
+}
+
 GeometricPrimitiveType PrimitiveType(const GeometricPrimitiveArguments &primitive_arguments) {
     return std::visit(detail::overloaded{
         [](const CubeGeometricPrimitiveArguments &) { return GeometricPrimitiveType::Cube; },
@@ -54,7 +176,7 @@ GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &gam
                                                          math::Color color,
                                                          bool wireframe)
     : Component(game),
-      primitive_{CreatePrimitive(primitive_arguments)},
+      primitive_{CreatePrimitive(&DeviceContext(), primitive_arguments)},
       transform_{transform},
       color_{color},
       wireframe_{wireframe},
@@ -80,7 +202,7 @@ GeometricPrimitive *GeometricPrimitiveComponent::Primitive() {
 }
 
 GeometricPrimitive &GeometricPrimitiveComponent::Primitive(const GeometricPrimitiveArguments &primitive_arguments) {
-    primitive_ = CreatePrimitive(primitive_arguments);
+    primitive_ = CreatePrimitive(&DeviceContext(), primitive_arguments);
     primitive_arguments_ = primitive_arguments;
     return *primitive_;
 }
@@ -134,88 +256,6 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
     math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
 
     primitive_->Draw(world, view, projection, color_, nullptr, wireframe_);
-}
-
-std::unique_ptr<GeometricPrimitive> GeometricPrimitiveComponent::CreatePrimitive(const GeometricPrimitiveArguments &primitive_arguments) {
-    auto device_context = &DeviceContext();
-    return std::visit(detail::overloaded{
-        [device_context](const CubeGeometricPrimitiveArguments &cube_arguments) {
-            return GeometricPrimitive::CreateCube(device_context,
-                                                  cube_arguments.size,
-                                                  cube_arguments.right_handed_coords);
-        },
-        [device_context](const BoxGeometricPrimitiveArguments &box_arguments) {
-            return GeometricPrimitive::CreateBox(device_context,
-                                                 box_arguments.size,
-                                                 box_arguments.right_handed_coords,
-                                                 box_arguments.invert_normals);
-        },
-        [device_context](const SphereGeometricPrimitiveArguments &sphere_arguments) {
-            return GeometricPrimitive::CreateSphere(device_context,
-                                                    sphere_arguments.diameter,
-                                                    sphere_arguments.tessellation,
-                                                    sphere_arguments.right_handed_coords,
-                                                    sphere_arguments.invert_normals);
-        },
-        [device_context](const GeoSphereGeometricPrimitiveArguments &geo_sphere_arguments) {
-            return GeometricPrimitive::CreateGeoSphere(device_context,
-                                                       geo_sphere_arguments.diameter,
-                                                       geo_sphere_arguments.tessellation,
-                                                       geo_sphere_arguments.right_handed_coords);
-        },
-        [device_context](const CylinderGeometricPrimitiveArguments &cylinder_arguments) {
-            return GeometricPrimitive::CreateCylinder(device_context,
-                                                      cylinder_arguments.height,
-                                                      cylinder_arguments.diameter,
-                                                      cylinder_arguments.tessellation,
-                                                      cylinder_arguments.right_handed_coords);
-        },
-        [device_context](const ConeGeometricPrimitiveArguments &cone_arguments) {
-            return GeometricPrimitive::CreateCone(device_context,
-                                                  cone_arguments.diameter,
-                                                  cone_arguments.height,
-                                                  cone_arguments.tessellation,
-                                                  cone_arguments.right_handed_coords);
-        },
-        [device_context](const TorusGeometricPrimitiveArguments &torus_arguments) {
-            return GeometricPrimitive::CreateTorus(device_context,
-                                                   torus_arguments.diameter,
-                                                   torus_arguments.thickness,
-                                                   torus_arguments.tessellation,
-                                                   torus_arguments.right_handed_coords);
-        },
-        [device_context](const TetrahedronGeometricPrimitiveArguments &tetrahedron_arguments) {
-            return GeometricPrimitive::CreateTetrahedron(device_context,
-                                                         tetrahedron_arguments.size,
-                                                         tetrahedron_arguments.right_handed_coords);
-        },
-        [device_context](const OctahedronGeometricPrimitiveArguments &octahedron_arguments) {
-            return GeometricPrimitive::CreateOctahedron(device_context,
-                                                        octahedron_arguments.size,
-                                                        octahedron_arguments.right_handed_coords);
-        },
-        [device_context](const DodecahedronGeometricPrimitiveArguments &dodecahedron_arguments) {
-            return GeometricPrimitive::CreateDodecahedron(device_context,
-                                                          dodecahedron_arguments.size,
-                                                          dodecahedron_arguments.right_handed_coords);
-        },
-        [device_context](const IcosahedronGeometricPrimitiveArguments &icosahedron_arguments) {
-            return GeometricPrimitive::CreateIcosahedron(device_context,
-                                                         icosahedron_arguments.size,
-                                                         icosahedron_arguments.right_handed_coords);
-        },
-        [device_context](const TeapotGeometricPrimitiveArguments &teapot_arguments) {
-            return GeometricPrimitive::CreateTeapot(device_context,
-                                                    teapot_arguments.size,
-                                                    teapot_arguments.tessellation,
-                                                    teapot_arguments.right_handed_coords);
-        },
-        [device_context](const CustomGeometricPrimitiveArguments &custom_arguments) {
-            return GeometricPrimitive::CreateCustom(device_context,
-                                                    custom_arguments.vertices,
-                                                    custom_arguments.indices);
-        },
-    }, primitive_arguments);
 }
 
 }
