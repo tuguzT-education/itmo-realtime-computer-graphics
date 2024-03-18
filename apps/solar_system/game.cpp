@@ -1,6 +1,7 @@
 #include "game.hpp"
 
 #include <array>
+#include <numbers>
 
 #include "camera_manager.hpp"
 
@@ -20,12 +21,18 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
 }
 
 void Game::Update(float delta_time) {
-    borov_engine::Game::Update(delta_time);
-
     namespace math = borov_engine::math;
 
-    auto rotate_mercury_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 1.0f * delta_time);
+    borov_engine::Game::Update(delta_time);
+
+    auto rotate_mercury_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 2.0f * delta_time);
     mercury_.Transform().RotateAround(sun_.Transform().position, rotate_mercury_by);
+
+    auto rotate_venus_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 1.17f * delta_time);
+    venus_.Transform().RotateAround(sun_.Transform().position, rotate_venus_by);
+
+    auto rotate_moon_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 0.5f * delta_time);
+    moon_.Transform().RotateAround(earth_.Transform().position, rotate_moon_by);
 }
 
 borov_engine::GeometricPrimitiveComponent &Game::CreateSun() {
@@ -57,6 +64,8 @@ borov_engine::GeometricPrimitiveComponent &Game::CreateVenus() {
     };
     borov_engine::Transform transform{
         .position = borov_engine::math::Vector3::UnitX * 3.0f,
+        .rotation = borov_engine::math::Quaternion::CreateFromAxisAngle(borov_engine::math::Vector3::Right,
+                                                                        std::numbers::pi_v<float> / 2.0f),
     };
     borov_engine::math::Color color{borov_engine::math::colors::linear::LightYellow};
     return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, color);

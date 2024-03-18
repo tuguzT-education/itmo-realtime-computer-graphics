@@ -45,6 +45,7 @@ set(SOURCE_LIST
         detail/err_handling_api.cpp
         detail/string_api_set.cpp
         detail/check_result.cpp
+        math.cpp
         window.cpp
         input.cpp
         game.cpp

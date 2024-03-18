@@ -24,6 +24,9 @@ namespace linear = DirectX::ColorsLinear;
 using Matrix4x4 = DirectX::SimpleMath::Matrix;
 using Quaternion = DirectX::SimpleMath::Quaternion;
 
+void RotateAround(const Vector3 &position, const Vector3 &rotation_point, const Quaternion &rotate_by, Vector3 &result);
+Vector3 RotateAround(const Vector3 &position, const Vector3 &rotation_point, const Quaternion &rotate_by);
+
 using Viewport = DirectX::SimpleMath::Viewport;
 using Plane = DirectX::SimpleMath::Plane;
 using Ray = DirectX::SimpleMath::Ray;
