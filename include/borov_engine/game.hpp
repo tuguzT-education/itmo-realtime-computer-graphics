@@ -52,10 +52,13 @@ class Game {
     [[nodiscard]] const borov_engine::CameraManager *CameraManager() const;
     [[nodiscard]] borov_engine::CameraManager *CameraManager();
 
-    template<typename T, typename ...Args>
+    template<std::derived_from<borov_engine::CameraManager> T, typename ...Args>
     T &CameraManager(Args &&... args);
 
-    template<typename T, typename ...Args>
+    [[nodiscard]] const borov_engine::ViewportManager &ViewportManager() const;
+    [[nodiscard]] borov_engine::ViewportManager &ViewportManager();
+
+    template<std::derived_from<borov_engine::ViewportManager> T, typename ...Args>
     T &ViewportManager(Args &&... args);
 
     [[nodiscard]] const Camera *MainCamera() const;
@@ -74,7 +77,7 @@ class Game {
 
     [[nodiscard]] bool IsRunning() const;
 
-    template<typename T, typename ...Args>
+    template<std::derived_from<borov_engine::Component> T, typename ...Args>
     T &AddComponent(Args &&... args);
 
     [[nodiscard]] ConstComponentView auto Components() const;
@@ -103,7 +106,7 @@ class Game {
     borov_engine::Input &input_;
     std::unique_ptr<borov_engine::ViewportManager> viewport_manager_;
     std::unique_ptr<borov_engine::CameraManager> camera_manager_;
-    std::vector<std::unique_ptr<Component>> components_;
+    std::vector<std::unique_ptr<borov_engine::Component>> components_;
 
     borov_engine::Timer timer_;
     Timer::Duration time_per_update_;

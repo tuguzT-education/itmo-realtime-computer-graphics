@@ -5,20 +5,20 @@
 
 namespace borov_engine {
 
-template<typename T, typename ...Args>
+template<std::derived_from<borov_engine::CameraManager> T, typename ...Args>
 T &Game::CameraManager(Args &&...args) {
     camera_manager_ = std::make_unique<T>(*this, std::forward<Args>(args)...);
     return dynamic_cast<T &>(*camera_manager_);
 }
 
-template<typename T, typename ...Args>
+template<std::derived_from<borov_engine::ViewportManager> T, typename ...Args>
 T &Game::ViewportManager(Args &&...args) {
     viewport_manager_ = std::make_unique<T>(*this, std::forward<Args>(args)...);
     ViewportManagerPostInit();
     return dynamic_cast<T &>(*viewport_manager_);
 }
 
-template<typename T, typename... Args>
+template<std::derived_from<borov_engine::Component> T, typename... Args>
 T &Game::AddComponent(Args &&... args) {
     auto &component = components_.emplace_back(std::make_unique<T>(*this, std::forward<Args>(args)...));
     return dynamic_cast<T &>(*component);

@@ -56,6 +56,14 @@ CameraManager *Game::CameraManager() {
     return camera_manager_.get();
 }
 
+const ViewportManager &Game::ViewportManager() const {
+    return *viewport_manager_;
+}
+
+ViewportManager &Game::ViewportManager() {
+    return *viewport_manager_;
+}
+
 const Camera *Game::MainCamera() const {
     if (camera_manager_ == nullptr) {
         return nullptr;
@@ -277,7 +285,7 @@ void Game::DrawInternal() {
 
     Draw();
 
-    std::array < ID3D11RenderTargetView * , 0 > no_render_targets;
+    std::array<ID3D11RenderTargetView *, 0> no_render_targets;
     device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
 
     swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);

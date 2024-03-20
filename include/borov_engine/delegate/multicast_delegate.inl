@@ -25,13 +25,10 @@ DelegateHandle MulticastDelegate<Args...>::operator+=(MulticastDelegate::Delegat
     return Add(std::forward<DelegateT>(delegate));
 }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "ConstantFunctionResult"
 template<typename... Args>
 bool MulticastDelegate<Args...>::operator-=(DelegateHandle &handle) {
     return Remove(handle);
 }
-#pragma clang diagnostic pop
 
 template<typename... Args>
 DelegateHandle MulticastDelegate<Args...>::Add(MulticastDelegate::DelegateT &&delegate) {
@@ -116,8 +113,6 @@ constexpr std::size_t MulticastDelegate<Args...>::GetSize() const {
     return delegates_.size();
 }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnreachableCode"
 template<typename... Args>
 void MulticastDelegate<Args...>::RemoveByOwner(void *owner) {
     if (owner == nullptr) {
@@ -138,11 +133,7 @@ void MulticastDelegate<Args...>::RemoveByOwner(void *owner) {
         }
     }
 }
-#pragma clang diagnostic pop
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnreachableCode"
-#pragma ide diagnostic ignored "ConstantFunctionResult"
 template<typename... Args>
 bool MulticastDelegate<Args...>::Remove(const DelegateHandle &handle) {
     if (!handle.IsValid()) {
@@ -165,7 +156,6 @@ bool MulticastDelegate<Args...>::Remove(const DelegateHandle &handle) {
     }
     return false;
 }
-#pragma clang diagnostic pop
 
 template<typename... Args>
 void MulticastDelegate<Args...>::RemoveAll() {
@@ -178,8 +168,6 @@ void MulticastDelegate<Args...>::RemoveAll() {
     }
 }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnreachableCode"
 template<typename... Args>
 void MulticastDelegate<Args...>::Compress(std::size_t max_space) {
     if (IsLocked()) {
@@ -200,7 +188,6 @@ void MulticastDelegate<Args...>::Compress(std::size_t max_space) {
         delegates_.resize(delegates_.size() - to_delete);
     }
 }
-#pragma clang diagnostic pop
 
 template<typename... Args>
 void MulticastDelegate<Args...>::Broadcast(Args... args) {
