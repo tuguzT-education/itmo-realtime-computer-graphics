@@ -1,8 +1,10 @@
 set(HEADER_LIST
         camera_manager.hpp
+        viewport_manager.hpp
         game.hpp)
 set(SOURCE_LIST
         camera_manager.cpp
+        viewport_manager.cpp
         game.cpp
         main.cpp)
 

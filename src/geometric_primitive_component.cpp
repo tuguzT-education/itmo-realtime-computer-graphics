@@ -244,8 +244,6 @@ bool &GeometricPrimitiveComponent::Wireframe() {
     return wireframe_;
 }
 
-void GeometricPrimitiveComponent::Update(float delta_time) {}
-
 void GeometricPrimitiveComponent::Draw(const Camera *camera) {
     if (primitive_ == nullptr) {
         return;

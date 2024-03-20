@@ -197,7 +197,6 @@ class GeometricPrimitiveComponent : public Component {
     [[nodiscard]] bool Wireframe() const;
     [[nodiscard]] bool &Wireframe();
 
-    void Update(float delta_time) override;
     void Draw(const Camera *camera) override;
 
   private:

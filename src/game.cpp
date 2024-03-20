@@ -5,6 +5,7 @@
 
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/camera_manager.hpp"
+#include "borov_engine/viewport_manager.hpp"
 
 namespace borov_engine {
 
@@ -21,6 +22,8 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     InitializeDevice();
     InitializeSwapChain(window);
     InitializeRenderTargetView();
+
+    ViewportManager<borov_engine::ViewportManager>();
 
     window_.OnResize().AddRaw(this, &Game::OnWindowResize);
 }
@@ -93,20 +96,6 @@ const Input *Game::Input() const {
 
 Input *Game::Input() {
     return &input_;
-}
-
-void Game::Viewports(std::span<Viewport> viewports) {
-    if (viewports.empty()) {
-        Viewport target_viewport{
-            0.0f, 0.0f,
-            static_cast<float>(target_width_),
-            static_cast<float>(target_height_),
-            0.0f, 1.0f,
-            MainCamera(),
-        };
-        viewports = {std::addressof(target_viewport), 1};
-    }
-    viewports_.assign(viewports.begin(), viewports.end());
 }
 
 bool Game::IsRunning() const {
@@ -226,14 +215,13 @@ void Game::InitializeRenderTargetView() {
 
     result = device_->CreateRenderTargetView(resource.Get(), nullptr, &render_target_view_);
     detail::CheckResult(result, "Failed to create render target view");
-
-    Viewports({});
 }
 
 void Game::Update(float delta_time) {
     if (camera_manager_ != nullptr) {
         camera_manager_->Update(delta_time);
     }
+    viewport_manager_->Update(delta_time);
 
     for (const auto &component : components_) {
         component->Update(delta_time);
@@ -244,8 +232,9 @@ void Game::Draw() {
     if (camera_manager_ != nullptr) {
         camera_manager_->Draw(nullptr);
     }
+    viewport_manager_->Draw(nullptr);
 
-    for (const auto &viewport : viewports_) {
+    for (const auto &viewport : viewport_manager_->Viewports()) {
         device_context_->RSSetViewports(1, viewport.Get11());
 
         Camera *camera = viewport.camera;
@@ -262,13 +251,20 @@ void Game::Draw() {
 
 void Game::OnTargetResize() {
     render_target_view_.Reset();
-
     if (swap_chain_ != nullptr) {
         HRESULT result = swap_chain_->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
         detail::CheckResult(result, "Failed to resize swap chain buffers");
     }
-
     InitializeRenderTargetView();
+
+    if (camera_manager_ != nullptr) {
+        camera_manager_->OnTargetResize();
+    }
+    viewport_manager_->OnTargetResize();
+
+    for (const auto &component : components_) {
+        component->OnTargetResize();
+    }
 }
 
 void Game::DrawInternal() {
@@ -281,7 +277,7 @@ void Game::DrawInternal() {
 
     Draw();
 
-    std::array<ID3D11RenderTargetView *, 0> no_render_targets;
+    std::array < ID3D11RenderTargetView * , 0 > no_render_targets;
     device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
 
     swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
@@ -289,6 +285,10 @@ void Game::DrawInternal() {
 
 void Game::OnWindowResize([[maybe_unused]] WindowResizeData data) {
     OnTargetResize();
+}
+
+void Game::ViewportManagerPostInit() {
+    viewport_manager_->OnTargetResize();
 }
 
 }

@@ -47,8 +47,6 @@ void CameraManager::Update(float delta_time) {
     }
 }
 
-void CameraManager::Draw(const borov_engine::Camera *camera) {}
-
 void CameraManager::OnMouseMove(borov_engine::MouseMoveData data) {
     mouse_offset_ += data.offset;
     wheel_delta_ += data.wheel_delta;

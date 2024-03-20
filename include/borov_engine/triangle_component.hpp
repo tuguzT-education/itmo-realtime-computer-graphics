@@ -27,7 +27,6 @@ class TriangleComponent : public Component {
     [[nodiscard]] const borov_engine::Transform &Transform() const;
     [[nodiscard]] borov_engine::Transform &Transform();
 
-    void Update(float delta_time) override;
     void Draw(const Camera *camera) override;
 
   private:

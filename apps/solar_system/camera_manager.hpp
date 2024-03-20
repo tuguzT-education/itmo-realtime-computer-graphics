@@ -14,7 +14,6 @@ class CameraManager : public borov_engine::CameraManager {
     [[nodiscard]] borov_engine::Camera *MainCamera() override;
 
     void Update(float delta_time) override;
-    void Draw(const borov_engine::Camera *camera) override;
 
   private:
     void OnMouseMove(borov_engine::MouseMoveData data);

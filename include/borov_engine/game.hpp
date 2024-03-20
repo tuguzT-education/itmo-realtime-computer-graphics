@@ -20,6 +20,7 @@ namespace borov_engine {
 
 class Component;
 class CameraManager;
+class ViewportManager;
 
 template<typename View, typename T>
 concept RefView = std::ranges::view<View>
@@ -54,6 +55,9 @@ class Game {
     template<typename T, typename ...Args>
     T &CameraManager(Args &&... args);
 
+    template<typename T, typename ...Args>
+    T &ViewportManager(Args &&... args);
+
     [[nodiscard]] const Camera *MainCamera() const;
     [[nodiscard]] Camera *MainCamera();
 
@@ -76,10 +80,6 @@ class Game {
     [[nodiscard]] ConstComponentView auto Components() const;
     [[nodiscard]] ComponentView auto Components();
 
-    [[nodiscard]] ConstViewportView auto Viewports() const;
-    [[nodiscard]] ViewportView auto Viewports();
-    void Viewports(std::span<Viewport> viewports);
-
     void Run();
     void Exit();
 
@@ -97,10 +97,11 @@ class Game {
 
     void DrawInternal();
     void OnWindowResize(WindowResizeData data);
+    void ViewportManagerPostInit();
 
     borov_engine::Window &window_;
     borov_engine::Input &input_;
-    std::vector<Viewport> viewports_;
+    std::unique_ptr<borov_engine::ViewportManager> viewport_manager_;
     std::unique_ptr<borov_engine::CameraManager> camera_manager_;
     std::vector<std::unique_ptr<Component>> components_;
 

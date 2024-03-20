@@ -6,6 +6,12 @@ Component::Component(borov_engine::Game &game) : game_{game} {}
 
 Component::~Component() = default;
 
+void Component::Update(float delta_time) {}
+
+void Component::Draw(const Camera *camera) {}
+
+void Component::OnTargetResize() {}
+
 Game &Component::Game() {
     return game_;
 }

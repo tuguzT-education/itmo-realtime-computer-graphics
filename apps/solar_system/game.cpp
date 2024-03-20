@@ -1,9 +1,9 @@
 #include "game.hpp"
 
-#include <array>
 #include <numbers>
 
 #include "camera_manager.hpp"
+#include "viewport_manager.hpp"
 
 Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     : borov_engine::Game(window, input),
@@ -13,7 +13,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       earth_{CreateEarth()},
       moon_{CreateMoon()} {
     CameraManager<::CameraManager>();
-    Viewports({});
+    ViewportManager<::ViewportManager>();
 
     if (borov_engine::Camera *camera = MainCamera()) {
         camera->Position() = borov_engine::math::Vector3::Backward * 3.0f;

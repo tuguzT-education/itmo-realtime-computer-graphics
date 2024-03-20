@@ -12,8 +12,9 @@ class Component {
     explicit Component(borov_engine::Game &game);
     virtual ~Component();
 
-    virtual void Update(float delta_time) = 0;
-    virtual void Draw(const Camera *camera) = 0;
+    virtual void Update(float delta_time);
+    virtual void Draw(const Camera *camera);
+    virtual void OnTargetResize();
 
   protected:
     [[nodiscard]] borov_engine::Game &Game();

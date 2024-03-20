@@ -68,8 +68,6 @@ Transform &TriangleComponent::Transform() {
     return transform_;
 }
 
-void TriangleComponent::Update(float delta_time) {}
-
 void TriangleComponent::Draw(const Camera *camera) {
     ID3D11DeviceContext &device_context = DeviceContext();
 
