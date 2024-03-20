@@ -295,8 +295,4 @@ void Game::OnWindowResize([[maybe_unused]] WindowResizeData data) {
     OnTargetResize();
 }
 
-void Game::ViewportManagerPostInit() {
-    viewport_manager_->OnTargetResize();
-}
-
 }

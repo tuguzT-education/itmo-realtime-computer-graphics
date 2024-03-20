@@ -89,7 +89,6 @@ class Game {
 
     void DrawInternal();
     void OnWindowResize(WindowResizeData data);
-    void ViewportManagerPostInit();
 
     borov_engine::Window &window_;
     borov_engine::Input &input_;

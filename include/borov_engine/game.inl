@@ -14,7 +14,7 @@ T &Game::CameraManager(Args &&...args) {
 template<std::derived_from<borov_engine::ViewportManager> T, typename ...Args>
 T &Game::ViewportManager(Args &&...args) {
     viewport_manager_ = std::make_unique<T>(*this, std::forward<Args>(args)...);
-    ViewportManagerPostInit();
+    viewport_manager_->OnTargetResize();
     return dynamic_cast<T &>(*viewport_manager_);
 }
 
