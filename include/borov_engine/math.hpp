@@ -3,6 +3,7 @@
 #ifndef BOROV_ENGINE_MATH_HPP_INCLUDED
 #define BOROV_ENGINE_MATH_HPP_INCLUDED
 
+#include <d3d11.h>
 #include <SimpleMath.h>
 #include <DirectXColors.h>
 

@@ -1,5 +1,7 @@
 #include "camera_manager.hpp"
 
+#include <borov_engine/game.hpp>
+
 CameraManager::CameraManager(borov_engine::Game &game) : borov_engine::CameraManager(game), wheel_delta_{} {
     camera_.ProjectionType() = borov_engine::CameraProjectionType::Perspective;
 

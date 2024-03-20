@@ -3,6 +3,8 @@
 #ifndef BOROV_ENGINE_VIEWPORT_MANAGER_HPP_INCLUDED
 #define BOROV_ENGINE_VIEWPORT_MANAGER_HPP_INCLUDED
 
+#include <span>
+
 #include "component.hpp"
 #include "viewport.hpp"
 

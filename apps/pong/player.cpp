@@ -1,5 +1,7 @@
 #include "player.hpp"
 
+#include <borov_engine/game.hpp>
+
 Player::Player(borov_engine::Game &game, ::Direction direction, ControlKeys controls)
     : BoxComponent(game, 0.05f, 0.3f, 0.05f, {1.0f, 1.0f, 1.0f}, {.position = PositionFrom(direction)}),
       direction_{direction},

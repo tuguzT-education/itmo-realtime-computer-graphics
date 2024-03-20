@@ -1,5 +1,7 @@
 #include "borov_engine/viewport_manager.hpp"
 
+#include "borov_engine/game.hpp"
+
 namespace borov_engine {
 
 ViewportManager::ViewportManager(borov_engine::Game &game) : Component(game) {}

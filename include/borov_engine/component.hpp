@@ -3,9 +3,15 @@
 #ifndef BOROV_ENGINE_CONTEXT_HPP_INCLUDED
 #define BOROV_ENGINE_CONTEXT_HPP_INCLUDED
 
-#include "game.hpp"
+#include <d3d11.h>
+
+#include <functional>
+
+#include "camera.hpp"
 
 namespace borov_engine {
+
+class Game;
 
 class Component {
   public:

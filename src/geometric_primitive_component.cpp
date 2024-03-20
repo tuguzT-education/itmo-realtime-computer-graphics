@@ -1,5 +1,7 @@
 #include "borov_engine/geometric_primitive_component.hpp"
 
+#include "borov_engine/camera.hpp"
+
 namespace borov_engine {
 
 namespace detail {

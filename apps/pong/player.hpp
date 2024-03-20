@@ -4,6 +4,7 @@
 #define PONG_PLAYER_HPP_INCLUDED
 
 #include <borov_engine/box_component.hpp>
+#include <borov_engine/input_key.hpp>
 
 #include "direction.hpp"
 

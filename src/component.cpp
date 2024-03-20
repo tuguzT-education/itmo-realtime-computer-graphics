@@ -1,5 +1,7 @@
 #include "borov_engine/component.hpp"
 
+#include "borov_engine/game.hpp"
+
 namespace borov_engine {
 
 Component::Component(borov_engine::Game &game) : game_{game} {}

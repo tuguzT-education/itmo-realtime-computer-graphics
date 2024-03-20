@@ -3,7 +3,6 @@
 #ifndef BOROV_ENGINE_CAMERA_MANAGER_HPP_INCLUDED
 #define BOROV_ENGINE_CAMERA_MANAGER_HPP_INCLUDED
 
-#include "camera.hpp"
 #include "component.hpp"
 
 namespace borov_engine {

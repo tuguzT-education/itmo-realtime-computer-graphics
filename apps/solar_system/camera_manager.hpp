@@ -4,6 +4,7 @@
 #define SOLAR_SYSTEM_CAMERA_MANAGER_HPP_INCLUDED
 
 #include <borov_engine/camera_manager.hpp>
+#include <borov_engine/input.hpp>
 
 class CameraManager : public borov_engine::CameraManager {
   public:

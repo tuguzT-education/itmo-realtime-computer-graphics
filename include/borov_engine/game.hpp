@@ -3,8 +3,6 @@
 #ifndef BOROV_ENGINE_GAME_HPP_INCLUDED
 #define BOROV_ENGINE_GAME_HPP_INCLUDED
 
-#include <d3d11.h>
-
 #include <vector>
 #include <memory>
 #include <ranges>
@@ -14,13 +12,10 @@
 #include "window.hpp"
 #include "input.hpp"
 #include "timer.hpp"
-#include "viewport.hpp"
+#include "camera_manager.hpp"
+#include "viewport_manager.hpp"
 
 namespace borov_engine {
-
-class Component;
-class CameraManager;
-class ViewportManager;
 
 template<typename View, typename T>
 concept RefView = std::ranges::view<View>
@@ -31,12 +26,6 @@ concept ComponentView = RefView<T, Component>;
 
 template<typename T>
 concept ConstComponentView = RefView<T, const Component>;
-
-template<typename T>
-concept ViewportView = RefView<T, Viewport>;
-
-template<typename T>
-concept ConstViewportView = RefView<T, const Viewport>;
 
 class Game {
   public:
