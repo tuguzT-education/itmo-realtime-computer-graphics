@@ -1,20 +1,18 @@
 #include "ball.hpp"
 
-#include <random>
 #include <borov_engine/game.hpp>
+#include <random>
 
 #include "player.hpp"
 
-Ball::Ball(borov_engine::Game &game)
-    : BoxComponent(game, 0.05f, 0.05f, 0.05f),
-      velocity_{RandomVelocity()} {}
+Ball::Ball(borov_engine::Game &game) : BoxComponent(game, 0.05f, 0.05f, 0.05f), velocity_{RandomVelocity()} {}
 
 void Ball::Reset() {
     Transform().position = borov_engine::math::Vector3::Zero;
     velocity_ = RandomVelocity();
 }
 
-void Ball::Update(float delta_time) {
+void Ball::Update(const float delta_time) {
     borov_engine::math::Vector3 normal;
     velocity_.Normalize(normal);
     velocity_ += normal * (0.05f * delta_time);
@@ -28,14 +26,13 @@ void Ball::Update(float delta_time) {
     }
 
     for (const Component &component : Game().Components()) {
-        auto player = dynamic_cast<const Player *>(&component);
+        const auto player = dynamic_cast<const Player *>(&component);
         if (player == nullptr) {
             continue;
         }
 
         Box box = Collision();
-        Box player_box = player->Collision();
-        if (box.Intersects(player_box)) {
+        if (Box player_box = player->Collision(); box.Intersects(player_box)) {
             velocity_.x = -velocity_.x;
         }
     }

@@ -12,16 +12,16 @@ namespace borov_engine::detail {
 void CheckResult(HRESULT result, const char *message = nullptr);
 void CheckResult(HRESULT result, const std::string &message);
 
-template<typename F>
+template <typename F>
 concept StringFactory = requires(F &&factory) {
     { factory() } -> std::convertible_to<std::string>;
 };
 
-template<StringFactory F>
+template <StringFactory F>
 void CheckResult(HRESULT result, F &&factory);
 
-}
+}  // namespace borov_engine::detail
 
 #include "check_result.inl"
 
-#endif //BOROV_ENGINE_CHECK_RESULT_HPP_INCLUDED
+#endif  // BOROV_ENGINE_CHECK_RESULT_HPP_INCLUDED

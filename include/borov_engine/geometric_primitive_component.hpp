@@ -45,8 +45,7 @@ struct BoxGeometricPrimitiveArguments {
     bool invert_normals = false;
 };
 
-HeapGeometricPrimitive CreateBox(ID3D11DeviceContext *device_context,
-                                 const BoxGeometricPrimitiveArguments &arguments);
+HeapGeometricPrimitive CreateBox(ID3D11DeviceContext *device_context, const BoxGeometricPrimitiveArguments &arguments);
 
 struct SphereGeometricPrimitiveArguments {
     float diameter = 1.0;
@@ -146,50 +145,40 @@ struct CustomGeometricPrimitiveArguments {
 HeapGeometricPrimitive CreateCustom(ID3D11DeviceContext *device_context,
                                     const CustomGeometricPrimitiveArguments &arguments);
 
-using GeometricPrimitiveArguments = std::variant<CubeGeometricPrimitiveArguments,
-                                                 BoxGeometricPrimitiveArguments,
-                                                 SphereGeometricPrimitiveArguments,
-                                                 GeoSphereGeometricPrimitiveArguments,
-                                                 CylinderGeometricPrimitiveArguments,
-                                                 ConeGeometricPrimitiveArguments,
-                                                 TorusGeometricPrimitiveArguments,
-                                                 TetrahedronGeometricPrimitiveArguments,
-                                                 OctahedronGeometricPrimitiveArguments,
-                                                 DodecahedronGeometricPrimitiveArguments,
-                                                 IcosahedronGeometricPrimitiveArguments,
-                                                 TeapotGeometricPrimitiveArguments,
-                                                 CustomGeometricPrimitiveArguments>;
+using GeometricPrimitiveArguments =
+    std::variant<CubeGeometricPrimitiveArguments, BoxGeometricPrimitiveArguments, SphereGeometricPrimitiveArguments,
+                 GeoSphereGeometricPrimitiveArguments, CylinderGeometricPrimitiveArguments,
+                 ConeGeometricPrimitiveArguments, TorusGeometricPrimitiveArguments,
+                 TetrahedronGeometricPrimitiveArguments, OctahedronGeometricPrimitiveArguments,
+                 DodecahedronGeometricPrimitiveArguments, IcosahedronGeometricPrimitiveArguments,
+                 TeapotGeometricPrimitiveArguments, CustomGeometricPrimitiveArguments>;
 
 HeapGeometricPrimitive CreatePrimitive(ID3D11DeviceContext *device_context,
-                                       const GeometricPrimitiveArguments &arguments);
+                                       const GeometricPrimitiveArguments &primitive_arguments);
 
-GeometricPrimitiveType PrimitiveType(const GeometricPrimitiveArguments &primitive_arguments);
+GeometricPrimitiveType PrimitiveType(const GeometricPrimitiveArguments &arguments);
 GeometricPrimitiveArguments PrimitiveArguments(GeometricPrimitiveType primitive_type);
 
 class GeometricPrimitiveComponent : public Component {
   public:
-    explicit GeometricPrimitiveComponent(borov_engine::Game &game,
-                                         const GeometricPrimitiveArguments &primitive_arguments,
-                                         borov_engine::Transform transform = {},
-                                         math::Color color = math::colors::linear::White.v,
-                                         bool wireframe = false);
+    explicit GeometricPrimitiveComponent(class Game &game, const GeometricPrimitiveArguments &arguments,
+                                         const Transform &transform = {},
+                                         math::Color color = math::colors::linear::White.v, bool wireframe = false);
 
-    explicit GeometricPrimitiveComponent(borov_engine::Game &game,
-                                         GeometricPrimitiveType primitive_type,
-                                         borov_engine::Transform transform = {},
-                                         math::Color color = math::colors::linear::White.v,
-                                         bool wireframe = false);
+    explicit GeometricPrimitiveComponent(class Game &game, GeometricPrimitiveType primitive_type,
+                                         const Transform &transform = {},
+                                         math::Color color = math::colors::linear::White.v, bool wireframe = false);
 
     [[nodiscard]] const GeometricPrimitive *Primitive() const;
     [[nodiscard]] GeometricPrimitive *Primitive();
-    GeometricPrimitive &Primitive(const GeometricPrimitiveArguments &primitive_arguments);
+    GeometricPrimitive &Primitive(const GeometricPrimitiveArguments &arguments);
     GeometricPrimitive &Primitive(GeometricPrimitiveType primitive_type);
 
     [[nodiscard]] GeometricPrimitiveType PrimitiveType() const;
     [[nodiscard]] const GeometricPrimitiveArguments &PrimitiveArguments() const;
 
-    [[nodiscard]] const borov_engine::Transform &Transform() const;
-    [[nodiscard]] borov_engine::Transform &Transform();
+    [[nodiscard]] const Transform &Transform() const;
+    [[nodiscard]] class Transform &Transform();
 
     [[nodiscard]] const math::Color &Color() const;
     [[nodiscard]] math::Color &Color();
@@ -200,13 +189,13 @@ class GeometricPrimitiveComponent : public Component {
     void Draw(const Camera *camera) override;
 
   private:
-    borov_engine::Transform transform_;
+    class Transform transform_;
     math::Color color_;
     bool wireframe_;
     HeapGeometricPrimitive primitive_;
     GeometricPrimitiveArguments primitive_arguments_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_GEOMETRIC_PRIMITIVE_COMPONENT_HPP_INCLUDED
+#endif  // BOROV_ENGINE_GEOMETRIC_PRIMITIVE_COMPONENT_HPP_INCLUDED

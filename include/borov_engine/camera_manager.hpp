@@ -9,12 +9,12 @@ namespace borov_engine {
 
 class CameraManager : public Component {
   public:
-    explicit CameraManager(borov_engine::Game &game);
+    explicit CameraManager(class Game &game);
 
     [[nodiscard]] virtual const Camera *MainCamera() const;
     [[nodiscard]] virtual Camera *MainCamera();
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_CAMERA_MANAGER_HPP_INCLUDED
+#endif  // BOROV_ENGINE_CAMERA_MANAGER_HPP_INCLUDED

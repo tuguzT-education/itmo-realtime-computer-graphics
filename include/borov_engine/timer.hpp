@@ -45,6 +45,6 @@ class Timer {
     float frames_per_second_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_TIMER_HPP_INCLUDED
+#endif  // BOROV_ENGINE_TIMER_HPP_INCLUDED

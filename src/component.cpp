@@ -38,4 +38,4 @@ const ID3D11Device &Component::Device() const {
     return *Game().device_.Get();
 }
 
-}
+}  // namespace borov_engine

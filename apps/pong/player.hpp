@@ -8,7 +8,7 @@
 
 #include "direction.hpp"
 
-class Player : public borov_engine::BoxComponent {
+class Player final : public borov_engine::BoxComponent {
   public:
     struct ControlKeys {
         borov_engine::InputKey up;
@@ -29,4 +29,4 @@ class Player : public borov_engine::BoxComponent {
     static borov_engine::math::Vector3 PositionFrom(::Direction direction);
 };
 
-#endif //PONG_PLAYER_HPP_INCLUDED
+#endif  // PONG_PLAYER_HPP_INCLUDED

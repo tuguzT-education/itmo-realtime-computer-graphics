@@ -6,7 +6,7 @@
 #include <borov_engine/game.hpp>
 #include <borov_engine/geometric_primitive_component.hpp>
 
-class Game : public borov_engine::Game {
+class Game final : public borov_engine::Game {
   public:
     explicit Game(borov_engine::Window &window, borov_engine::Input &input);
 
@@ -27,4 +27,4 @@ class Game : public borov_engine::Game {
     borov_engine::GeometricPrimitiveComponent &moon_;
 };
 
-#endif //SOLAR_SYSTEM_GAME_HPP_INCLUDED
+#endif  // SOLAR_SYSTEM_GAME_HPP_INCLUDED

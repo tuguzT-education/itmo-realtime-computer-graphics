@@ -3,12 +3,9 @@
 #include <iostream>
 
 Game::Game(borov_engine::Window &window, borov_engine::Input &input)
-    : borov_engine::Game(window, input),
-      ball_{AddComponent<Ball>()},
-      left_score_{},
-      right_score_{} {}
+    : borov_engine::Game(window, input), ball_{AddComponent<Ball>()}, left_score_{}, right_score_{} {}
 
-void Game::Update(float delta_time) {
+void Game::Update(const float delta_time) {
     borov_engine::Game::Update(delta_time);
 
     const auto &position = ball_.Transform().position;
@@ -23,7 +20,5 @@ void Game::Update(float delta_time) {
     }
 
     ball_.Reset();
-    std::cout << "\n\tLEFT:  " << left_score_
-              << "\n\tRIGHT: " << right_score_
-              << "\n\n";
+    std::cout << "\n\tLEFT:  " << left_score_ << "\n\tRIGHT: " << right_score_ << "\n\n";
 }

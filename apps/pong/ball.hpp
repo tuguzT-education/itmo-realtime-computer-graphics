@@ -5,7 +5,7 @@
 
 #include <borov_engine/box_component.hpp>
 
-class Ball : public borov_engine::BoxComponent {
+class Ball final : public borov_engine::BoxComponent {
   public:
     explicit Ball(borov_engine::Game &game);
 
@@ -19,4 +19,4 @@ class Ball : public borov_engine::BoxComponent {
     borov_engine::math::Vector3 velocity_;
 };
 
-#endif //PONG_BALL_HPP_INCLUDED
+#endif  // PONG_BALL_HPP_INCLUDED

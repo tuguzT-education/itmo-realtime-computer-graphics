@@ -15,7 +15,7 @@ class Game;
 
 class Component {
   public:
-    explicit Component(borov_engine::Game &game);
+    explicit Component(Game &game);
     virtual ~Component();
 
     virtual void Update(float delta_time);
@@ -23,8 +23,8 @@ class Component {
     virtual void OnTargetResize();
 
   protected:
-    [[nodiscard]] borov_engine::Game &Game();
-    [[nodiscard]] const borov_engine::Game &Game() const;
+    [[nodiscard]] const Game &Game() const;
+    [[nodiscard]] class Game &Game();
 
     [[nodiscard]] ID3D11DeviceContext &DeviceContext();
     [[nodiscard]] const ID3D11DeviceContext &DeviceContext() const;
@@ -33,9 +33,9 @@ class Component {
     [[nodiscard]] const ID3D11Device &Device() const;
 
   private:
-    std::reference_wrapper<borov_engine::Game> game_;
+    std::reference_wrapper<class Game> game_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_CONTEXT_HPP_INCLUDED
+#endif  // BOROV_ENGINE_CONTEXT_HPP_INCLUDED

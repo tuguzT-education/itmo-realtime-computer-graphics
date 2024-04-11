@@ -14,15 +14,15 @@ class DelegateHandle {
     explicit DelegateHandle() noexcept;
     constexpr explicit DelegateHandle(std::nullptr_t) noexcept;
 
-    constexpr ~DelegateHandle() noexcept = default;
+    constexpr ~DelegateHandle() noexcept;
 
-    constexpr DelegateHandle(const DelegateHandle &other) noexcept = default;
-    constexpr DelegateHandle &operator=(const DelegateHandle &other) noexcept = default;
+    constexpr DelegateHandle(const DelegateHandle &other) noexcept;
+    constexpr DelegateHandle &operator=(const DelegateHandle &other) noexcept;
 
     constexpr DelegateHandle(DelegateHandle &&other) noexcept;
     constexpr DelegateHandle &operator=(DelegateHandle &&other) noexcept;
 
-    constexpr auto operator<=>(const DelegateHandle &other) const noexcept = default;
+    constexpr auto operator<=>(const DelegateHandle &other) const noexcept;
     explicit constexpr operator bool() const noexcept;
 
     [[nodiscard]] constexpr bool IsValid() const noexcept;
@@ -36,8 +36,8 @@ class DelegateHandle {
     ID id_;
 };
 
-}
+}  // namespace borov_engine::delegate
 
 #include "delegate_handle.inl"
 
-#endif //BOROV_ENGINE_DELEGATE_DELEGATE_HANDLE_HPP_INCLUDED
+#endif  // BOROV_ENGINE_DELEGATE_DELEGATE_HANDLE_HPP_INCLUDED

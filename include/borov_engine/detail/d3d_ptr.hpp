@@ -7,9 +7,9 @@
 
 namespace borov_engine::detail {
 
-template<typename T>
+template <typename T>
 using D3DPtr = Microsoft::WRL::ComPtr<T>;
 
-}
+}  // namespace borov_engine::detail
 
-#endif //BOROV_ENGINE_D3D_PTR_HPP_INCLUDED
+#endif  // BOROV_ENGINE_D3D_PTR_HPP_INCLUDED

@@ -55,7 +55,7 @@ float Camera::Width() const {
     return width_;
 }
 
-bool Camera::Width(float width) {
+bool Camera::Width(const float width) {
     if (width < 0.0f) {
         return false;
     }
@@ -67,7 +67,7 @@ float Camera::Height() const {
     return height_;
 }
 
-bool Camera::Height(float height) {
+bool Camera::Height(const float height) {
     if (height < 0.0f) {
         return false;
     }
@@ -79,7 +79,7 @@ float Camera::NearPlane() const {
     return near_plane_;
 }
 
-bool Camera::NearPlane(float near_plane) {
+bool Camera::NearPlane(const float near_plane) {
     if (near_plane <= 0.0f || near_plane == far_plane_) {
         return false;
     }
@@ -91,7 +91,7 @@ float Camera::FarPlane() const {
     return far_plane_;
 }
 
-bool Camera::FarPlane(float far_plane) {
+bool Camera::FarPlane(const float far_plane) {
     if (far_plane <= 0.0f || near_plane_ == far_plane) {
         return false;
     }
@@ -104,7 +104,7 @@ float Camera::AspectRatio() const {
 }
 
 float Camera::InverseAspectRatio() const {
-    float aspect_ratio = AspectRatio();
+    const float aspect_ratio = AspectRatio();
     return (aspect_ratio != 0.0f) ? (1.0f / aspect_ratio) : 0.0f;
 }
 
@@ -112,7 +112,7 @@ float Camera::HorizontalFOV() const {
     return horizontal_fov_;
 }
 
-bool Camera::HorizontalFOV(float horizontal_fov) {
+bool Camera::HorizontalFOV(const float horizontal_fov) {
     if (horizontal_fov <= 0.0 || horizontal_fov >= std::numbers::pi_v<float>) {
         return false;
     }
@@ -124,7 +124,7 @@ float Camera::VerticalFOV() const {
     return 2.0f * std::atan(std::tan(horizontal_fov_ / 2.0f) * InverseAspectRatio());
 }
 
-bool Camera::VerticalFOV(float vertical_fov) {
+bool Camera::VerticalFOV(const float vertical_fov) {
     if (vertical_fov <= 0.0 || vertical_fov >= std::numbers::pi_v<float>) {
         return false;
     }
@@ -136,7 +136,7 @@ float Camera::OrthographicUnits() const {
     return orthographic_units_;
 }
 
-bool Camera::OrthographicUnits(float orthographic_units) {
+bool Camera::OrthographicUnits(const float orthographic_units) {
     if (orthographic_units <= 0.0) {
         return false;
     }
@@ -145,9 +145,9 @@ bool Camera::OrthographicUnits(float orthographic_units) {
 }
 
 math::Matrix4x4 Camera::View() const {
-    math::Vector3 eye = position_;
-    math::Vector3 target = position_ + Forward();
-    math::Vector3 up = Up();
+    const math::Vector3 eye = position_;
+    const math::Vector3 target = position_ + Forward();
+    const math::Vector3 up = Up();
     return math::Matrix4x4::CreateLookAt(eye, target, up);
 }
 
@@ -166,17 +166,12 @@ math::Matrix4x4 Camera::Projection() const {
 }
 
 math::Matrix4x4 Camera::Perspective() const {
-    return math::Matrix4x4::CreatePerspectiveFieldOfView(horizontal_fov_,
-                                                         AspectRatio(),
-                                                         near_plane_,
-                                                         far_plane_);
+    return math::Matrix4x4::CreatePerspectiveFieldOfView(horizontal_fov_, AspectRatio(), near_plane_, far_plane_);
 }
 
 math::Matrix4x4 Camera::Orthographic() const {
-    return math::Matrix4x4::CreateOrthographic(orthographic_units_,
-                                               orthographic_units_ * InverseAspectRatio(),
-                                               near_plane_,
-                                               far_plane_);
+    return math::Matrix4x4::CreateOrthographic(orthographic_units_, orthographic_units_ * InverseAspectRatio(),
+                                               near_plane_, far_plane_);
 }
 
-}
+}  // namespace borov_engine

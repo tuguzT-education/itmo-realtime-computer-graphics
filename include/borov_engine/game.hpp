@@ -3,28 +3,25 @@
 #ifndef BOROV_ENGINE_GAME_HPP_INCLUDED
 #define BOROV_ENGINE_GAME_HPP_INCLUDED
 
-#include <vector>
-#include <memory>
-#include <ranges>
 #include <concepts>
+#include <memory>
+#include <vector>
 
+#include "camera_manager.hpp"
 #include "detail/d3d_ptr.hpp"
-#include "window.hpp"
 #include "input.hpp"
 #include "timer.hpp"
-#include "camera_manager.hpp"
 #include "viewport_manager.hpp"
 
 namespace borov_engine {
 
-template<typename View, typename T>
-concept RefView = std::ranges::view<View>
-    && std::same_as<std::ranges::range_value_t<View>, std::reference_wrapper<T>>;
+template <typename View, typename T>
+concept RefView = std::ranges::view<View> && std::same_as<std::ranges::range_value_t<View>, std::reference_wrapper<T>>;
 
-template<typename T>
+template <typename T>
 concept ComponentView = RefView<T, Component>;
 
-template<typename T>
+template <typename T>
 concept ConstComponentView = RefView<T, const Component>;
 
 class Game {
@@ -38,17 +35,17 @@ class Game {
     [[nodiscard]] const math::Color &ClearColor() const;
     [[nodiscard]] math::Color &ClearColor();
 
-    [[nodiscard]] const borov_engine::CameraManager *CameraManager() const;
-    [[nodiscard]] borov_engine::CameraManager *CameraManager();
+    [[nodiscard]] const CameraManager *CameraManager() const;
+    [[nodiscard]] class CameraManager *CameraManager();
 
-    template<std::derived_from<borov_engine::CameraManager> T, typename ...Args>
-    T &CameraManager(Args &&... args);
+    template <std::derived_from<class CameraManager> T, typename... Args>
+    T &CameraManager(Args &&...args);
 
-    [[nodiscard]] const borov_engine::ViewportManager &ViewportManager() const;
-    [[nodiscard]] borov_engine::ViewportManager &ViewportManager();
+    [[nodiscard]] const ViewportManager &ViewportManager() const;
+    [[nodiscard]] class ViewportManager &ViewportManager();
 
-    template<std::derived_from<borov_engine::ViewportManager> T, typename ...Args>
-    T &ViewportManager(Args &&... args);
+    template <std::derived_from<class ViewportManager> T, typename... Args>
+    T &ViewportManager(Args &&...args);
 
     [[nodiscard]] const Camera *MainCamera() const;
     [[nodiscard]] Camera *MainCamera();
@@ -56,18 +53,18 @@ class Game {
     [[nodiscard]] std::uint32_t TargetWidth() const;
     [[nodiscard]] std::uint32_t TargetHeight() const;
 
-    [[nodiscard]] const borov_engine::Timer &Timer() const;
+    [[nodiscard]] const Timer &Timer() const;
 
-    [[nodiscard]] const borov_engine::Window *Window() const;
-    [[nodiscard]] borov_engine::Window *Window();
+    [[nodiscard]] const Window *Window() const;
+    [[nodiscard]] class Window *Window();
 
-    [[nodiscard]] const borov_engine::Input *Input() const;
-    [[nodiscard]] borov_engine::Input *Input();
+    [[nodiscard]] const Input *Input() const;
+    [[nodiscard]] class Input *Input();
 
     [[nodiscard]] bool IsRunning() const;
 
-    template<std::derived_from<borov_engine::Component> T, typename ...Args>
-    T &AddComponent(Args &&... args);
+    template <std::derived_from<Component> T, typename... Args>
+    T &AddComponent(Args &&...args);
 
     [[nodiscard]] ConstComponentView auto Components() const;
     [[nodiscard]] ComponentView auto Components();
@@ -84,19 +81,19 @@ class Game {
     friend class Component;
 
     void InitializeDevice();
-    void InitializeSwapChain(const borov_engine::Window &window);
+    void InitializeSwapChain(const class Window &window);
     void InitializeRenderTargetView();
 
     void DrawInternal();
     void OnWindowResize(WindowResizeData data);
 
-    borov_engine::Window &window_;
-    borov_engine::Input &input_;
-    std::unique_ptr<borov_engine::ViewportManager> viewport_manager_;
-    std::unique_ptr<borov_engine::CameraManager> camera_manager_;
-    std::vector<std::unique_ptr<borov_engine::Component>> components_;
+    class Window &window_;
+    class Input &input_;
+    std::unique_ptr<class ViewportManager> viewport_manager_;
+    std::unique_ptr<class CameraManager> camera_manager_;
+    std::vector<std::unique_ptr<Component>> components_;
 
-    borov_engine::Timer timer_;
+    class Timer timer_;
     Timer::Duration time_per_update_;
     math::Color clear_color_;
     std::uint32_t target_width_;
@@ -110,8 +107,8 @@ class Game {
     detail::D3DPtr<ID3D11Device> device_;
 };
 
-}
+}  // namespace borov_engine
 
 #include "game.inl"
 
-#endif //BOROV_ENGINE_GAME_HPP_INCLUDED
+#endif  // BOROV_ENGINE_GAME_HPP_INCLUDED

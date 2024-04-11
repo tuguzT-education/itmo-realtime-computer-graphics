@@ -34,4 +34,4 @@ void ViewportManager::OnTargetResize() {
 
 void ViewportManager::SplitViewports(std::vector<Viewport> &into) {}
 
-}
+}  // namespace borov_engine

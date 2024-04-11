@@ -19,4 +19,4 @@ class Game final : public borov_engine::Game {
     std::string initial_title_;
 };
 
-#endif //EXAMPLE_GAME_HPP_INCLUDED
+#endif  // EXAMPLE_GAME_HPP_INCLUDED

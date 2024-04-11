@@ -6,13 +6,15 @@ namespace borov_engine {
 
 namespace detail {
 
-std::array<BoxComponent::Vertex, 8> BoxVertices(float length, float height, float width, math::Color color) {
+std::array<BoxComponent::Vertex, 8> BoxVertices(const float length, const float height, const float width,
+                                                const math::Color color) {
     float right = length / 2;
     float left = -length / 2;
     float top = height / 2;
     float bottom = -height / 2;
     float forward = width / 2;
     float backward = -width / 2;
+    // clang-format off
     return {
         BoxComponent::Vertex{{left, top, backward}, color},
         BoxComponent::Vertex{{right, top, backward}, color},
@@ -23,9 +25,11 @@ std::array<BoxComponent::Vertex, 8> BoxVertices(float length, float height, floa
         BoxComponent::Vertex{{left, bottom, forward}, color},
         BoxComponent::Vertex{{right, bottom, forward}, color},
     };
+    // clang-format on
 }
 
 std::array<BoxComponent::Index, 36> BoxIndices() {
+    // clang-format off
     return {
         0, 1, 2, 2, 1, 3,
         4, 0, 6, 6, 0, 2,
@@ -34,23 +38,21 @@ std::array<BoxComponent::Index, 36> BoxIndices() {
         4, 5, 0, 0, 5, 1,
         3, 7, 2, 2, 7, 6,
     };
+    // clang-format on
 }
 
 // VERY dangerous if not used properly
-template<class T>
-inline T &Unmove(T &&t) {
+template <class T>
+T &Unmove(T &&t) {
     return static_cast<T &>(t);
 }
 
-}
+}  // namespace detail
 
-BoxComponent::BoxComponent(borov_engine::Game &game,
-                           float length, float height, float width, math::Color color,
-                           borov_engine::Transform transform)
-    : TriangleComponent(game,
-                        detail::Unmove(detail::BoxVertices(length, height, width, color)),
-                        detail::Unmove(detail::BoxIndices()),
-                        transform),
+BoxComponent::BoxComponent(class Game &game, const float length, const float height, const float width,
+                           const math::Color color, const class Transform &transform)
+    : TriangleComponent(game, detail::Unmove(detail::BoxVertices(length, height, width, color)),
+                        detail::Unmove(detail::BoxIndices()), transform),
       length_{length},
       height_{height},
       width_{width} {}
@@ -68,10 +70,10 @@ float BoxComponent::Width() const {
 }
 
 BoxComponent::Box BoxComponent::Collision() const {
-    math::Vector3 center = Transform().position;
-    math::Vector3 extents = math::Vector3{Length() / 2, Height() / 2, Width() / 2} * Transform().scale;
-    math::Quaternion orientation = Transform().rotation;
+    const math::Vector3 center = Transform().position;
+    const math::Vector3 extents = math::Vector3{Length() / 2, Height() / 2, Width() / 2} * Transform().scale;
+    const math::Quaternion orientation = Transform().rotation;
     return Box{center, extents, orientation};
 }
 
-}
+}  // namespace borov_engine

@@ -5,9 +5,9 @@
 
 #include <unordered_set>
 
-#include "window.hpp"
-#include "input_key.hpp"
 #include "delegate/multicast_delegate.hpp"
+#include "input_key.hpp"
+#include "window.hpp"
 
 namespace borov_engine {
 
@@ -28,13 +28,13 @@ class Input {
 
     [[nodiscard]] bool IsKeyDown(InputKey key) const;
 
-    [[nodiscard]] const borov_engine::OnMouseMove &OnMouseMove() const;
+    [[nodiscard]] const OnMouseMove &OnMouseMove() const;
     [[nodiscard]] borov_engine::OnMouseMove &OnMouseMove();
 
-    [[nodiscard]] const borov_engine::OnInputKeyUp &OnInputKeyUp() const;
+    [[nodiscard]] const OnInputKeyUp &OnInputKeyUp() const;
     [[nodiscard]] borov_engine::OnInputKeyUp &OnInputKeyUp();
 
-    [[nodiscard]] const borov_engine::OnInputKeyDown &OnInputKeyDown() const;
+    [[nodiscard]] const OnInputKeyDown &OnInputKeyDown() const;
     [[nodiscard]] borov_engine::OnInputKeyDown &OnInputKeyDown();
 
   private:
@@ -53,6 +53,6 @@ class Input {
     std::unordered_set<InputKey> keys_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_INPUT_DEVICE_HPP_INCLUDED
+#endif  // BOROV_ENGINE_INPUT_DEVICE_HPP_INCLUDED

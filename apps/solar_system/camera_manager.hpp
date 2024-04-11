@@ -6,7 +6,7 @@
 #include <borov_engine/camera_manager.hpp>
 #include <borov_engine/input.hpp>
 
-class CameraManager : public borov_engine::CameraManager {
+class CameraManager final : public borov_engine::CameraManager {
   public:
     explicit CameraManager(borov_engine::Game &game);
     ~CameraManager() override;
@@ -25,4 +25,4 @@ class CameraManager : public borov_engine::CameraManager {
     borov_engine::Camera camera_;
 };
 
-#endif //SOLAR_SYSTEM_CAMERA_MANAGER_HPP_INCLUDED
+#endif  // SOLAR_SYSTEM_CAMERA_MANAGER_HPP_INCLUDED

@@ -13,10 +13,8 @@ class BoxComponent : public TriangleComponent {
   public:
     using Box = DirectX::BoundingOrientedBox;
 
-    explicit BoxComponent(borov_engine::Game &game,
-                          float length, float height, float width,
-                          math::Color color = {1.0f, 1.0f, 1.0f},
-                          borov_engine::Transform transform = {});
+    explicit BoxComponent(class Game &game, float length, float height, float width,
+                          math::Color color = {1.0f, 1.0f, 1.0f}, const class Transform &transform = {});
 
     [[nodiscard]] float Length() const;
     [[nodiscard]] float Height() const;
@@ -30,6 +28,6 @@ class BoxComponent : public TriangleComponent {
     float width_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_BOX_COMPONENT_HPP_INCLUDED
+#endif  // BOROV_ENGINE_BOX_COMPONENT_HPP_INCLUDED

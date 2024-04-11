@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "math.hpp"
 #include "delegate/multicast_delegate.hpp"
+#include "math.hpp"
 
 namespace borov_engine {
 
@@ -21,10 +21,8 @@ DECLARE_MULTICAST_DELEGATE(OnWindowResize, WindowResizeData);
 
 class Window {
   public:
-    explicit Window(std::string_view name,
-                    std::int32_t width, std::int32_t height,
-                    std::int32_t min_width = 400, std::int32_t min_height = 400,
-                    HINSTANCE instance_handle = nullptr);
+    explicit Window(std::string_view name, std::int32_t width, std::int32_t height, std::int32_t min_width = 400,
+                    std::int32_t min_height = 400, HINSTANCE instance_handle = nullptr);
     ~Window();
 
     [[nodiscard]] HWND RawHandle() const;
@@ -64,6 +62,6 @@ class Window {
     OnWindowResize on_resize_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_WINDOW_HPP_INCLUDED
+#endif  // BOROV_ENGINE_WINDOW_HPP_INCLUDED

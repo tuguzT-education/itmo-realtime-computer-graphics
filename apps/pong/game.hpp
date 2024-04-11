@@ -7,7 +7,7 @@
 
 #include "ball.hpp"
 
-class Game : public borov_engine::Game {
+class Game final : public borov_engine::Game {
   public:
     explicit Game(borov_engine::Window &window, borov_engine::Input &input);
 
@@ -19,4 +19,4 @@ class Game : public borov_engine::Game {
     std::size_t right_score_;
 };
 
-#endif //PONG_GAME_HPP_INCLUDED
+#endif  // PONG_GAME_HPP_INCLUDED

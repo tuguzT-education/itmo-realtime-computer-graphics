@@ -12,4 +12,4 @@ Camera *CameraManager::MainCamera() {
     return nullptr;
 }
 
-}
+}  // namespace borov_engine

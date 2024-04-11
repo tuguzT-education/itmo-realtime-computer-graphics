@@ -20,18 +20,18 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     }
 }
 
-void Game::Update(float delta_time) {
+void Game::Update(const float delta_time) {
     namespace math = borov_engine::math;
 
     borov_engine::Game::Update(delta_time);
 
-    auto rotate_mercury_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 2.0f * delta_time);
+    const auto rotate_mercury_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 2.0f * delta_time);
     mercury_.Transform().RotateAround(sun_.Transform().position, rotate_mercury_by);
 
-    auto rotate_venus_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 1.17f * delta_time);
+    const auto rotate_venus_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 1.17f * delta_time);
     venus_.Transform().RotateAround(sun_.Transform().position, rotate_venus_by);
 
-    auto rotate_moon_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 0.5f * delta_time);
+    const auto rotate_moon_by = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 0.5f * delta_time);
     moon_.Transform().RotateAround(earth_.Transform().position, rotate_moon_by);
 }
 

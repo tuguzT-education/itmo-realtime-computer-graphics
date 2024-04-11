@@ -12,7 +12,7 @@ namespace borov_engine {
 
 class ViewportManager : public Component {
   public:
-    explicit ViewportManager(borov_engine::Game &game);
+    explicit ViewportManager(class Game &game);
 
     [[nodiscard]] const Viewport &TargetViewport() const;
 
@@ -29,6 +29,6 @@ class ViewportManager : public Component {
     std::vector<Viewport> split_viewports_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_VIEWPORT_MANAGER_HPP_INCLUDED
+#endif  // BOROV_ENGINE_VIEWPORT_MANAGER_HPP_INCLUDED

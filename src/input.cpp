@@ -2,9 +2,8 @@
 
 #include <hidusage.h>
 
-#include <iostream>
-#include <stdexcept>
 #include <array>
+#include <stdexcept>
 
 #include "borov_engine/detail/err_handling_api.hpp"
 #include "borov_engine/game.hpp"
@@ -16,21 +15,20 @@ Input::Input(Window &window) : window_{window} {
         RAWINPUTDEVICE{
             .usUsagePage = HID_USAGE_PAGE_GENERIC,
             .usUsage = HID_USAGE_GENERIC_MOUSE,
-            .dwFlags = 0, // adds HID mouse and also ignores legacy mouse messages
+            .dwFlags = 0,  // adds HID mouse and also ignores legacy mouse messages
             .hwndTarget = window.RawHandle(),
         },
         RAWINPUTDEVICE{
             .usUsagePage = HID_USAGE_PAGE_GENERIC,
             .usUsage = HID_USAGE_GENERIC_KEYBOARD,
-            .dwFlags = 0, // adds HID keyboard and also ignores legacy keyboard messages
+            .dwFlags = 0,  // adds HID keyboard and also ignores legacy keyboard messages
             .hwndTarget = window.RawHandle(),
         },
     };
 
-    if (!RegisterRawInputDevices(raw_input_devices.data(),
-                                 raw_input_devices.size(),
+    if (!RegisterRawInputDevices(raw_input_devices.data(), raw_input_devices.size(),
                                  sizeof(decltype(raw_input_devices)::value_type))) {
-        std::string message = detail::LastError();
+        const std::string message = detail::LastError();
         throw std::runtime_error{message};
     }
 
@@ -42,8 +40,8 @@ Input::~Input() {
     window_.input_ = nullptr;
 }
 
-bool Input::IsKeyDown(InputKey key) const {
-    return keys_.count(key) > 0;
+bool Input::IsKeyDown(const InputKey key) const {
+    return keys_.contains(key);
 }
 
 const OnMouseMove &Input::OnMouseMove() const {
@@ -71,7 +69,7 @@ OnInputKeyDown &Input::OnInputKeyDown() {
 }
 
 void Input::OnRawKeyboard(const RAWKEYBOARD &data) {
-    bool is_key_up = data.Flags & RI_KEY_BREAK;
+    const bool is_key_up = data.Flags & RI_KEY_BREAK;
 
     auto key = static_cast<InputKey>(data.VKey);
     switch (data.MakeCode) {
@@ -97,6 +95,9 @@ void Input::OnRawKeyboard(const RAWKEYBOARD &data) {
         }
         case 0xE038: {
             key = InputKey::RightAlt;
+            break;
+        }
+        default: {
             break;
         }
     }
@@ -132,7 +133,7 @@ void Input::OnRawMouse(const RAWMOUSE &data) {
     ::GetCursorPos(&point);
     ::ScreenToClient(window_.RawHandle(), &point);
 
-    MouseMoveData mouse_move_data{
+    const MouseMoveData mouse_move_data{
         .position = {static_cast<float>(point.x), static_cast<float>(point.y)},
         .offset = {static_cast<float>(data.lLastX), static_cast<float>(data.lLastY)},
         .wheel_delta = static_cast<std::int16_t>(data.usButtonData) / WHEEL_DELTA,
@@ -140,14 +141,14 @@ void Input::OnRawMouse(const RAWMOUSE &data) {
     on_mouse_move_.Broadcast(mouse_move_data);
 }
 
-void Input::AddPressedKey(InputKey key) {
+void Input::AddPressedKey(const InputKey key) {
     keys_.insert(key);
     on_input_key_down_.Broadcast(key);
 }
 
-void Input::RemovePressedKey(InputKey key) {
+void Input::RemovePressedKey(const InputKey key) {
     keys_.erase(key);
     on_input_key_up_.Broadcast(key);
 }
 
-}
+}  // namespace borov_engine

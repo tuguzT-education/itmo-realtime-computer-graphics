@@ -9,28 +9,28 @@
 
 namespace borov_engine::delegate {
 
-template<typename Lambda, typename FunctionType, typename... Payload>
+template <typename Lambda, typename FunctionType, typename... Payload>
 class LambdaDelegate;
 
-template<typename Lambda, typename R, typename... Args, typename... Payload>
+template <typename Lambda, typename R, typename... Args, typename... Payload>
 class LambdaDelegate<Lambda, R(Args...), Payload...> : public DelegateKind<R, Args...> {
   public:
     using Function = Lambda;
 
-    explicit LambdaDelegate(Lambda &&lambda, Payload &&... payload);
+    explicit LambdaDelegate(Lambda &&lambda, Payload &&...payload);
 
-    R Execute(Args &&... args) override;
+    R Execute(Args &&...args) override;
 
   private:
-    template<std::size_t... Is>
-    R Execute_Internal(Args &&... args, std::index_sequence<Is...>);
+    template <std::size_t... Is>
+    R Execute_Internal(Args &&...args, std::index_sequence<Is...>);
 
     Lambda lambda_;
     std::tuple<Payload...> payload_;
 };
 
-}
+}  // namespace borov_engine::delegate
 
 #include "lambda_delegate.inl"
 
-#endif //BOROV_ENGINE_DELEGATE_LAMBDA_DELEGATE_HPP_INCLUDED
+#endif  // BOROV_ENGINE_DELEGATE_LAMBDA_DELEGATE_HPP_INCLUDED

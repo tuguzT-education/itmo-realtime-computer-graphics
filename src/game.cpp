@@ -1,10 +1,9 @@
 #include "borov_engine/game.hpp"
 
 #include <array>
-#include <format>
 
-#include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/camera_manager.hpp"
+#include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/viewport_manager.hpp"
 
 namespace borov_engine {
@@ -127,7 +126,7 @@ void Game::Run() {
         lag += timer_.CurrentTickTimePoint() - timer_.PreviousTickTimePoint();
 
         while (lag >= time_per_update_) {
-            float delta_time = Timer::SecondsFrom(time_per_update_);
+            const float delta_time = Timer::SecondsFrom(time_per_update_);
             Update(delta_time);
             lag -= time_per_update_;
         }
@@ -144,26 +143,16 @@ void Game::Exit() {
 }
 
 void Game::InitializeDevice() {
-    std::array feature_level{D3D_FEATURE_LEVEL_11_1};
-    HRESULT result = D3D11CreateDevice(
-        nullptr,
-        D3D_DRIVER_TYPE_HARDWARE,
-        nullptr,
-        D3D11_CREATE_DEVICE_DEBUG,
-        feature_level.data(),
-        feature_level.size(),
-        D3D11_SDK_VERSION,
-        &device_,
-        nullptr,
-        &device_context_);
+    constexpr std::array feature_level{D3D_FEATURE_LEVEL_11_1};
+    const HRESULT result =
+        D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG, feature_level.data(),
+                          feature_level.size(), D3D11_SDK_VERSION, &device_, nullptr, &device_context_);
     detail::CheckResult(result, "Failed to create device");
 }
 
 void Game::InitializeSwapChain(const borov_engine::Window &window) {
-    HRESULT result;
-
     detail::D3DPtr<IDXGIDevice> dxgi_device;
-    result = device_.As(&dxgi_device);
+    HRESULT result = device_.As(&dxgi_device);
     detail::CheckResult(result, "Failed to cast device to DXGI device");
 
     detail::D3DPtr<IDXGIAdapter> dxgi_adapter;
@@ -175,19 +164,22 @@ void Game::InitializeSwapChain(const borov_engine::Window &window) {
     detail::CheckResult(result, "Failed to retrieve DXGI factory");
 
     DXGI_SWAP_CHAIN_DESC swap_chain_desc{
-        .BufferDesc = {
-            .RefreshRate = {
-                .Numerator = 60,
-                .Denominator = 1,
+        .BufferDesc =
+            {
+                .RefreshRate =
+                    {
+                        .Numerator = 60,
+                        .Denominator = 1,
+                    },
+                .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+                .ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
+                .Scaling = DXGI_MODE_SCALING_UNSPECIFIED,
             },
-            .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
-            .ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
-            .Scaling = DXGI_MODE_SCALING_UNSPECIFIED,
-        },
-        .SampleDesc = {
-            .Count = 1,
-            .Quality = 0,
-        },
+        .SampleDesc =
+            {
+                .Count = 1,
+                .Quality = 0,
+            },
         .BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT,
         .BufferCount = 2,
         .OutputWindow = window.RawHandle(),
@@ -195,10 +187,7 @@ void Game::InitializeSwapChain(const borov_engine::Window &window) {
         .SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD,
         .Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH,
     };
-    result = dxgi_factory->CreateSwapChain(
-        device_.Get(),
-        &swap_chain_desc,
-        &swap_chain_);
+    result = dxgi_factory->CreateSwapChain(device_.Get(), &swap_chain_desc, &swap_chain_);
     detail::CheckResult(result, "Failed to create swap chain");
 }
 
@@ -225,7 +214,7 @@ void Game::InitializeRenderTargetView() {
     detail::CheckResult(result, "Failed to create render target view");
 }
 
-void Game::Update(float delta_time) {
+void Game::Update(const float delta_time) {
     if (camera_manager_ != nullptr) {
         camera_manager_->Update(delta_time);
     }
@@ -260,7 +249,7 @@ void Game::Draw() {
 void Game::OnTargetResize() {
     render_target_view_.Reset();
     if (swap_chain_ != nullptr) {
-        HRESULT result = swap_chain_->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+        const HRESULT result = swap_chain_->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
         detail::CheckResult(result, "Failed to resize swap chain buffers");
     }
     InitializeRenderTargetView();
@@ -278,21 +267,22 @@ void Game::OnTargetResize() {
 void Game::DrawInternal() {
     device_context_->ClearState();
 
-    std::array render_targets{render_target_view_.Get()};
+    const std::array render_targets{render_target_view_.Get()};
     device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), nullptr);
 
     device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
 
     Draw();
 
-    std::array<ID3D11RenderTargetView *, 0> no_render_targets;
+    constexpr std::array<ID3D11RenderTargetView *, 0> no_render_targets;
     device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
 
-    swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+    const HRESULT result = swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+    detail::CheckResult(result, "Failed to present into swapchain");
 }
 
 void Game::OnWindowResize([[maybe_unused]] WindowResizeData data) {
     OnTargetResize();
 }
 
-}
+}  // namespace borov_engine

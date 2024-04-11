@@ -7,7 +7,7 @@
 
 namespace borov_engine::alloc {
 
-template<std::size_t MaxStackSize>
+template <std::size_t MaxStackSize>
 class InlineAllocator {
   public:
     constexpr InlineAllocator() noexcept;
@@ -41,8 +41,8 @@ class InlineAllocator {
     std::size_t size_;
 };
 
-}
+}  // namespace borov_engine::alloc
 
 #include "inline_allocator.inl"
 
-#endif //BOROV_ENGINE_ALLOC_INLINE_ALLOCATOR_HPP_INCLUDED
+#endif  // BOROV_ENGINE_ALLOC_INLINE_ALLOCATOR_HPP_INCLUDED

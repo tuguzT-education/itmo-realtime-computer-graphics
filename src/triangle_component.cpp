@@ -2,55 +2,39 @@
 
 #include <d3dcompiler.h>
 
-#include <format>
 #include <array>
+#include <format>
 
+#include "borov_engine/camera.hpp"
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/detail/string_api_set.hpp"
-#include "borov_engine/camera.hpp"
 
 namespace borov_engine {
 
 namespace detail {
 
-D3DPtr<ID3DBlob> CompileFromFile(const char *path,
-                                 const D3D_SHADER_MACRO *defines,
-                                 ID3DInclude *include,
-                                 const char *entrypoint,
-                                 const char *target,
-                                 UINT flags_1,
-                                 UINT flags_2) {
+D3DPtr<ID3DBlob> CompileFromFile(const char *path, const D3D_SHADER_MACRO *defines, ID3DInclude *include,
+                                 const char *entrypoint, const char *target, const UINT flags_1, const UINT flags_2) {
     D3DPtr<ID3DBlob> shader;
 
     D3DPtr<ID3DBlob> error_messages;
-    std::wstring w_path = MultiByteToWideChar(CP_UTF8, 0, path);
-    HRESULT result = D3DCompileFromFile(w_path.c_str(),
-                                        defines,
-                                        include,
-                                        entrypoint,
-                                        target,
-                                        flags_1,
-                                        flags_2,
-                                        &shader,
-                                        &error_messages);
-    detail::CheckResult(result, [&] {
-        const char *message = error_messages
-                              ? static_cast<const char *>(error_messages->GetBufferPointer())
-                              : "file is missing";
+    const std::wstring w_path = MultiByteToWideChar(CP_UTF8, 0, path);
+    const HRESULT result = D3DCompileFromFile(w_path.c_str(), defines, include, entrypoint, target, flags_1, flags_2,
+                                              &shader, &error_messages);
+    CheckResult(result, [&] {
+        const char *message =
+            error_messages ? static_cast<const char *>(error_messages->GetBufferPointer()) : "file is missing";
         return std::format("Failed to compile vertex shader file '{}':\n{}", path, message);
     });
 
     return shader;
 }
 
-}
+}  // namespace detail
 
-TriangleComponent::TriangleComponent(borov_engine::Game &game,
-                                     std::span<Vertex> vertices,
-                                     std::span<Index> indices,
-                                     borov_engine::Transform transform)
-    : Component{game},
-      transform_{transform} {
+TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<Vertex> vertices,
+                                     const std::span<Index> indices, const borov_engine::Transform &transform)
+    : Component{game}, transform_{transform} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
@@ -88,7 +72,8 @@ void TriangleComponent::Draw(const Camera *camera) {
     math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
     math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
     ConstantBuffer constant_buffer{.wvp_matrix = world * view * projection};
-    device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+    const HRESULT result = device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+    detail::CheckResult(result, "Failed to map constant buffer data");
     std::memcpy(subresource.pData, &constant_buffer, sizeof(constant_buffer));
     device_context.Unmap(constant_buffer_.Get(), 0);
 
@@ -102,32 +87,20 @@ void TriangleComponent::Draw(const Camera *camera) {
 }
 
 void TriangleComponent::InitializeVertexShader() {
-    vertex_byte_code_ = detail::CompileFromFile("resources/shaders/triangle_component.hlsl",
-                                                nullptr,
-                                                nullptr,
-                                                "VSMain",
-                                                "vs_5_0",
-                                                D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-                                                0);
+    vertex_byte_code_ = detail::CompileFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "VSMain",
+                                                "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
-    HRESULT result = Device().CreateVertexShader(vertex_byte_code_->GetBufferPointer(),
-                                                 vertex_byte_code_->GetBufferSize(),
-                                                 nullptr, &vertex_shader_);
+    const HRESULT result = Device().CreateVertexShader(vertex_byte_code_->GetBufferPointer(),
+                                                       vertex_byte_code_->GetBufferSize(), nullptr, &vertex_shader_);
     detail::CheckResult(result, "Failed to create vertex shader from byte code");
 }
 
 void TriangleComponent::InitializeIndexShader() {
-    index_byte_code_ = detail::CompileFromFile("resources/shaders/triangle_component.hlsl",
-                                               nullptr,
-                                               nullptr,
-                                               "PSMain",
-                                               "ps_5_0",
-                                               D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION,
-                                               0);
+    index_byte_code_ = detail::CompileFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "PSMain",
+                                               "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
-    HRESULT result = Device().CreatePixelShader(index_byte_code_->GetBufferPointer(),
-                                                index_byte_code_->GetBufferSize(),
-                                                nullptr, &index_shader_);
+    const HRESULT result = Device().CreatePixelShader(index_byte_code_->GetBufferPointer(),
+                                                      index_byte_code_->GetBufferSize(), nullptr, &index_shader_);
     detail::CheckResult(result, "Failed to create index shader from byte code");
 }
 
@@ -153,27 +126,24 @@ void TriangleComponent::InitializeInputLayout() {
         },
     };
 
-    HRESULT result = Device().CreateInputLayout(
-        input_elements.data(),
-        input_elements.size(),
-        vertex_byte_code_->GetBufferPointer(),
-        vertex_byte_code_->GetBufferSize(),
-        &input_layout_);
+    const HRESULT result =
+        Device().CreateInputLayout(input_elements.data(), input_elements.size(), vertex_byte_code_->GetBufferPointer(),
+                                   vertex_byte_code_->GetBufferSize(), &input_layout_);
     detail::CheckResult(result, "Failed to create input layout");
 }
 
 void TriangleComponent::InitializeRasterizerState() {
-    D3D11_RASTERIZER_DESC rasterizer_desc{
+    constexpr D3D11_RASTERIZER_DESC rasterizer_desc{
         .FillMode = D3D11_FILL_SOLID,
         .CullMode = D3D11_CULL_NONE,
     };
 
-    HRESULT result = Device().CreateRasterizerState(&rasterizer_desc, &rasterizer_state_);
+    const HRESULT result = Device().CreateRasterizerState(&rasterizer_desc, &rasterizer_state_);
     detail::CheckResult(result, "Failed to create rasterizer state");
 }
 
 void TriangleComponent::InitializeVertexBuffer(std::span<Vertex> vertices) {
-    D3D11_BUFFER_DESC buffer_desc{
+    const D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = static_cast<std::uint32_t>(vertices.size_bytes()),
         .Usage = D3D11_USAGE_DEFAULT,
         .BindFlags = D3D11_BIND_VERTEX_BUFFER,
@@ -187,12 +157,12 @@ void TriangleComponent::InitializeVertexBuffer(std::span<Vertex> vertices) {
         .SysMemSlicePitch = 0,
     };
 
-    HRESULT result = Device().CreateBuffer(&buffer_desc, &initial_data, &vertex_buffer_);
+    const HRESULT result = Device().CreateBuffer(&buffer_desc, &initial_data, &vertex_buffer_);
     detail::CheckResult(result, "Failed to create vertex buffer");
 }
 
 void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
-    D3D11_BUFFER_DESC buffer_desc{
+    const D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = static_cast<std::uint32_t>(indices.size_bytes()),
         .Usage = D3D11_USAGE_DEFAULT,
         .BindFlags = D3D11_BIND_INDEX_BUFFER,
@@ -200,18 +170,18 @@ void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
         .MiscFlags = 0,
         .StructureByteStride = 0,
     };
-    D3D11_SUBRESOURCE_DATA initial_data{
+    const D3D11_SUBRESOURCE_DATA initial_data{
         .pSysMem = indices.data(),
         .SysMemPitch = 0,
         .SysMemSlicePitch = 0,
     };
 
-    HRESULT result = Device().CreateBuffer(&buffer_desc, &initial_data, &index_buffer_);
+    const HRESULT result = Device().CreateBuffer(&buffer_desc, &initial_data, &index_buffer_);
     detail::CheckResult(result, "Failed to create index buffer");
 }
 
 void TriangleComponent::InitializeConstantBuffer(ConstantBuffer constant_buffer) {
-    D3D11_BUFFER_DESC buffer_desc{
+    constexpr D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = sizeof(constant_buffer),
         .Usage = D3D11_USAGE_DYNAMIC,
         .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
@@ -225,8 +195,8 @@ void TriangleComponent::InitializeConstantBuffer(ConstantBuffer constant_buffer)
         .SysMemSlicePitch = 0,
     };
 
-    HRESULT result = Device().CreateBuffer(&buffer_desc, &initial_data, &constant_buffer_);
+    const HRESULT result = Device().CreateBuffer(&buffer_desc, &initial_data, &constant_buffer_);
     detail::CheckResult(result, "Failed to create constant buffer");
 }
 
-}
+}  // namespace borov_engine

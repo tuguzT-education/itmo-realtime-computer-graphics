@@ -3,20 +3,20 @@
 #ifndef BOROV_ENGINE_DETAIL_CHECK_RESULT_INL_INCLUDED
 #define BOROV_ENGINE_DETAIL_CHECK_RESULT_INL_INCLUDED
 
-#include <stdexcept>
-
 #include <comdef.h>
+
+#include <stdexcept>
 
 #include "string_api_set.hpp"
 
 namespace borov_engine::detail {
 
-template<StringFactory F>
+template <StringFactory F>
 void CheckResult(const HRESULT result, F &&factory) {
     if (FAILED(result)) {
         std::string message = factory();
 
-        _com_error error{result};
+        const _com_error error{result};
         if (!message.empty()) {
             message.append("\ncause: ");
         }
@@ -26,6 +26,6 @@ void CheckResult(const HRESULT result, F &&factory) {
     }
 }
 
-}
+}  // namespace borov_engine::detail
 
-#endif //BOROV_ENGINE_DETAIL_CHECK_RESULT_INL_INCLUDED
+#endif  // BOROV_ENGINE_DETAIL_CHECK_RESULT_INL_INCLUDED

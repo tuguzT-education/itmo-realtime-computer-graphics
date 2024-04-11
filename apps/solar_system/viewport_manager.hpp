@@ -5,7 +5,7 @@
 
 #include <borov_engine/viewport_manager.hpp>
 
-class ViewportManager : public borov_engine::ViewportManager {
+class ViewportManager final : public borov_engine::ViewportManager {
   public:
     explicit ViewportManager(borov_engine::Game &game);
 
@@ -13,4 +13,4 @@ class ViewportManager : public borov_engine::ViewportManager {
     void SplitViewports(std::vector<borov_engine::Viewport> &into) override;
 };
 
-#endif //SOLAR_SYSTEM_VIEWPORT_MANAGER_HPP_INCLUDED
+#endif  // SOLAR_SYSTEM_VIEWPORT_MANAGER_HPP_INCLUDED

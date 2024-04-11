@@ -2,11 +2,9 @@
 
 namespace borov_engine::math {
 
-void RotateAround(const Vector3 &position,
-                  const Vector3 &rotation_point,
-                  const Quaternion &rotate_by,
+void RotateAround(const Vector3 &position, const Vector3 &rotation_point, const Quaternion &rotate_by,
                   Vector3 &result) {
-    result = math::Vector3::Transform(position - rotation_point, rotate_by) + rotation_point;
+    result = Vector3::Transform(position - rotation_point, rotate_by) + rotation_point;
 }
 
 Vector3 RotateAround(const Vector3 &position, const Vector3 &rotation_point, const Quaternion &rotate_by) {
@@ -15,4 +13,4 @@ Vector3 RotateAround(const Vector3 &position, const Vector3 &rotation_point, con
     return result;
 }
 
-}
+}  // namespace borov_engine::math

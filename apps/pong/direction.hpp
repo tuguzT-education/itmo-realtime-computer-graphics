@@ -8,4 +8,4 @@ enum class Direction {
     Right,
 };
 
-#endif //PONG_DIRECTION_HPP_INCLUDED
+#endif  // PONG_DIRECTION_HPP_INCLUDED

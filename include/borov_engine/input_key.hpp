@@ -180,6 +180,6 @@ enum class InputKey : std::uint16_t {
     OemClear = 254,
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_INPUT_KEYS_HPP_INCLUDED
+#endif  // BOROV_ENGINE_INPUT_KEYS_HPP_INCLUDED

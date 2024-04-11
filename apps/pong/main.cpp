@@ -6,20 +6,18 @@ int main() {
     borov_engine::Input input{window};
 
     Game game{window, input};
-    game.AddComponent<Player>(
-        Direction::Left,
-        Player::ControlKeys{
-            .up = borov_engine::InputKey::W,
-            .down = borov_engine::InputKey::S,
-        }
-    );
-    game.AddComponent<Player>(
-        Direction::Right,
-        Player::ControlKeys{
-            .up = borov_engine::InputKey::Up,
-            .down = borov_engine::InputKey::Down,
-        }
-    );
+
+    Player::ControlKeys left_player_control_keys{
+        .up = borov_engine::InputKey::W,
+        .down = borov_engine::InputKey::S,
+    };
+    game.AddComponent<Player>(Direction::Left, left_player_control_keys);
+
+    Player::ControlKeys right_player_control_keys{
+        .up = borov_engine::InputKey::Up,
+        .down = borov_engine::InputKey::Down,
+    };
+    game.AddComponent<Player>(Direction::Right, right_player_control_keys);
 
     game.Run();
     return 0;

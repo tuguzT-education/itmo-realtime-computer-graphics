@@ -9,6 +9,6 @@ namespace borov_engine::detail {
 
 std::string LastError();
 
-}
+}  // namespace borov_engine::detail
 
-#endif //BOROV_ENGINE_DETAIL_ERR_HANDLING_API_HPP_INCLUDED
+#endif  // BOROV_ENGINE_DETAIL_ERR_HANDLING_API_HPP_INCLUDED

@@ -3,9 +3,9 @@
 #ifndef BOROV_ENGINE_MATH_HPP_INCLUDED
 #define BOROV_ENGINE_MATH_HPP_INCLUDED
 
-#include <d3d11.h>
-#include <SimpleMath.h>
 #include <DirectXColors.h>
+#include <SimpleMath.h>
+#include <d3d11.h>
 
 namespace borov_engine::math {
 
@@ -20,7 +20,7 @@ namespace colors {
 namespace srgb = DirectX::Colors;
 namespace linear = DirectX::ColorsLinear;
 
-}
+}  // namespace colors
 
 using Matrix4x4 = DirectX::SimpleMath::Matrix;
 using Quaternion = DirectX::SimpleMath::Quaternion;
@@ -33,6 +33,6 @@ using Plane = DirectX::SimpleMath::Plane;
 using Ray = DirectX::SimpleMath::Ray;
 using Rectangle = DirectX::SimpleMath::Rectangle;
 
-}
+}  // namespace borov_engine::math
 
-#endif //BOROV_ENGINE_MATH_HPP_INCLUDED
+#endif  // BOROV_ENGINE_MATH_HPP_INCLUDED

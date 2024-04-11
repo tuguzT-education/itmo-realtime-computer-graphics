@@ -17,6 +17,6 @@ struct Transform {
     void RotateAround(const math::Vector3 &point, const math::Quaternion &rotate_by);
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_TRANSFORM_HPP_INCLUDED
+#endif  // BOROV_ENGINE_TRANSFORM_HPP_INCLUDED

@@ -5,9 +5,15 @@
 
 namespace borov_engine::delegate {
 
-constexpr DelegateHandle::DelegateHandle(std::nullptr_t) noexcept: id_{kInvalidID} {}
+constexpr DelegateHandle::DelegateHandle(std::nullptr_t) noexcept : id_{kInvalidID} {}
 
-constexpr DelegateHandle::DelegateHandle(DelegateHandle &&other) noexcept: id_{other.id_} {
+constexpr DelegateHandle::~DelegateHandle() noexcept = default;
+
+constexpr DelegateHandle::DelegateHandle(const DelegateHandle &other) noexcept = default;
+
+constexpr DelegateHandle &DelegateHandle::operator=(const DelegateHandle &other) noexcept = default;
+
+constexpr DelegateHandle::DelegateHandle(DelegateHandle &&other) noexcept : id_{other.id_} {
     other.Reset();
 }
 
@@ -16,6 +22,8 @@ constexpr DelegateHandle &DelegateHandle::operator=(DelegateHandle &&other) noex
     other.Reset();
     return *this;
 }
+
+constexpr auto DelegateHandle::operator<=>(const DelegateHandle &other) const noexcept = default;
 
 constexpr DelegateHandle::operator bool() const noexcept {
     return IsValid();
@@ -29,6 +37,6 @@ constexpr void DelegateHandle::Reset() noexcept {
     id_ = kInvalidID;
 }
 
-}
+}  // namespace borov_engine::delegate
 
-#endif //BOROV_ENGINE_DELEGATE_DELEGATE_HANDLE_INL_INCLUDED
+#endif  // BOROV_ENGINE_DELEGATE_DELEGATE_HANDLE_INL_INCLUDED

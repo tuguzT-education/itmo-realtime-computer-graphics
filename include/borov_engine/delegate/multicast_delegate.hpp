@@ -7,19 +7,18 @@
 
 #include "delegate.hpp"
 
-#define DECLARE_MULTICAST_DELEGATE(name, ...) \
-using name = ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__>; \
-using name ## Delegate = ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__>::DelegateT
+#define DECLARE_MULTICAST_DELEGATE(name, ...)                              \
+    using name = ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__>; \
+    using name##Delegate = ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__>::DelegateT
 
-#define DECLARE_EVENT(name, owner_type, ...) \
-class name : public ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__> \
-{ \
-private: \
-    friend class owner_type; \
-    using ::borov_engine::delegate::MulticastDelegate::Broadcast; \
-    using ::borov_engine::delegate::MulticastDelegate::RemoveAll; \
-    using ::borov_engine::delegate::MulticastDelegate::Remove; \
-};
+#define DECLARE_EVENT(name, owner_type, ...)                                       \
+    class name : public ::borov_engine::delegate::MulticastDelegate<__VA_ARGS__> { \
+      private:                                                                     \
+        friend class owner_type;                                                   \
+        using ::borov_engine::delegate::MulticastDelegate::Broadcast;              \
+        using ::borov_engine::delegate::MulticastDelegate::RemoveAll;              \
+        using ::borov_engine::delegate::MulticastDelegate::Remove;                 \
+    };
 
 namespace borov_engine::delegate {
 
@@ -29,40 +28,40 @@ class MulticastDelegateBase {
 };
 
 // AllocatedDelegate that can be bound to by MULTIPLE objects
-template<typename... Args>
+template <typename... Args>
 class MulticastDelegate : public MulticastDelegateBase {
   public:
     using DelegateT = Delegate<void, Args...>;
 
   private:
-    template<typename... Payload>
+    template <typename... Payload>
     using StaticKind = StaticDelegate<void(Args...), Payload...>;
 
-    template<typename... Payload>
+    template <typename... Payload>
     using StaticFn = typename StaticKind<Payload...>::Function;
 
-    template<typename T, typename... Payload>
+    template <typename T, typename... Payload>
     using RawKind = RawDelegate<false, T, void(Args...), Payload...>;
 
-    template<typename T, typename... Payload>
+    template <typename T, typename... Payload>
     using RawFn = typename RawKind<T, Payload...>::Function;
 
-    template<typename T, typename... Payload>
+    template <typename T, typename... Payload>
     using ConstRawKind = RawDelegate<true, T, void(Args...), Payload...>;
 
-    template<typename T, typename... Payload>
+    template <typename T, typename... Payload>
     using ConstRawFn = typename ConstRawKind<T, Payload...>::Function;
 
-    template<typename T, typename... Payload>
+    template <typename T, typename... Payload>
     using SharedPtrKind = SharedPtrDelegate<false, T, void(Args...), Payload...>;
 
-    template<typename T, typename... Payload>
+    template <typename T, typename... Payload>
     using SharedPtrFn = typename SharedPtrKind<T, Payload...>::Function;
 
-    template<typename T, typename... Payload>
+    template <typename T, typename... Payload>
     using ConstSharedPtrKind = SharedPtrDelegate<true, T, void(Args...), Payload...>;
 
-    template<typename T, typename... Payload>
+    template <typename T, typename... Payload>
     using ConstSharedPtrFn = typename ConstSharedPtrKind<T, Payload...>::Function;
 
   public:
@@ -80,25 +79,23 @@ class MulticastDelegate : public MulticastDelegateBase {
 
     DelegateHandle Add(DelegateT &&delegate);
 
-    template<typename... Payload>
-    DelegateHandle AddStatic(StaticFn<Payload...> function, Payload &&... payload);
+    template <typename... Payload>
+    DelegateHandle AddStatic(StaticFn<Payload...> function, Payload &&...payload);
 
-    template<typename T, typename... Payload>
-    DelegateHandle AddRaw(T *object, RawFn<T, Payload...> function, Payload &&... payload);
-    template<typename T, typename... Payload>
-    DelegateHandle AddRaw(T *object, ConstRawFn<T, Payload...> function, Payload &&... payload);
+    template <typename T, typename... Payload>
+    DelegateHandle AddRaw(T *object, RawFn<T, Payload...> function, Payload &&...payload);
+    template <typename T, typename... Payload>
+    DelegateHandle AddRaw(T *object, ConstRawFn<T, Payload...> function, Payload &&...payload);
 
-    template<typename Lambda, typename... Payload>
-    DelegateHandle AddLambda(Lambda &&lambda, Payload &&... payload);
+    template <typename Lambda, typename... Payload>
+    DelegateHandle AddLambda(Lambda &&lambda, Payload &&...payload);
 
-    template<typename T, typename... Payload>
-    DelegateHandle AddSharedPtr(const std::shared_ptr<T> &object,
-                                SharedPtrFn<T, Payload...> function,
-                                Payload &&... payload);
-    template<typename T, typename... Payload>
-    DelegateHandle AddSharedPtr(const std::shared_ptr<T> &object,
-                                ConstSharedPtrFn<T, Payload...> function,
-                                Payload &&... payload);
+    template <typename T, typename... Payload>
+    DelegateHandle AddSharedPtr(const std::shared_ptr<T> &object, SharedPtrFn<T, Payload...> function,
+                                Payload &&...payload);
+    template <typename T, typename... Payload>
+    DelegateHandle AddSharedPtr(const std::shared_ptr<T> &object, ConstSharedPtrFn<T, Payload...> function,
+                                Payload &&...payload);
 
     [[nodiscard]] bool IsBoundTo(const DelegateHandle &handle) const;
 
@@ -109,22 +106,23 @@ class MulticastDelegate : public MulticastDelegateBase {
     void RemoveAll();
     void Compress(std::size_t max_space = 0);
 
-    void Broadcast(Args ...args);
+    void Broadcast(Args... args);
 
   private:
     void Lock();
     void Unlock();
 
     // Returns true is the delegate is currently broadcasting
-    // If this is true, the order of the array should not be changed otherwise this causes undefined behaviour
+    // If this is true, the order of the array should not be changed otherwise
+    // this causes undefined behaviour
     [[nodiscard]] constexpr bool IsLocked() const;
 
     std::vector<DelegateT> delegates_;
     std::size_t locks_;
 };
 
-}
+}  // namespace borov_engine::delegate
 
 #include "multicast_delegate.inl"
 
-#endif //BOROV_ENGINE_DELEGATE_MULTICAST_DELEGATE_HPP_INCLUDED
+#endif  // BOROV_ENGINE_DELEGATE_MULTICAST_DELEGATE_HPP_INCLUDED

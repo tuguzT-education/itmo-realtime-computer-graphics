@@ -7,20 +7,20 @@ namespace borov_engine::delegate {
 
 class DelegateKindBase {
   public:
-    DelegateKindBase() = default;
-    virtual ~DelegateKindBase() noexcept = default;
+    DelegateKindBase();
+    virtual ~DelegateKindBase() noexcept;
 
     [[nodiscard]] virtual const void *Owner() const;
 };
 
-template<typename R, typename... Args>
+template <typename R, typename... Args>
 class DelegateKind : public DelegateKindBase {
   public:
-    [[nodiscard]] virtual R Execute(Args &&... args) = 0;
+    [[nodiscard]] virtual R Execute(Args &&...args) = 0;
 };
 
-}
+}  // namespace borov_engine::delegate
 
 #include "delegate_kind.inl"
 
-#endif //BOROV_ENGINE_DELEGATE_DELEGATE_KIND_HPP_INCLUDED
+#endif  // BOROV_ENGINE_DELEGATE_DELEGATE_KIND_HPP_INCLUDED

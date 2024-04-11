@@ -71,6 +71,6 @@ class Camera final {
     CameraProjectionType projection_type_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_CAMERA_HPP_INCLUDED
+#endif  // BOROV_ENGINE_CAMERA_HPP_INCLUDED

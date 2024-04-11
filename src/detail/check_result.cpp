@@ -10,4 +10,4 @@ void CheckResult(const HRESULT result, const std::string &message) {
     CheckResult(result, [&] { return message; });
 }
 
-}
+}  // namespace borov_engine::detail

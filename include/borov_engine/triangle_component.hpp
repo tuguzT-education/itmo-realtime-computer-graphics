@@ -3,14 +3,13 @@
 #ifndef BOROV_ENGINE_TRIANGLE_COMPONENT_HPP_INCLUDED
 #define BOROV_ENGINE_TRIANGLE_COMPONENT_HPP_INCLUDED
 
-#include "component.hpp"
-
 #include <VertexTypes.h>
 
 #include <span>
 
-#include "transform.hpp"
+#include "component.hpp"
 #include "detail/d3d_ptr.hpp"
+#include "transform.hpp"
 
 namespace borov_engine {
 
@@ -19,13 +18,11 @@ class TriangleComponent : public Component {
     using Vertex = DirectX::VertexPositionColor;
     using Index = std::uint32_t;
 
-    explicit TriangleComponent(borov_engine::Game &game,
-                               std::span<Vertex> vertices,
-                               std::span<Index> indices,
-                               borov_engine::Transform transform = {});
+    explicit TriangleComponent(class Game &game, std::span<Vertex> vertices, std::span<Index> indices,
+                               const Transform &transform = {});
 
-    [[nodiscard]] const borov_engine::Transform &Transform() const;
-    [[nodiscard]] borov_engine::Transform &Transform();
+    [[nodiscard]] const Transform &Transform() const;
+    [[nodiscard]] class Transform &Transform();
 
     void Draw(const Camera *camera) override;
 
@@ -42,7 +39,7 @@ class TriangleComponent : public Component {
     void InitializeIndexBuffer(std::span<Index> indices);
     void InitializeConstantBuffer(ConstantBuffer constant_buffer);
 
-    borov_engine::Transform transform_;
+    class Transform transform_;
 
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;
@@ -58,6 +55,6 @@ class TriangleComponent : public Component {
     detail::D3DPtr<ID3DBlob> vertex_byte_code_;
 };
 
-}
+}  // namespace borov_engine
 
-#endif //BOROV_ENGINE_TRIANGLE_COMPONENT_HPP_INCLUDED
+#endif  // BOROV_ENGINE_TRIANGLE_COMPONENT_HPP_INCLUDED

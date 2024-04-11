@@ -2,7 +2,7 @@
 
 namespace borov_engine::delegate {
 
-DelegateBase::DelegateBase() noexcept: handle_{}, allocator_{} {}
+DelegateBase::DelegateBase() noexcept = default;
 
 DelegateBase::~DelegateBase() {
     Release();
@@ -16,8 +16,7 @@ DelegateBase &DelegateBase::operator=(const DelegateBase &other) {
 }
 
 DelegateBase::DelegateBase(DelegateBase &&other) noexcept
-    : handle_{std::move(other.handle_)},
-      allocator_{std::move(other.allocator_)} {}
+    : handle_{std::move(other.handle_)}, allocator_{std::move(other.allocator_)} {}
 
 DelegateBase &DelegateBase::operator=(DelegateBase &&other) noexcept {
     Release();
@@ -59,4 +58,4 @@ void DelegateBase::Release() {
     allocator_.Free();
 }
 
-}
+}  // namespace borov_engine::delegate
