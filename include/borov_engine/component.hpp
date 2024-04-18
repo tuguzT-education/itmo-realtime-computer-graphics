@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef BOROV_ENGINE_CONTEXT_HPP_INCLUDED
-#define BOROV_ENGINE_CONTEXT_HPP_INCLUDED
+#ifndef BOROV_ENGINE_COMPONENT_HPP_INCLUDED
+#define BOROV_ENGINE_COMPONENT_HPP_INCLUDED
 
 #include <d3d11.h>
 
@@ -38,4 +38,4 @@ class Component {
 
 }  // namespace borov_engine
 
-#endif  // BOROV_ENGINE_CONTEXT_HPP_INCLUDED
+#endif  // BOROV_ENGINE_COMPONENT_HPP_INCLUDED

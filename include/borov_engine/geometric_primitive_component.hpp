@@ -7,8 +7,7 @@
 
 #include <variant>
 
-#include "component.hpp"
-#include "transform.hpp"
+#include "scene_component.hpp"
 
 namespace borov_engine {
 
@@ -159,14 +158,14 @@ HeapGeometricPrimitive CreatePrimitive(ID3D11DeviceContext *device_context,
 GeometricPrimitiveType PrimitiveType(const GeometricPrimitiveArguments &arguments);
 GeometricPrimitiveArguments PrimitiveArguments(GeometricPrimitiveType primitive_type);
 
-class GeometricPrimitiveComponent : public Component {
+class GeometricPrimitiveComponent : public SceneComponent {
   public:
     explicit GeometricPrimitiveComponent(class Game &game, const GeometricPrimitiveArguments &arguments,
-                                         const Transform &transform = {},
+                                         const class Transform &transform = {},
                                          math::Color color = math::colors::linear::White.v, bool wireframe = false);
 
     explicit GeometricPrimitiveComponent(class Game &game, GeometricPrimitiveType primitive_type,
-                                         const Transform &transform = {},
+                                         const class Transform &transform = {},
                                          math::Color color = math::colors::linear::White.v, bool wireframe = false);
 
     [[nodiscard]] const GeometricPrimitive *Primitive() const;
@@ -177,9 +176,6 @@ class GeometricPrimitiveComponent : public Component {
     [[nodiscard]] GeometricPrimitiveType PrimitiveType() const;
     [[nodiscard]] const GeometricPrimitiveArguments &PrimitiveArguments() const;
 
-    [[nodiscard]] const Transform &Transform() const;
-    [[nodiscard]] class Transform &Transform();
-
     [[nodiscard]] const math::Color &Color() const;
     [[nodiscard]] math::Color &Color();
 
@@ -189,7 +185,6 @@ class GeometricPrimitiveComponent : public Component {
     void Draw(const Camera *camera) override;
 
   private:
-    class Transform transform_;
     math::Color color_;
     bool wireframe_;
     HeapGeometricPrimitive primitive_;

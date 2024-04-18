@@ -36,6 +36,7 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/viewport.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/viewport_manager.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/transform.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/scene_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/geometric_primitive_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/box_component.hpp)
@@ -57,6 +58,7 @@ set(SOURCE_LIST
         viewport.cpp
         viewport_manager.cpp
         transform.cpp
+        scene_component.cpp
         geometric_primitive_component.cpp
         triangle_component.cpp
         box_component.cpp)

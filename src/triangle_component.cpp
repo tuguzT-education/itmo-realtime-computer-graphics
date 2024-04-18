@@ -34,7 +34,7 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path, const D3D_SHADER_MACRO *defin
 
 TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<Vertex> vertices,
                                      const std::span<Index> indices, const borov_engine::Transform &transform)
-    : Component{game}, transform_{transform} {
+    : SceneComponent{game, transform} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
@@ -42,14 +42,6 @@ TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<V
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
     InitializeConstantBuffer(ConstantBuffer{.wvp_matrix = transform.World()});
-}
-
-const Transform &TriangleComponent::Transform() const {
-    return transform_;
-}
-
-Transform &TriangleComponent::Transform() {
-    return transform_;
 }
 
 void TriangleComponent::Draw(const Camera *camera) {
@@ -68,7 +60,7 @@ void TriangleComponent::Draw(const Camera *camera) {
     device_context.PSSetShader(index_shader_.Get(), nullptr, 0);
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
-    math::Matrix4x4 world = transform_.World();
+    math::Matrix4x4 world = Transform().World();
     math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
     math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
     ConstantBuffer constant_buffer{.wvp_matrix = world * view * projection};

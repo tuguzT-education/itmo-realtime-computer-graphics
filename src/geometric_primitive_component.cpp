@@ -163,8 +163,7 @@ GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &gam
                                                          const GeometricPrimitiveArguments &arguments,
                                                          const borov_engine::Transform &transform,
                                                          const math::Color color, const bool wireframe)
-    : Component(game),
-      transform_{transform},
+    : SceneComponent(game, transform),
       color_{color},
       wireframe_{wireframe},
       primitive_{CreatePrimitive(&DeviceContext(), arguments)},
@@ -204,14 +203,6 @@ const GeometricPrimitiveArguments &GeometricPrimitiveComponent::PrimitiveArgumen
     return primitive_arguments_;
 }
 
-const Transform &GeometricPrimitiveComponent::Transform() const {
-    return transform_;
-}
-
-Transform &GeometricPrimitiveComponent::Transform() {
-    return transform_;
-}
-
 const math::Color &GeometricPrimitiveComponent::Color() const {
     return color_;
 }
@@ -233,7 +224,7 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
         return;
     }
 
-    const math::Matrix4x4 world = transform_.World();
+    const math::Matrix4x4 world = Transform().World();
     const math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
     const math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
 

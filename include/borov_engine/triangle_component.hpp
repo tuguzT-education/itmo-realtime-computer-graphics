@@ -7,22 +7,18 @@
 
 #include <span>
 
-#include "component.hpp"
 #include "detail/d3d_ptr.hpp"
-#include "transform.hpp"
+#include "scene_component.hpp"
 
 namespace borov_engine {
 
-class TriangleComponent : public Component {
+class TriangleComponent : public SceneComponent {
   public:
     using Vertex = DirectX::VertexPositionColor;
     using Index = std::uint32_t;
 
     explicit TriangleComponent(class Game &game, std::span<Vertex> vertices, std::span<Index> indices,
-                               const Transform &transform = {});
-
-    [[nodiscard]] const Transform &Transform() const;
-    [[nodiscard]] class Transform &Transform();
+                               const class Transform &transform = {});
 
     void Draw(const Camera *camera) override;
 
@@ -38,8 +34,6 @@ class TriangleComponent : public Component {
     void InitializeVertexBuffer(std::span<Vertex> vertices);
     void InitializeIndexBuffer(std::span<Index> indices);
     void InitializeConstantBuffer(ConstantBuffer constant_buffer);
-
-    class Transform transform_;
 
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;
