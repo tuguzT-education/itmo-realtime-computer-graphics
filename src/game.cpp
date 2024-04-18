@@ -274,7 +274,7 @@ void Game::DrawInternal() {
 
     Draw();
 
-    constexpr std::array<ID3D11RenderTargetView *, 0> no_render_targets;
+    constexpr std::array<ID3D11RenderTargetView *, 0> no_render_targets = {};
     device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
 
     const HRESULT result = swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
