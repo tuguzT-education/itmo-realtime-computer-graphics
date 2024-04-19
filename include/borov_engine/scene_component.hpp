@@ -19,7 +19,7 @@ class SceneComponent : public Component {
     void WorldTransform(const class Transform &world_transform);
 
     [[nodiscard]] const SceneComponent *Parent() const;
-    void Parent(const SceneComponent *parent);
+    bool Parent(const SceneComponent *parent);
 
   private:
     class Transform transform_;

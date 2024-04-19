@@ -37,11 +37,12 @@ const SceneComponent *SceneComponent::Parent() const {
     return parent_;
 }
 
-void SceneComponent::Parent(const SceneComponent *parent) {
+bool SceneComponent::Parent(const SceneComponent *parent) {
     if (parent == this) {
-        return;
+        return false;
     }
     parent_ = parent;
+    return true;
 }
 
 }  // namespace borov_engine

@@ -14,17 +14,35 @@ class Game final : public borov_engine::Game {
     void Update(float delta_time) override;
 
   private:
-    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateSun();
-    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateMercury();
-    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateVenus();
-    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateEarth();
-    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateMoon();
+    [[nodiscard]] borov_engine::SceneComponent &CreateSun();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateSunMesh();
 
-    borov_engine::GeometricPrimitiveComponent &sun_;
-    borov_engine::GeometricPrimitiveComponent &mercury_;
-    borov_engine::GeometricPrimitiveComponent &venus_;
-    borov_engine::GeometricPrimitiveComponent &earth_;
-    borov_engine::GeometricPrimitiveComponent &moon_;
+    [[nodiscard]] borov_engine::SceneComponent &CreateMercury();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateMercuryMesh();
+
+    [[nodiscard]] borov_engine::SceneComponent &CreateVenus();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateVenusMesh();
+
+    [[nodiscard]] borov_engine::SceneComponent &CreateEarth();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateEarthMesh();
+
+    [[nodiscard]] borov_engine::SceneComponent &CreateMoon();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateMoonMesh();
+
+    borov_engine::SceneComponent &sun_;
+    borov_engine::GeometricPrimitiveComponent &sun_mesh_;
+
+    borov_engine::SceneComponent &mercury_;
+    borov_engine::GeometricPrimitiveComponent &mercury_mesh_;
+
+    borov_engine::SceneComponent &venus_;
+    borov_engine::GeometricPrimitiveComponent &venus_mesh_;
+
+    borov_engine::SceneComponent &earth_;
+    borov_engine::GeometricPrimitiveComponent &earth_mesh_;
+
+    borov_engine::SceneComponent &moon_;
+    borov_engine::GeometricPrimitiveComponent &moon_mesh_;
 };
 
 #endif  // SOLAR_SYSTEM_GAME_HPP_INCLUDED
