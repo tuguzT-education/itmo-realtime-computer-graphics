@@ -18,7 +18,7 @@ class TriangleComponent : public SceneComponent {
     using Index = std::uint32_t;
 
     explicit TriangleComponent(class Game &game, std::span<Vertex> vertices, std::span<Index> indices,
-                               const class Transform &transform = {});
+                               const class Transform &transform = {}, const SceneComponent *parent = nullptr);
 
     void Draw(const Camera *camera) override;
 

@@ -161,11 +161,11 @@ GeometricPrimitiveArguments PrimitiveArguments(GeometricPrimitiveType primitive_
 class GeometricPrimitiveComponent : public SceneComponent {
   public:
     explicit GeometricPrimitiveComponent(class Game &game, const GeometricPrimitiveArguments &arguments,
-                                         const class Transform &transform = {},
+                                         const class Transform &transform = {}, const SceneComponent *parent = nullptr,
                                          math::Color color = math::colors::linear::White.v, bool wireframe = false);
 
     explicit GeometricPrimitiveComponent(class Game &game, GeometricPrimitiveType primitive_type,
-                                         const class Transform &transform = {},
+                                         const class Transform &transform = {}, const SceneComponent *parent = nullptr,
                                          math::Color color = math::colors::linear::White.v, bool wireframe = false);
 
     [[nodiscard]] const GeometricPrimitive *Primitive() const;

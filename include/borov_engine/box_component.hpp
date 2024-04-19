@@ -14,7 +14,8 @@ class BoxComponent : public TriangleComponent {
     using Box = DirectX::BoundingOrientedBox;
 
     explicit BoxComponent(class Game &game, float length, float height, float width,
-                          math::Color color = {1.0f, 1.0f, 1.0f}, const class Transform &transform = {});
+                          math::Color color = {1.0f, 1.0f, 1.0f}, const class Transform &transform = {},
+                          const SceneComponent *parent = nullptr);
 
     [[nodiscard]] float Length() const;
     [[nodiscard]] float Height() const;

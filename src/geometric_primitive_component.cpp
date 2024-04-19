@@ -162,8 +162,9 @@ GeometricPrimitiveArguments PrimitiveArguments(const GeometricPrimitiveType prim
 GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &game,
                                                          const GeometricPrimitiveArguments &arguments,
                                                          const borov_engine::Transform &transform,
-                                                         const math::Color color, const bool wireframe)
-    : SceneComponent(game, transform),
+                                                         const SceneComponent *parent, const math::Color color,
+                                                         const bool wireframe)
+    : SceneComponent(game, transform, parent),
       color_{color},
       wireframe_{wireframe},
       primitive_{CreatePrimitive(&DeviceContext(), arguments)},
@@ -172,9 +173,10 @@ GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &gam
 GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &game,
                                                          const GeometricPrimitiveType primitive_type,
                                                          const borov_engine::Transform &transform,
-                                                         const math::Color color, const bool wireframe)
-    : GeometricPrimitiveComponent(game, borov_engine::PrimitiveArguments(primitive_type), transform, color, wireframe) {
-}
+                                                         const SceneComponent *parent, const math::Color color,
+                                                         const bool wireframe)
+    : GeometricPrimitiveComponent(game, borov_engine::PrimitiveArguments(primitive_type), transform, parent, color,
+                                  wireframe) {}
 
 const GeometricPrimitive *GeometricPrimitiveComponent::Primitive() const {
     return primitive_.get();
@@ -224,7 +226,7 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
         return;
     }
 
-    const math::Matrix4x4 world = Transform().World();
+    const math::Matrix4x4 world = WorldTransform().ToMatrix();
     const math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
     const math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
 

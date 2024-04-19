@@ -10,13 +10,20 @@ namespace borov_engine {
 
 class SceneComponent : public Component {
   public:
-    explicit SceneComponent(class Game &game, const Transform &transform = {});
+    explicit SceneComponent(class Game &game, const Transform &transform = {}, const SceneComponent *parent = nullptr);
 
     [[nodiscard]] const Transform &Transform() const;
     [[nodiscard]] class Transform &Transform();
 
+    [[nodiscard]] class Transform WorldTransform() const;
+    void WorldTransform(const class Transform &world_transform);
+
+    [[nodiscard]] const SceneComponent *Parent() const;
+    void Parent(const SceneComponent *parent);
+
   private:
     class Transform transform_;
+    const SceneComponent *parent_;
 };
 
 }  // namespace borov_engine

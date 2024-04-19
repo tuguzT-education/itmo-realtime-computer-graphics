@@ -33,15 +33,16 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path, const D3D_SHADER_MACRO *defin
 }  // namespace detail
 
 TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<Vertex> vertices,
-                                     const std::span<Index> indices, const borov_engine::Transform &transform)
-    : SceneComponent{game, transform} {
+                                     const std::span<Index> indices, const borov_engine::Transform &transform,
+                                     const SceneComponent *parent)
+    : SceneComponent{game, transform, parent} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
-    InitializeConstantBuffer(ConstantBuffer{.wvp_matrix = transform.World()});
+    InitializeConstantBuffer(ConstantBuffer{.wvp_matrix = WorldTransform().ToMatrix()});
 }
 
 void TriangleComponent::Draw(const Camera *camera) {
@@ -60,7 +61,7 @@ void TriangleComponent::Draw(const Camera *camera) {
     device_context.PSSetShader(index_shader_.Get(), nullptr, 0);
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
-    math::Matrix4x4 world = Transform().World();
+    math::Matrix4x4 world = WorldTransform().ToMatrix();
     math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
     math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
     ConstantBuffer constant_buffer{.wvp_matrix = world * view * projection};
@@ -97,7 +98,7 @@ void TriangleComponent::InitializeIndexShader() {
 }
 
 void TriangleComponent::InitializeInputLayout() {
-    std::array input_elements{
+    constexpr std::array input_elements{
         D3D11_INPUT_ELEMENT_DESC{
             .SemanticName = "POSITION",
             .SemanticIndex = 0,
@@ -143,7 +144,7 @@ void TriangleComponent::InitializeVertexBuffer(std::span<Vertex> vertices) {
         .MiscFlags = 0,
         .StructureByteStride = 0,
     };
-    D3D11_SUBRESOURCE_DATA initial_data{
+    const D3D11_SUBRESOURCE_DATA initial_data{
         .pSysMem = vertices.data(),
         .SysMemPitch = 0,
         .SysMemSlicePitch = 0,
@@ -181,7 +182,7 @@ void TriangleComponent::InitializeConstantBuffer(ConstantBuffer constant_buffer)
         .MiscFlags = 0,
         .StructureByteStride = 0,
     };
-    D3D11_SUBRESOURCE_DATA initial_data{
+    const D3D11_SUBRESOURCE_DATA initial_data{
         .pSysMem = &constant_buffer,
         .SysMemPitch = 0,
         .SysMemSlicePitch = 0,

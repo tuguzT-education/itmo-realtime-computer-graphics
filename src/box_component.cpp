@@ -50,9 +50,9 @@ T &Unmove(T &&t) {
 }  // namespace detail
 
 BoxComponent::BoxComponent(class Game &game, const float length, const float height, const float width,
-                           const math::Color color, const class Transform &transform)
+                           const math::Color color, const class Transform &transform, const SceneComponent *parent)
     : TriangleComponent(game, detail::Unmove(detail::BoxVertices(length, height, width, color)),
-                        detail::Unmove(detail::BoxIndices()), transform),
+                        detail::Unmove(detail::BoxIndices()), transform, parent),
       length_{length},
       height_{height},
       width_{width} {}
