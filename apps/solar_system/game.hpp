@@ -38,6 +38,18 @@ class Game final : public borov_engine::Game {
     [[nodiscard]] borov_engine::SceneComponent &CreateDeimos();
     [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateDeimosMesh();
 
+    [[nodiscard]] borov_engine::SceneComponent &CreateJupyter();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateJupyterMesh();
+
+    [[nodiscard]] borov_engine::SceneComponent &CreateSaturn();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateSaturnMesh();
+
+    [[nodiscard]] borov_engine::SceneComponent &CreateUranus();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateUranusMesh();
+
+    [[nodiscard]] borov_engine::SceneComponent &CreateNeptune();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateNeptuneMesh();
+
     borov_engine::SceneComponent &sun_;
     borov_engine::GeometricPrimitiveComponent &sun_mesh_;
 
@@ -61,6 +73,18 @@ class Game final : public borov_engine::Game {
 
     borov_engine::SceneComponent &deimos_;
     borov_engine::GeometricPrimitiveComponent &deimos_mesh_;
+
+    borov_engine::SceneComponent &jupyter_;
+    borov_engine::GeometricPrimitiveComponent &jupyter_mesh_;
+
+    borov_engine::SceneComponent &saturn_;
+    borov_engine::GeometricPrimitiveComponent &saturn_mesh_;
+
+    borov_engine::SceneComponent &uranus_;
+    borov_engine::GeometricPrimitiveComponent &uranus_mesh_;
+
+    borov_engine::SceneComponent &neptune_;
+    borov_engine::GeometricPrimitiveComponent &neptune_mesh_;
 };
 
 #endif  // SOLAR_SYSTEM_GAME_HPP_INCLUDED
