@@ -16,12 +16,18 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       earth_{CreateEarth()},
       earth_mesh_{CreateEarthMesh()},
       moon_{CreateMoon()},
-      moon_mesh_{CreateMoonMesh()} {
+      moon_mesh_{CreateMoonMesh()},
+      mars_{CreateMars()},
+      mars_mesh_{CreateMarsMesh()},
+      phobos_{CreatePhobos()},
+      phobos_mesh_{CreatePhobosMesh()},
+      deimos_{CreateDeimos()},
+      deimos_mesh_{CreateDeimosMesh()} {
     CameraManager<::CameraManager>();
     ViewportManager<::ViewportManager>();
 
     if (borov_engine::Camera *camera = MainCamera()) {
-        camera->Position() = borov_engine::math::Vector3::Backward * 3.0f;
+        camera->Position() = borov_engine::math::Vector3::Backward * 6.0f;
     }
 }
 
@@ -60,6 +66,23 @@ void Game::Update(const float delta_time) {
     const auto earth_around_self = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 2.0f * delta_time);
     auto &earth_mesh_rotation = earth_mesh_.Transform().rotation;
     earth_mesh_rotation = math::Quaternion::Concatenate(earth_mesh_rotation, earth_around_self);
+
+    // Rotate the Mars around the Sun
+    const auto mars_around_sun = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 0.25f * delta_time);
+    mars_.Transform().RotateAround(math::Vector3::Zero, mars_around_sun);
+
+    // Rotate the Deimos around the Mars
+    const auto phobos_around_mars = math::Quaternion::CreateFromAxisAngle(math::Vector3::Forward, 1.5f * delta_time);
+    phobos_.Transform().RotateAround(math::Vector3::Zero, phobos_around_mars);
+
+    // Rotate the Deimos around the Mars
+    const auto deimos_around_mars = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 0.5f * delta_time);
+    deimos_.Transform().RotateAround(math::Vector3::Zero, deimos_around_mars);
+
+    // Rotate the Mars around itself
+    const auto mars_around_self = math::Quaternion::CreateFromAxisAngle(math::Vector3::Forward, 1.25f * delta_time);
+    auto &mars_mesh_rotation = mars_mesh_.Transform().rotation;
+    mars_mesh_rotation = math::Quaternion::Concatenate(mars_mesh_rotation, mars_around_self);
 }
 
 borov_engine::SceneComponent &Game::CreateSun() {
@@ -95,7 +118,7 @@ borov_engine::GeometricPrimitiveComponent &Game::CreateMercuryMesh() {
 
 borov_engine::SceneComponent &Game::CreateVenus() {
     borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 3.0f,
+        .position = borov_engine::math::Vector3::UnitX * 2.0f,
         .rotation = borov_engine::math::Quaternion::CreateFromAxisAngle(borov_engine::math::Vector3::Right,
                                                                         std::numbers::pi_v<float> / 2.0f),
     };
@@ -114,7 +137,7 @@ borov_engine::GeometricPrimitiveComponent &Game::CreateVenusMesh() {
 
 borov_engine::SceneComponent &Game::CreateEarth() {
     borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 5.0f,
+        .position = borov_engine::math::Vector3::UnitX * 3.0f,
     };
     return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
 }
@@ -142,4 +165,52 @@ borov_engine::GeometricPrimitiveComponent &Game::CreateMoonMesh() {
     borov_engine::Transform transform;
     borov_engine::math::Color color{borov_engine::math::colors::linear::LightGray};
     return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &moon_, color);
+}
+
+borov_engine::SceneComponent &Game::CreateMars() {
+    borov_engine::Transform transform{
+        .position = borov_engine::math::Vector3::UnitX * 4.5f,
+    };
+    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
+}
+
+borov_engine::GeometricPrimitiveComponent &Game::CreateMarsMesh() {
+    borov_engine::IcosahedronGeometricPrimitiveArguments arguments{
+        .size = 0.25f,
+    };
+    borov_engine::Transform transform;
+    borov_engine::math::Color color{borov_engine::math::colors::linear::OrangeRed};
+    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &mars_, color);
+}
+
+borov_engine::SceneComponent &Game::CreatePhobos() {
+    borov_engine::Transform transform{
+        .position = borov_engine::math::Vector3::UnitX * 0.5f,
+    };
+    return AddComponent<borov_engine::SceneComponent>(transform, &mars_);
+}
+
+borov_engine::GeometricPrimitiveComponent &Game::CreatePhobosMesh() {
+    borov_engine::TeapotGeometricPrimitiveArguments arguments{
+        .size = 0.1f,
+    };
+    borov_engine::Transform transform;
+    borov_engine::math::Color color{borov_engine::math::colors::linear::PaleVioletRed};
+    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &phobos_, color);
+}
+
+borov_engine::SceneComponent &Game::CreateDeimos() {
+    borov_engine::Transform transform{
+        .position = borov_engine::math::Vector3::UnitZ * 0.75f,
+    };
+    return AddComponent<borov_engine::SceneComponent>(transform, &mars_);
+}
+
+borov_engine::GeometricPrimitiveComponent &Game::CreateDeimosMesh() {
+    borov_engine::BoxGeometricPrimitiveArguments arguments{
+        .size = borov_engine::math::Vector3::One * 0.1f,
+    };
+    borov_engine::Transform transform;
+    borov_engine::math::Color color{borov_engine::math::colors::linear::DarkRed};
+    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &deimos_, color);
 }

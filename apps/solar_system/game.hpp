@@ -29,6 +29,15 @@ class Game final : public borov_engine::Game {
     [[nodiscard]] borov_engine::SceneComponent &CreateMoon();
     [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateMoonMesh();
 
+    [[nodiscard]] borov_engine::SceneComponent &CreateMars();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateMarsMesh();
+
+    [[nodiscard]] borov_engine::SceneComponent &CreatePhobos();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreatePhobosMesh();
+
+    [[nodiscard]] borov_engine::SceneComponent &CreateDeimos();
+    [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateDeimosMesh();
+
     borov_engine::SceneComponent &sun_;
     borov_engine::GeometricPrimitiveComponent &sun_mesh_;
 
@@ -43,6 +52,15 @@ class Game final : public borov_engine::Game {
 
     borov_engine::SceneComponent &moon_;
     borov_engine::GeometricPrimitiveComponent &moon_mesh_;
+
+    borov_engine::SceneComponent &mars_;
+    borov_engine::GeometricPrimitiveComponent &mars_mesh_;
+
+    borov_engine::SceneComponent &phobos_;
+    borov_engine::GeometricPrimitiveComponent &phobos_mesh_;
+
+    borov_engine::SceneComponent &deimos_;
+    borov_engine::GeometricPrimitiveComponent &deimos_mesh_;
 };
 
 #endif  // SOLAR_SYSTEM_GAME_HPP_INCLUDED
