@@ -5,7 +5,6 @@
 
 #include <DirectXColors.h>
 #include <SimpleMath.h>
-#include <d3d11.h>
 
 namespace borov_engine::math {
 
