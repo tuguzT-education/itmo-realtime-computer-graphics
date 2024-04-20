@@ -1,54 +1,30 @@
 #include "borov_engine/camera.hpp"
 
-#include <numbers>
-
 namespace borov_engine {
 
-Camera::Camera()
-    : position_{math::Vector3::Backward},
-      rotation_{math::Quaternion::Identity},
+namespace detail {
+
+template <class... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+
+}  // namespace detail
+
+Camera::Camera(class Game& game)
+    : SceneComponent(game),
       width_{},
       height_{},
       near_plane_{0.1f},
-      far_plane_{1000.0f},
-      horizontal_fov_{std::numbers::pi_v<float> / 2.0f},
-      orthographic_units_{2.0f},
-      projection_type_{CameraProjectionType::Orthographic} {}
+      far_plane_{100.0f},
+      projection_type_{OrthographicCameraProjectionType{}} {}
 
-const math::Vector3 &Camera::Position() const {
-    return position_;
-}
-
-math::Vector3 &Camera::Position() {
-    return position_;
-}
-
-const math::Quaternion &Camera::Rotation() const {
-    return rotation_;
-}
-
-math::Quaternion &Camera::Rotation() {
-    return rotation_;
-}
-
-const CameraProjectionType &Camera::ProjectionType() const {
+const CameraProjectionType& Camera::ProjectionType() const {
     return projection_type_;
 }
 
-CameraProjectionType &Camera::ProjectionType() {
+CameraProjectionType& Camera::ProjectionType() {
     return projection_type_;
-}
-
-math::Vector3 Camera::Forward() const {
-    return math::Vector3::Transform(math::Vector3::Forward, rotation_);
-}
-
-math::Vector3 Camera::Up() const {
-    return math::Vector3::Transform(math::Vector3::Up, rotation_);
-}
-
-math::Vector3 Camera::Right() const {
-    return math::Vector3::Transform(math::Vector3::Right, rotation_);
 }
 
 float Camera::Width() const {
@@ -100,78 +76,43 @@ bool Camera::FarPlane(const float far_plane) {
 }
 
 float Camera::AspectRatio() const {
-    return (height_ != 0.0f) ? (width_ / height_) : 0.0f;
+    return height_ != 0.0f ? width_ / height_ : 0.0f;
 }
 
 float Camera::InverseAspectRatio() const {
     const float aspect_ratio = AspectRatio();
-    return (aspect_ratio != 0.0f) ? (1.0f / aspect_ratio) : 0.0f;
-}
-
-float Camera::HorizontalFOV() const {
-    return horizontal_fov_;
-}
-
-bool Camera::HorizontalFOV(const float horizontal_fov) {
-    if (horizontal_fov <= 0.0 || horizontal_fov >= std::numbers::pi_v<float>) {
-        return false;
-    }
-    horizontal_fov_ = horizontal_fov;
-    return true;
-}
-
-float Camera::VerticalFOV() const {
-    return 2.0f * std::atan(std::tan(horizontal_fov_ / 2.0f) * InverseAspectRatio());
-}
-
-bool Camera::VerticalFOV(const float vertical_fov) {
-    if (vertical_fov <= 0.0 || vertical_fov >= std::numbers::pi_v<float>) {
-        return false;
-    }
-    horizontal_fov_ = 2.0f * std::atan(std::tan(vertical_fov / 2.0f) * AspectRatio());
-    return true;
-}
-
-float Camera::OrthographicUnits() const {
-    return orthographic_units_;
-}
-
-bool Camera::OrthographicUnits(const float orthographic_units) {
-    if (orthographic_units <= 0.0) {
-        return false;
-    }
-    orthographic_units_ = orthographic_units;
-    return true;
+    return aspect_ratio != 0.0f ? 1.0f / aspect_ratio : 0.0f;
 }
 
 math::Matrix4x4 Camera::View() const {
-    const math::Vector3 eye = position_;
-    const math::Vector3 target = position_ + Forward();
-    const math::Vector3 up = Up();
+    const math::Vector3 eye = Transform().position;
+    const math::Vector3 target = Transform().position + Transform().Forward();
+    const math::Vector3 up = Transform().Up();
     return math::Matrix4x4::CreateLookAt(eye, target, up);
 }
 
 math::Matrix4x4 Camera::Projection() const {
-    switch (projection_type_) {
-        case CameraProjectionType::Perspective: {
-            return Perspective();
-        }
-        case CameraProjectionType::Orthographic: {
-            return Orthographic();
-        }
-        default: {
-            return math::Matrix4x4::Identity;
-        }
-    }
+    auto perspective = [this](const PerspectiveCameraProjectionType& projection_type) {
+        const float fov = projection_type.horizontal_fov;
+        return math::Matrix4x4::CreatePerspectiveFieldOfView(fov, AspectRatio(), near_plane_, far_plane_);
+    };
+    auto orthographic = [this](const OrthographicCameraProjectionType& projection_type) {
+        const float units = projection_type.orthographic_units;
+        return math::Matrix4x4::CreateOrthographic(units, units * InverseAspectRatio(), near_plane_, far_plane_);
+    };
+    return std::visit(detail::overloaded{perspective, orthographic}, projection_type_);
 }
 
-math::Matrix4x4 Camera::Perspective() const {
-    return math::Matrix4x4::CreatePerspectiveFieldOfView(horizontal_fov_, AspectRatio(), near_plane_, far_plane_);
-}
-
-math::Matrix4x4 Camera::Orthographic() const {
-    return math::Matrix4x4::CreateOrthographic(orthographic_units_, orthographic_units_ * InverseAspectRatio(),
-                                               near_plane_, far_plane_);
+math::Frustum Camera::Frustum() const {
+    const math::Vector3& origin = Transform().position;
+    const math::Quaternion& orientation = Transform().rotation;
+    const float right_slope = width_ / 2.0f;
+    const float left_slope = -width_ / 2.0f;
+    const float top_slope = height_ / 2.0f;
+    const float bottom_slope = -height_ / 2.0f;
+    return math::Frustum{
+        origin, orientation, right_slope, left_slope, top_slope, bottom_slope, near_plane_, far_plane_,
+    };
 }
 
 }  // namespace borov_engine

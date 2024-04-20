@@ -17,16 +17,20 @@ std::span<const Viewport> ViewportManager::Viewports() const {
     return split_viewports_;
 }
 
-void ViewportManager::Update(float delta_time) {
-    for (auto &viewport : split_viewports_) {
-        viewport.camera = Game().MainCamera();
-    }
-    target_viewport_.camera = Game().MainCamera();
-}
+void ViewportManager::Update(float delta_time) {}
 
 void ViewportManager::OnTargetResize() {
-    target_viewport_.width = static_cast<float>(Game().TargetWidth());
-    target_viewport_.height = static_cast<float>(Game().TargetHeight());
+    const auto target_width = static_cast<float>(Game().TargetWidth());
+    const auto target_height = static_cast<float>(Game().TargetHeight());
+
+    target_viewport_.width = target_width;
+    target_viewport_.height = target_height;
+
+    target_viewport_.camera = Game().MainCamera();
+    if (target_viewport_.camera != nullptr) {
+        target_viewport_.camera->Width(target_width);
+        target_viewport_.camera->Height(target_height);
+    }
 
     split_viewports_.clear();
     SplitViewports(split_viewports_);

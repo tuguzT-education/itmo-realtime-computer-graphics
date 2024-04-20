@@ -17,7 +17,7 @@ class BoxComponent : public TriangleComponent {
     [[nodiscard]] float Height() const;
     [[nodiscard]] float Width() const;
 
-    [[nodiscard]] math::OrientedBox Collision() const;
+    [[nodiscard]] math::Box Collision() const;
 
   private:
     float length_;

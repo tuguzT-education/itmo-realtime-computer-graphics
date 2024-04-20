@@ -36,8 +36,8 @@ using Rectangle = DirectX::SimpleMath::Rectangle;
 using ContainmentType = DirectX::ContainmentType;
 using PlaneIntersectionType = DirectX::PlaneIntersectionType;
 
-using Box = DirectX::BoundingBox;
-using OrientedBox = DirectX::BoundingOrientedBox;
+using Box = DirectX::BoundingOrientedBox;
+using AxisAlignedBox = DirectX::BoundingBox;
 using Sphere = DirectX::BoundingSphere;
 using Frustum = DirectX::BoundingFrustum;
 

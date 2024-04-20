@@ -3,31 +3,29 @@
 #ifndef BOROV_ENGINE_CAMERA_HPP_INCLUDED
 #define BOROV_ENGINE_CAMERA_HPP_INCLUDED
 
-#include "math.hpp"
+#include <numbers>
+#include <variant>
+
+#include "scene_component.hpp"
 
 namespace borov_engine {
 
-enum class CameraProjectionType : std::uint8_t {
-    Perspective,
-    Orthographic,
+struct PerspectiveCameraProjectionType {
+    float horizontal_fov = std::numbers::pi_v<float> / 2.0f;
 };
 
-class Camera final {
+struct OrthographicCameraProjectionType {
+    float orthographic_units = 2.0f;
+};
+
+using CameraProjectionType = std::variant<PerspectiveCameraProjectionType, OrthographicCameraProjectionType>;
+
+class Camera : public SceneComponent {
   public:
-    explicit Camera();
-
-    [[nodiscard]] const math::Vector3 &Position() const;
-    [[nodiscard]] math::Vector3 &Position();
-
-    [[nodiscard]] const math::Quaternion &Rotation() const;
-    [[nodiscard]] math::Quaternion &Rotation();
+    explicit Camera(class Game &game);
 
     [[nodiscard]] const CameraProjectionType &ProjectionType() const;
     [[nodiscard]] CameraProjectionType &ProjectionType();
-
-    [[nodiscard]] math::Vector3 Forward() const;
-    [[nodiscard]] math::Vector3 Up() const;
-    [[nodiscard]] math::Vector3 Right() const;
 
     [[nodiscard]] float Width() const;
     bool Width(float width);
@@ -44,30 +42,16 @@ class Camera final {
     [[nodiscard]] float AspectRatio() const;
     [[nodiscard]] float InverseAspectRatio() const;
 
-    [[nodiscard]] float HorizontalFOV() const;
-    bool HorizontalFOV(float horizontal_fov);
-
-    [[nodiscard]] float VerticalFOV() const;
-    bool VerticalFOV(float vertical_fov);
-
-    [[nodiscard]] float OrthographicUnits() const;
-    bool OrthographicUnits(float orthographic_units);
-
     [[nodiscard]] math::Matrix4x4 View() const;
     [[nodiscard]] math::Matrix4x4 Projection() const;
 
-    [[nodiscard]] math::Matrix4x4 Perspective() const;
-    [[nodiscard]] math::Matrix4x4 Orthographic() const;
+    [[nodiscard]] math::Frustum Frustum() const;
 
   private:
-    math::Vector3 position_;
-    math::Quaternion rotation_;
     float width_;
     float height_;
     float near_plane_;
     float far_plane_;
-    float horizontal_fov_;
-    float orthographic_units_;
     CameraProjectionType projection_type_;
 };
 

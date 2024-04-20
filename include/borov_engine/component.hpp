@@ -7,11 +7,10 @@
 
 #include <functional>
 
-#include "camera.hpp"
-
 namespace borov_engine {
 
 class Game;
+class Camera;
 
 class Component {
   public:

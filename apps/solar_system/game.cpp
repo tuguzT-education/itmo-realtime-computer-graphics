@@ -31,12 +31,11 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       uranus_mesh_{CreateUranusMesh()},
       neptune_{CreateNeptune()},
       neptune_mesh_{CreateNeptuneMesh()} {
-    auto &camera_manager = CameraManager<::CameraManager>();
+    CameraManager<::CameraManager>(0.0f, -std::numbers::pi_v<float> / 4.0f);
     ViewportManager<::ViewportManager>();
 
     if (borov_engine::Camera *camera = MainCamera()) {
-        camera->Position() = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f};
-        camera_manager.Pitch(-std::numbers::pi_v<float> / 4.0f);
+        camera->Transform().position = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f};
     }
 }
 

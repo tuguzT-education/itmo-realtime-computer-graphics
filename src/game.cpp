@@ -234,12 +234,7 @@ void Game::Draw() {
     for (const auto &viewport : viewport_manager_->Viewports()) {
         device_context_->RSSetViewports(1, viewport.Get11());
 
-        Camera *camera = viewport.camera;
-        if (camera != nullptr) {
-            camera->Width(viewport.width);
-            camera->Height(viewport.height);
-        }
-
+        const Camera *camera = viewport.camera;
         for (const auto &component : components_) {
             component->Draw(camera);
         }
