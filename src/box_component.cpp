@@ -69,11 +69,11 @@ float BoxComponent::Width() const {
     return width_;
 }
 
-BoxComponent::Box BoxComponent::Collision() const {
+math::OrientedBox BoxComponent::Collision() const {
     const math::Vector3 center = Transform().position;
     const math::Vector3 extents = math::Vector3{Length() / 2, Height() / 2, Width() / 2} * Transform().scale;
     const math::Quaternion orientation = Transform().rotation;
-    return Box{center, extents, orientation};
+    return {center, extents, orientation};
 }
 
 }  // namespace borov_engine

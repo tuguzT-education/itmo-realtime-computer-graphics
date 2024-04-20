@@ -47,6 +47,18 @@ Transform Transform::Inverse(const Transform& transform) {
     return result;
 }
 
+math::Vector3 Transform::Right() const {
+    return math::Vector3::Transform(math::Vector3::Right, rotation);
+}
+
+math::Vector3 Transform::Up() const {
+    return math::Vector3::Transform(math::Vector3::Up, rotation);
+}
+
+math::Vector3 Transform::Forward() const {
+    return math::Vector3::Transform(math::Vector3::Forward, rotation);
+}
+
 void Transform::RotateAround(const math::Vector3& point, const math::Quaternion& rotate_by) {
     position = math::RotateAround(position, point, rotate_by);
 }

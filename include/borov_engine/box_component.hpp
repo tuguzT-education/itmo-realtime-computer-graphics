@@ -3,16 +3,12 @@
 #ifndef BOROV_ENGINE_BOX_COMPONENT_HPP_INCLUDED
 #define BOROV_ENGINE_BOX_COMPONENT_HPP_INCLUDED
 
-#include <DirectXCollision.h>
-
 #include "triangle_component.hpp"
 
 namespace borov_engine {
 
 class BoxComponent : public TriangleComponent {
   public:
-    using Box = DirectX::BoundingOrientedBox;
-
     explicit BoxComponent(class Game &game, float length, float height, float width,
                           math::Color color = {1.0f, 1.0f, 1.0f}, const class Transform &transform = {},
                           const SceneComponent *parent = nullptr);
@@ -21,7 +17,7 @@ class BoxComponent : public TriangleComponent {
     [[nodiscard]] float Height() const;
     [[nodiscard]] float Width() const;
 
-    [[nodiscard]] Box Collision() const;
+    [[nodiscard]] math::OrientedBox Collision() const;
 
   private:
     float length_;

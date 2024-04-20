@@ -3,6 +3,7 @@
 #ifndef BOROV_ENGINE_MATH_HPP_INCLUDED
 #define BOROV_ENGINE_MATH_HPP_INCLUDED
 
+#include <DirectXCollision.h>
 #include <DirectXColors.h>
 #include <SimpleMath.h>
 
@@ -31,6 +32,14 @@ using Viewport = DirectX::SimpleMath::Viewport;
 using Plane = DirectX::SimpleMath::Plane;
 using Ray = DirectX::SimpleMath::Ray;
 using Rectangle = DirectX::SimpleMath::Rectangle;
+
+using ContainmentType = DirectX::ContainmentType;
+using PlaneIntersectionType = DirectX::PlaneIntersectionType;
+
+using Box = DirectX::BoundingBox;
+using OrientedBox = DirectX::BoundingOrientedBox;
+using Sphere = DirectX::BoundingSphere;
+using Frustum = DirectX::BoundingFrustum;
 
 }  // namespace borov_engine::math
 
