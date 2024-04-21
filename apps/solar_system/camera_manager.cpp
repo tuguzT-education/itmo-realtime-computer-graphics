@@ -5,8 +5,6 @@
 
 CameraManager::CameraManager(borov_engine::Game &game, borov_engine::Camera &camera)
     : borov_engine::CameraManager(game), wheel_delta_{}, camera_{camera} {
-    camera.ProjectionType() = borov_engine::PerspectiveCameraProjectionType{};
-
     if (const auto input = Game().Input(); input != nullptr) {
         input->OnMouseMove().AddRaw(this, &CameraManager::OnMouseMove);
     }
@@ -19,11 +17,11 @@ CameraManager::~CameraManager() {
 }
 
 const borov_engine::Camera *CameraManager::MainCamera() const {
-    return &camera_.get();
+    return &camera_;
 }
 
 borov_engine::Camera *CameraManager::MainCamera() {
-    return &camera_.get();
+    return &camera_;
 }
 
 void CameraManager::Update(const float delta_time) {
@@ -35,7 +33,7 @@ void CameraManager::Update(const float delta_time) {
         const auto y = static_cast<float>(input->IsKeyDown(InputKey::Space) - input->IsKeyDown(InputKey::LeftControl));
         const auto z = static_cast<float>(input->IsKeyDown(InputKey::W) - input->IsKeyDown(InputKey::S));
 
-        borov_engine::Transform &transform = camera_.get().Transform();
+        borov_engine::Transform &transform = camera_.Transform();
         const math::Vector3 direction = transform.Right() * x + math::Vector3::Up * y + transform.Forward() * z;
         const float speed = input->IsKeyDown(InputKey::LeftShift) ? 2.0f : 1.0f;
         transform.position += direction * speed * delta_time;
@@ -50,7 +48,7 @@ void CameraManager::Update(const float delta_time) {
         transform.rotation = math::Quaternion::CreateFromYawPitchRoll(yaw, pitch, 0.0f);
         mouse_offset_ = math::Vector2::Zero;
 
-        if (borov_engine::CameraProjectionType &projection_type = camera_.get().ProjectionType();
+        if (borov_engine::CameraProjectionType &projection_type = camera_.ProjectionType();
             std::holds_alternative<borov_engine::PerspectiveCameraProjectionType>(projection_type)) {
             auto &[horizontal_fov] = std::get<borov_engine::PerspectiveCameraProjectionType>(projection_type);
 

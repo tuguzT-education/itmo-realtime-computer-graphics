@@ -22,7 +22,7 @@ class CameraManager final : public borov_engine::CameraManager {
     borov_engine::math::Vector2 mouse_offset_;
     std::int32_t wheel_delta_;
 
-    std::reference_wrapper<borov_engine::Camera> camera_;
+    borov_engine::Camera &camera_;
 };
 
 #endif  // SOLAR_SYSTEM_CAMERA_MANAGER_HPP_INCLUDED

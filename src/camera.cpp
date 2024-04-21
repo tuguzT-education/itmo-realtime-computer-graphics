@@ -11,13 +11,14 @@ struct overloaded : Ts... {
 
 }  // namespace detail
 
-Camera::Camera(class Game& game, const class Transform& transform, const SceneComponent* parent)
+Camera::Camera(class Game& game, const CameraProjectionType projection_type, const class Transform& transform,
+               const SceneComponent* parent)
     : SceneComponent(game, transform, parent),
       width_{},
       height_{},
       near_plane_{0.1f},
       far_plane_{100.0f},
-      projection_type_{OrthographicCameraProjectionType{}} {}
+      projection_type_{projection_type} {}
 
 const CameraProjectionType& Camera::ProjectionType() const {
     return projection_type_;
@@ -106,8 +107,7 @@ math::Matrix4x4 Camera::Projection() const {
 }
 
 math::Frustum Camera::Frustum() const {
-    const math::Vector3& origin = Transform().position;
-    const math::Quaternion& orientation = Transform().rotation;
+    const auto [origin, orientation, scale] = WorldTransform();
     const float right_slope = width_ / 2.0f;
     const float left_slope = -width_ / 2.0f;
     const float top_slope = height_ / 2.0f;

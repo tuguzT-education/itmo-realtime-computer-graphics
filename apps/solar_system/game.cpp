@@ -6,10 +6,14 @@
 
 Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     : borov_engine::Game(window, input),
-      camera_{AddComponent<borov_engine::Camera>(borov_engine::Transform{
-          .position = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f},
-          .rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(0, -std::numbers::pi_v<float> / 4.0f, 0),
-      })},
+      camera_{
+          AddComponent<borov_engine::Camera>(borov_engine::PerspectiveCameraProjectionType{},
+                                             borov_engine::Transform{
+                                                 .position = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f},
+                                                 .rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(
+                                                     0, -std::numbers::pi_v<float> / 4.0f, 0),
+                                             }),
+      },
       sun_{CreateSun()},
       sun_mesh_{CreateSunMesh()},
       mercury_{CreateMercury()},
@@ -43,13 +47,11 @@ void Game::Update(const float delta_time) {
 
     if (const borov_engine::Input *input = Input()) {
         if (input->IsKeyDown(borov_engine::InputKey::Escape)) {
-            camera_.Parent(nullptr);
             CameraManager<::CameraManager>(camera_);
         }
-        // TODO cast ray, find an object to be parent of the camera
+        // TODO cast ray, find camera target
         if (input->IsKeyDown(borov_engine::InputKey::LeftButton)) {
-            camera_.Parent(&venus_);
-            CameraManager<OrbitCameraManager>(camera_);
+            CameraManager<OrbitCameraManager>(camera_, venus_mesh_);
         }
     }
 
@@ -90,8 +92,6 @@ borov_engine::GeometricPrimitiveComponent &Game::CreateMercuryMesh() {
 borov_engine::SceneComponent &Game::CreateVenus() {
     borov_engine::Transform transform{
         .position = borov_engine::math::Vector3::UnitX * 2.0f,
-        .rotation = borov_engine::math::Quaternion::CreateFromAxisAngle(borov_engine::math::Vector3::Right,
-                                                                        std::numbers::pi_v<float> / 2.0f),
     };
     return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
 }
@@ -101,7 +101,10 @@ borov_engine::GeometricPrimitiveComponent &Game::CreateVenusMesh() {
         .height = 0.25f,
         .diameter = 0.25f,
     };
-    borov_engine::Transform transform;
+    borov_engine::Transform transform{
+        .rotation = borov_engine::math::Quaternion::CreateFromAxisAngle(borov_engine::math::Vector3::Right,
+                                                                        std::numbers::pi_v<float> / 2.0f),
+    };
     borov_engine::math::Color color{borov_engine::math::colors::linear::LightYellow};
     return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &venus_, color);
 }
