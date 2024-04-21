@@ -1,14 +1,10 @@
 #include "camera_manager.hpp"
 
+#include <algorithm>
 #include <borov_engine/game.hpp>
 
 CameraManager::CameraManager(borov_engine::Game &game, borov_engine::Camera &camera)
     : borov_engine::CameraManager(game), wheel_delta_{}, camera_{camera} {
-    auto [pitch, yaw, roll] = camera.Transform().rotation.ToEuler();
-    yaw_ = yaw;
-    pitch_ = pitch;
-
-    camera.Transform().rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(yaw, pitch, 0.0f);
     camera.ProjectionType() = borov_engine::PerspectiveCameraProjectionType{};
 
     if (const auto input = Game().Input(); input != nullptr) {
@@ -30,22 +26,6 @@ borov_engine::Camera *CameraManager::MainCamera() {
     return &camera_.get();
 }
 
-float CameraManager::Yaw() const {
-    return yaw_;
-}
-
-void CameraManager::Yaw(const float yaw) {
-    yaw_ = yaw;
-}
-
-float CameraManager::Pitch() const {
-    return pitch_;
-}
-
-void CameraManager::Pitch(const float pitch) {
-    pitch_ = pitch;
-}
-
 void CameraManager::Update(const float delta_time) {
     if (const auto input = Game().Input(); input != nullptr) {
         using borov_engine::InputKey;
@@ -60,9 +40,14 @@ void CameraManager::Update(const float delta_time) {
         const float speed = input->IsKeyDown(InputKey::LeftShift) ? 2.0f : 1.0f;
         transform.position += direction * speed * delta_time;
 
-        yaw_ -= mouse_offset_.x * 0.005f;
-        pitch_ -= mouse_offset_.y * 0.005f;
-        transform.rotation = math::Quaternion::CreateFromYawPitchRoll(yaw_, pitch_, 0.0f);
+        auto [pitch, yaw, roll] = transform.rotation.ToEuler();
+        yaw -= mouse_offset_.x * 0.005f;
+        pitch -= mouse_offset_.y * 0.005f;
+
+        constexpr float max_pitch = std::numbers::pi_v<float> / 2.0f - 0.001f;
+        pitch = std::clamp(pitch, -max_pitch, max_pitch);
+
+        transform.rotation = math::Quaternion::CreateFromYawPitchRoll(yaw, pitch, 0.0f);
         mouse_offset_ = math::Vector2::Zero;
 
         if (borov_engine::CameraProjectionType &projection_type = camera_.get().ProjectionType();
@@ -75,8 +60,7 @@ void CameraManager::Update(const float delta_time) {
     }
 }
 
-// ReSharper disable once CppPassValueParameterByConstReference
-void CameraManager::OnMouseMove(const borov_engine::MouseMoveData data) {
+void CameraManager::OnMouseMove(const borov_engine::MouseMoveData &data) {
     mouse_offset_ += data.offset;
     wheel_delta_ += data.wheel_delta;
 }

@@ -17,7 +17,7 @@ struct MouseMoveData {
     std::int32_t wheel_delta;
 };
 
-DECLARE_MULTICAST_DELEGATE(OnMouseMove, MouseMoveData);
+DECLARE_MULTICAST_DELEGATE(OnMouseMove, const MouseMoveData &);
 DECLARE_MULTICAST_DELEGATE(OnInputKeyUp, InputKey);
 DECLARE_MULTICAST_DELEGATE(OnInputKeyDown, InputKey);
 

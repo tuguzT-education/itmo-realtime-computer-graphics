@@ -14,22 +14,14 @@ class CameraManager final : public borov_engine::CameraManager {
     [[nodiscard]] const borov_engine::Camera *MainCamera() const override;
     [[nodiscard]] borov_engine::Camera *MainCamera() override;
 
-    [[nodiscard]] float Yaw() const;
-    void Yaw(float yaw);
-
-    [[nodiscard]] float Pitch() const;
-    void Pitch(float pitch);
-
     void Update(float delta_time) override;
 
   private:
-    void OnMouseMove(borov_engine::MouseMoveData data);
+    void OnMouseMove(const borov_engine::MouseMoveData &data);
 
     borov_engine::math::Vector2 mouse_offset_;
     std::int32_t wheel_delta_;
 
-    float yaw_;
-    float pitch_;
     std::reference_wrapper<borov_engine::Camera> camera_;
 };
 
