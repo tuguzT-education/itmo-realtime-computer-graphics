@@ -22,7 +22,7 @@ using CameraProjectionType = std::variant<PerspectiveCameraProjectionType, Ortho
 
 class Camera : public SceneComponent {
   public:
-    explicit Camera(class Game &game);
+    explicit Camera(class Game &game, const class Transform &transform = {}, const SceneComponent *parent = nullptr);
 
     [[nodiscard]] const CameraProjectionType &ProjectionType() const;
     [[nodiscard]] CameraProjectionType &ProjectionType();

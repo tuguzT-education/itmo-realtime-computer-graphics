@@ -8,7 +8,7 @@
 
 class CameraManager final : public borov_engine::CameraManager {
   public:
-    explicit CameraManager(borov_engine::Game &game, float yaw = 0.0f, float pitch = 0.0f);
+    explicit CameraManager(borov_engine::Game &game, borov_engine::Camera &camera);
     ~CameraManager() override;
 
     [[nodiscard]] const borov_engine::Camera *MainCamera() const override;
@@ -30,7 +30,7 @@ class CameraManager final : public borov_engine::CameraManager {
 
     float yaw_;
     float pitch_;
-    borov_engine::Camera &camera_;
+    std::reference_wrapper<borov_engine::Camera> camera_;
 };
 
 #endif  // SOLAR_SYSTEM_CAMERA_MANAGER_HPP_INCLUDED

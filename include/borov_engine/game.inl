@@ -10,6 +10,9 @@ namespace borov_engine {
 template <std::derived_from<class CameraManager> T, typename... Args>
 T &Game::CameraManager(Args &&...args) {
     camera_manager_ = std::make_unique<T>(*this, std::forward<Args>(args)...);
+    if (viewport_manager_ != nullptr) {
+        viewport_manager_->OnTargetResize();
+    }
     return dynamic_cast<T &>(*camera_manager_);
 }
 

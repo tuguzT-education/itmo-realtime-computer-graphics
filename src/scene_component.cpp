@@ -41,7 +41,10 @@ bool SceneComponent::Parent(const SceneComponent *parent) {
     if (parent == this) {
         return false;
     }
+
+    const class Transform world_transform = WorldTransform();
     parent_ = parent;
+    WorldTransform(world_transform);
     return true;
 }
 

@@ -11,8 +11,8 @@ struct overloaded : Ts... {
 
 }  // namespace detail
 
-Camera::Camera(class Game& game)
-    : SceneComponent(game),
+Camera::Camera(class Game& game, const class Transform& transform, const SceneComponent* parent)
+    : SceneComponent(game, transform, parent),
       width_{},
       height_{},
       near_plane_{0.1f},
@@ -85,9 +85,11 @@ float Camera::InverseAspectRatio() const {
 }
 
 math::Matrix4x4 Camera::View() const {
-    const math::Vector3 eye = Transform().position;
-    const math::Vector3 target = Transform().position + Transform().Forward();
-    const math::Vector3 up = Transform().Up();
+    const class Transform world_transform = WorldTransform();
+    const math::Vector3 eye = world_transform.position;
+    const math::Vector3 target = world_transform.position + world_transform.Forward();
+    const math::Vector3 up = world_transform.Up();
+
     return math::Matrix4x4::CreateLookAt(eye, target, up);
 }
 

@@ -2,14 +2,14 @@
 
 #include <borov_engine/game.hpp>
 
-CameraManager::CameraManager(borov_engine::Game &game, const float yaw, const float pitch)
-    : borov_engine::CameraManager(game),
-      wheel_delta_{},
-      yaw_{yaw},
-      pitch_{pitch},
-      camera_{game.AddComponent<borov_engine::Camera>()} {
-    camera_.Transform().rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(yaw, pitch, 0.0f);
-    camera_.ProjectionType() = borov_engine::PerspectiveCameraProjectionType{};
+CameraManager::CameraManager(borov_engine::Game &game, borov_engine::Camera &camera)
+    : borov_engine::CameraManager(game), wheel_delta_{}, camera_{camera} {
+    auto [pitch, yaw, roll] = camera.Transform().rotation.ToEuler();
+    yaw_ = yaw;
+    pitch_ = pitch;
+
+    camera.Transform().rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(yaw, pitch, 0.0f);
+    camera.ProjectionType() = borov_engine::PerspectiveCameraProjectionType{};
 
     if (const auto input = Game().Input(); input != nullptr) {
         input->OnMouseMove().AddRaw(this, &CameraManager::OnMouseMove);
@@ -23,11 +23,11 @@ CameraManager::~CameraManager() {
 }
 
 const borov_engine::Camera *CameraManager::MainCamera() const {
-    return &camera_;
+    return &camera_.get();
 }
 
 borov_engine::Camera *CameraManager::MainCamera() {
-    return &camera_;
+    return &camera_.get();
 }
 
 float CameraManager::Yaw() const {
@@ -55,7 +55,7 @@ void CameraManager::Update(const float delta_time) {
         const auto y = static_cast<float>(input->IsKeyDown(InputKey::Space) - input->IsKeyDown(InputKey::LeftControl));
         const auto z = static_cast<float>(input->IsKeyDown(InputKey::W) - input->IsKeyDown(InputKey::S));
 
-        borov_engine::Transform &transform = camera_.Transform();
+        borov_engine::Transform &transform = camera_.get().Transform();
         const math::Vector3 direction = transform.Right() * x + math::Vector3::Up * y + transform.Forward() * z;
         const float speed = input->IsKeyDown(InputKey::LeftShift) ? 2.0f : 1.0f;
         transform.position += direction * speed * delta_time;
@@ -65,7 +65,7 @@ void CameraManager::Update(const float delta_time) {
         transform.rotation = math::Quaternion::CreateFromYawPitchRoll(yaw_, pitch_, 0.0f);
         mouse_offset_ = math::Vector2::Zero;
 
-        if (borov_engine::CameraProjectionType &projection_type = camera_.ProjectionType();
+        if (borov_engine::CameraProjectionType &projection_type = camera_.get().ProjectionType();
             std::holds_alternative<borov_engine::PerspectiveCameraProjectionType>(projection_type)) {
             auto &[horizontal_fov] = std::get<borov_engine::PerspectiveCameraProjectionType>(projection_type);
 

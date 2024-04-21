@@ -50,6 +50,10 @@ class Game final : public borov_engine::Game {
     [[nodiscard]] borov_engine::SceneComponent &CreateNeptune();
     [[nodiscard]] borov_engine::GeometricPrimitiveComponent &CreateNeptuneMesh();
 
+    void MovePlanets(float delta_time);
+
+    borov_engine::Camera &camera_;
+
     borov_engine::SceneComponent &sun_;
     borov_engine::GeometricPrimitiveComponent &sun_mesh_;
 
