@@ -21,13 +21,13 @@
 class Game final : public borov_engine::Game {
   public:
     explicit Game(borov_engine::Window &window, borov_engine::Input &input);
+    ~Game() override;
 
   protected:
     void Update(float delta_time) override;
 
   private:
-    void SwitchCameraManagerIfNeeded();
-    void MovePlanets(float delta_time);
+    void OnInputKeyDown(borov_engine::InputKey input_key);
 
     borov_engine::Camera &camera_;
 

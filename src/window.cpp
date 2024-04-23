@@ -62,7 +62,7 @@ math::Rectangle Window::Dimensions() const {
 
 math::Rectangle Window::ClientDimensions() const {
     RECT rect{};
-    ::GetClientRect(handle_, &rect);
+    GetClientRect(handle_, &rect);
     return math::Rectangle{rect};
 }
 
@@ -80,6 +80,32 @@ std::int32_t Window::MinHeight() const {
 
 std::int32_t &Window::MinHeight() {
     return min_height_;
+}
+
+math::Point Window::CursorPosition() const {
+    POINT point;
+    if (!GetCursorPos(&point) || !ScreenToClient(handle_, &point)) {
+        return math::Point{
+            .x = -1,
+            .y = -1,
+        };
+    }
+    return math::Point{
+        .x = static_cast<std::int32_t>(point.x),
+        .y = static_cast<std::int32_t>(point.y),
+    };
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+bool Window::CursorPosition(const math::Point cursor_position) {
+    POINT point{
+        .x = cursor_position.x,
+        .y = cursor_position.y,
+    };
+    if (!ClientToScreen(handle_, &point)) {
+        return false;
+    }
+    return SetCursorPos(point.x, point.y);
 }
 
 bool Window::IsDestroyed() const {
@@ -156,18 +182,19 @@ LRESULT CALLBACK Window::WndProc(const HWND hwnd, const UINT u_message, const WP
 
             UINT size;
             const auto h_raw_input = reinterpret_cast<HRAWINPUT>(l_param);
-            UINT result = ::GetRawInputData(h_raw_input, RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER));
+            UINT result = GetRawInputData(h_raw_input, RID_INPUT, nullptr, &size, sizeof(RAWINPUTHEADER));
             if (result) {
                 throw std::runtime_error{"Failed to obtain raw input"};
             }
 
             raw_input_bytes.reserve(size);
-            result = ::GetRawInputData(h_raw_input, RID_INPUT, raw_input_bytes.data(), &size, sizeof(RAWINPUTHEADER));
+            result = GetRawInputData(h_raw_input, RID_INPUT, raw_input_bytes.data(), &size, sizeof(RAWINPUTHEADER));
             if (result != size) {
                 throw std::runtime_error{"Failed to obtain raw input: GetRawInputData does not return correct size"};
             }
 
-            auto raw_input = reinterpret_cast<RAWINPUT *>(raw_input_bytes.data());
+            // ReSharper disable once CppTooWideScopeInitStatement
+            const auto raw_input = reinterpret_cast<RAWINPUT *>(raw_input_bytes.data());
             switch (raw_input->header.dwType) {
                 case RIM_TYPEKEYBOARD: {
                     input->OnRawKeyboard(raw_input->data.keyboard);
@@ -186,7 +213,7 @@ LRESULT CALLBACK Window::WndProc(const HWND hwnd, const UINT u_message, const WP
             break;
         }
         case WM_GETMINMAXINFO: {
-            auto min_max_info = reinterpret_cast<LPMINMAXINFO>(l_param);
+            const auto min_max_info = reinterpret_cast<LPMINMAXINFO>(l_param);
             min_max_info->ptMinTrackSize = {
                 .x = window->min_width_,
                 .y = window->min_height_,

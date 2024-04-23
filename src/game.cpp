@@ -85,6 +85,48 @@ std::uint32_t Game::TargetHeight() const {
     return target_height_;
 }
 
+math::Vector3 Game::ScreenToWorld(const math::Point screen_point) const {
+    const auto x = static_cast<float>(screen_point.x);
+    const auto y = static_cast<float>(screen_point.y);
+
+    auto contains = [x, y](const Viewport &viewport) {
+        return (viewport.x <= x && x < viewport.x + viewport.width) &&
+               (viewport.y <= y && y < viewport.y + viewport.height);
+    };
+
+    for (const Viewport &viewport : ViewportManager().Viewports()) {
+        if (!contains(viewport) || viewport.camera == nullptr) {
+            continue;
+        }
+        const math::Vector3 point{x, y, 1.0f};
+        const math::Matrix4x4 projection = viewport.camera->Projection();
+        const math::Matrix4x4 view = viewport.camera->View();
+        const math::Matrix4x4 world = math::Matrix4x4::Identity;
+        return viewport.Unproject(point, projection, view, world);
+    }
+
+    return math::Vector3::Zero;
+}
+
+math::Point Game::WorldToScreen(const math::Vector3 position, const Viewport *viewport) const {
+    const Viewport &viewport_ref = (viewport != nullptr) ? *viewport : ViewportManager().TargetViewport();
+    if (viewport_ref.camera == nullptr) {
+        return math::Point{
+            .x = -1,
+            .y = -1,
+        };
+    }
+
+    const math::Matrix4x4 projection = viewport_ref.camera->Projection();
+    const math::Matrix4x4 view = viewport_ref.camera->View();
+    const math::Matrix4x4 world = math::Matrix4x4::Identity;
+    const math::Vector3 result = viewport_ref.Project(position, projection, view, world);
+    return math::Point{
+        .x = static_cast<std::int32_t>(result.x),
+        .y = static_cast<std::int32_t>(result.y),
+    };
+}
+
 const Timer &Game::Timer() const {
     return timer_;
 }

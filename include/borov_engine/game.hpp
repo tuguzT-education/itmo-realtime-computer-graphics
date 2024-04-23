@@ -53,6 +53,9 @@ class Game {
     [[nodiscard]] std::uint32_t TargetWidth() const;
     [[nodiscard]] std::uint32_t TargetHeight() const;
 
+    [[nodiscard]] math::Vector3 ScreenToWorld(math::Point screen_point) const;
+    [[nodiscard]] math::Point WorldToScreen(math::Vector3 position, const Viewport *viewport = nullptr) const;
+
     [[nodiscard]] const Timer &Timer() const;
 
     [[nodiscard]] const Window *Window() const;

@@ -37,6 +37,9 @@ class Window {
     [[nodiscard]] std::int32_t MinHeight() const;
     [[nodiscard]] std::int32_t &MinHeight();
 
+    [[nodiscard]] math::Point CursorPosition() const;
+    bool CursorPosition(math::Point cursor_position);
+
     [[nodiscard]] bool IsDestroyed() const;
     [[nodiscard]] bool IsFocused() const;
 

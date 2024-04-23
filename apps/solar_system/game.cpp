@@ -96,59 +96,19 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       } {
     CameraManager<::CameraManager>(camera_);
     ViewportManager<::ViewportManager>();
+
+    input.OnInputKeyDown().AddRaw(this, &Game::OnInputKeyDown);
+}
+
+Game::~Game() {
+    if (const auto input = Input(); input != nullptr) {
+        input->OnInputKeyDown().RemoveByOwner(this);
+    }
 }
 
 void Game::Update(const float delta_time) {
     borov_engine::Game::Update(delta_time);
 
-    SwitchCameraManagerIfNeeded();
-    MovePlanets(delta_time);
-}
-
-void Game::SwitchCameraManagerIfNeeded() {
-    const borov_engine::Input *input = Input();
-    if (input == nullptr) {
-        return;
-    }
-
-    if (input->IsKeyDown(borov_engine::InputKey::Escape)) {
-        CameraManager<::CameraManager>(camera_);
-    }
-    if (input->IsKeyDown(borov_engine::InputKey::LeftButton)) {
-        const borov_engine::SceneComponent *target = nullptr;
-        float nearest_distance = std::numeric_limits<float>::infinity();
-
-        const borov_engine::Transform transform = camera_.WorldTransform();
-        // TODO cast a ray from mouse position
-        const auto ray = borov_engine::math::Ray{transform.position, transform.Forward()};
-
-        // ReSharper disable once CppTooWideScopeInitStatement
-        auto is_scene_and_collision = [](const borov_engine::Component &component) {
-            return dynamic_cast<const borov_engine::SceneComponent *>(&component) != nullptr &&
-                   dynamic_cast<const Collision *>(&component) != nullptr;
-        };
-        for (const borov_engine::Component &component : Components() | std::views::filter(is_scene_and_collision)) {
-            const auto &scene_component = dynamic_cast<const borov_engine::SceneComponent &>(component);
-            const auto &collision = dynamic_cast<const Collision &>(component);
-            const auto box = collision.BoxCollision();
-            if (float distance = 1000.0f; ray.Intersects(box, distance)) {
-                if (target == nullptr) {
-                    target = &scene_component;
-                } else if (distance < nearest_distance) {
-                    target = &scene_component;
-                    nearest_distance = distance;
-                }
-            }
-        }
-
-        if (target != nullptr) {
-            CameraManager<OrbitCameraManager>(camera_, *target);
-        }
-    }
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void Game::MovePlanets(const float delta_time) {
     namespace math = borov_engine::math;
 
     // Rotate the Mercury around the Sun
@@ -219,4 +179,57 @@ void Game::MovePlanets(const float delta_time) {
     // Rotate the Neptune around the Sun
     const auto neptune_around_sun = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 0.03f * delta_time);
     neptune_.Transform().RotateAround(math::Vector3::Zero, neptune_around_sun);
+}
+
+void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
+    switch (input_key) {
+        case borov_engine::InputKey::Escape: {
+            CameraManager<::CameraManager>(camera_);
+            break;
+        }
+        case borov_engine::InputKey::LeftButton: {
+            const borov_engine::Window *window = Window();
+            if (window == nullptr) {
+                break;
+            }
+
+            const borov_engine::SceneComponent *target = nullptr;
+            float nearest_distance = std::numeric_limits<float>::infinity();
+
+            namespace math = borov_engine::math;
+            const math::Point cursor_position = window->CursorPosition();
+            const math::Vector3 world_cursor_position = ScreenToWorld(cursor_position);
+            const math::Vector3 ray_position = camera_.WorldTransform().position;
+            math::Vector3 ray_direction = world_cursor_position - ray_position;
+            ray_direction.Normalize();
+            const math::Ray ray{ray_position, ray_direction};
+
+            // ReSharper disable once CppTooWideScopeInitStatement
+            auto is_scene_and_collision = [](const borov_engine::Component &component) {
+                return dynamic_cast<const borov_engine::SceneComponent *>(&component) != nullptr &&
+                       dynamic_cast<const Collision *>(&component) != nullptr;
+            };
+            for (const borov_engine::Component &component : Components() | std::views::filter(is_scene_and_collision)) {
+                const auto &scene_component = dynamic_cast<const borov_engine::SceneComponent &>(component);
+                const auto &collision = dynamic_cast<const Collision &>(component);
+                const auto box = collision.BoxCollision();
+                if (float distance = 1000.0f; ray.Intersects(box, distance)) {
+                    if (target == nullptr) {
+                        target = &scene_component;
+                    } else if (distance < nearest_distance) {
+                        target = &scene_component;
+                        nearest_distance = distance;
+                    }
+                }
+            }
+
+            if (target != nullptr) {
+                CameraManager<OrbitCameraManager>(camera_, *target);
+            }
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }

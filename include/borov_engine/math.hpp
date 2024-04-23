@@ -33,6 +33,11 @@ using Plane = DirectX::SimpleMath::Plane;
 using Ray = DirectX::SimpleMath::Ray;
 using Rectangle = DirectX::SimpleMath::Rectangle;
 
+struct Point {
+    std::int32_t x;
+    std::int32_t y;
+};
+
 using ContainmentType = DirectX::ContainmentType;
 using PlaneIntersectionType = DirectX::PlaneIntersectionType;
 
