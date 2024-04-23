@@ -1,12 +1,38 @@
 set(HEADER_LIST
+        celestials/sun.hpp
+        celestials/mercury.hpp
+        celestials/venus.hpp
+        celestials/earth.hpp
+        celestials/moon.hpp
+        celestials/mars.hpp
+        celestials/phobos.hpp
+        celestials/deimos.hpp
+        celestials/jupyter.hpp
+        celestials/saturn.hpp
+        celestials/uranus.hpp
+        celestials/neptune.hpp
         camera_manager.hpp
         orbit_camera_manager.hpp
         viewport_manager.hpp
+        collision.hpp
         game.hpp)
 set(SOURCE_LIST
+        celestials/sun.cpp
+        celestials/mercury.cpp
+        celestials/venus.cpp
+        celestials/earth.cpp
+        celestials/moon.cpp
+        celestials/mars.cpp
+        celestials/phobos.cpp
+        celestials/deimos.cpp
+        celestials/jupyter.cpp
+        celestials/saturn.cpp
+        celestials/uranus.cpp
+        celestials/neptune.cpp
         camera_manager.cpp
         orbit_camera_manager.cpp
         viewport_manager.cpp
+        collision.cpp
         game.cpp
         main.cpp)
 

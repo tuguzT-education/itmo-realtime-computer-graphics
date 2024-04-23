@@ -11,33 +11,89 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
                                              borov_engine::Transform{
                                                  .position = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f},
                                                  .rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(
-                                                     0, -std::numbers::pi_v<float> / 4.0f, 0),
+                                                     0.0f, -std::numbers::pi_v<float> / 4.0f, 0.0f),
                                              }),
       },
-      sun_{CreateSun()},
-      sun_mesh_{CreateSunMesh()},
-      mercury_{CreateMercury()},
-      mercury_mesh_{CreateMercuryMesh()},
-      venus_{CreateVenus()},
-      venus_mesh_{CreateVenusMesh()},
-      earth_{CreateEarth()},
-      earth_mesh_{CreateEarthMesh()},
-      moon_{CreateMoon()},
-      moon_mesh_{CreateMoonMesh()},
-      mars_{CreateMars()},
-      mars_mesh_{CreateMarsMesh()},
-      phobos_{CreatePhobos()},
-      phobos_mesh_{CreatePhobosMesh()},
-      deimos_{CreateDeimos()},
-      deimos_mesh_{CreateDeimosMesh()},
-      jupyter_{CreateJupyter()},
-      jupyter_mesh_{CreateJupyterMesh()},
-      saturn_{CreateSaturn()},
-      saturn_mesh_{CreateSaturnMesh()},
-      uranus_{CreateUranus()},
-      uranus_mesh_{CreateUranusMesh()},
-      neptune_{CreateNeptune()},
-      neptune_mesh_{CreateNeptuneMesh()} {
+      sun_{
+          AddComponent<Sun>(),
+      },
+      mercury_{
+          AddComponent<Mercury>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 1.5f,
+              },
+              &sun_),
+      },
+      venus_{
+          AddComponent<Venus>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 2.0f,
+              },
+              &sun_),
+      },
+      earth_{
+          AddComponent<Earth>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 3.0f,
+              },
+              &sun_),
+      },
+      moon_{
+          AddComponent<Moon>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 0.5f,
+              },
+              &earth_),
+      },
+      mars_{
+          AddComponent<Mars>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 4.5f,
+              },
+              &sun_),
+      },
+      phobos_{
+          AddComponent<Phobos>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 0.5f,
+              },
+              &mars_),
+      },
+      deimos_{
+          AddComponent<Deimos>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitZ * 0.75f,
+              },
+              &mars_),
+      },
+      jupyter_{
+          AddComponent<Jupyter>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 6.5f,
+              },
+              &sun_),
+      },
+      saturn_{
+          AddComponent<Saturn>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 8.0f,
+              },
+              &sun_),
+      },
+      uranus_{
+          AddComponent<Uranus>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 12.0f,
+              },
+              &sun_),
+      },
+      neptune_{
+          AddComponent<Neptune>(
+              borov_engine::Transform{
+                  .position = borov_engine::math::Vector3::UnitX * 18.0f,
+              },
+              &sun_),
+      } {
     CameraManager<::CameraManager>(camera_);
     ViewportManager<::ViewportManager>();
 }
@@ -45,212 +101,50 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
 void Game::Update(const float delta_time) {
     borov_engine::Game::Update(delta_time);
 
-    if (const borov_engine::Input *input = Input()) {
-        if (input->IsKeyDown(borov_engine::InputKey::Escape)) {
-            CameraManager<::CameraManager>(camera_);
-        }
-        // TODO cast ray, find camera target
-        if (input->IsKeyDown(borov_engine::InputKey::LeftButton)) {
-            CameraManager<OrbitCameraManager>(camera_, venus_mesh_);
-        }
-    }
-
+    SwitchCameraManagerIfNeeded();
     MovePlanets(delta_time);
 }
 
-borov_engine::SceneComponent &Game::CreateSun() {
-    return AddComponent<borov_engine::SceneComponent>();
-}
+void Game::SwitchCameraManagerIfNeeded() {
+    const borov_engine::Input *input = Input();
+    if (input == nullptr) {
+        return;
+    }
 
-borov_engine::GeometricPrimitiveComponent &Game::CreateSunMesh() {
-    borov_engine::SphereGeometricPrimitiveArguments arguments{
-        .diameter = 2.0f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::Yellow};
-    color *= 2.0f;
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &sun_, color);
-}
+    if (input->IsKeyDown(borov_engine::InputKey::Escape)) {
+        CameraManager<::CameraManager>(camera_);
+    }
+    if (input->IsKeyDown(borov_engine::InputKey::LeftButton)) {
+        const borov_engine::SceneComponent *target = nullptr;
+        float nearest_distance = std::numeric_limits<float>::infinity();
 
-borov_engine::SceneComponent &Game::CreateMercury() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 1.5f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
-}
+        const borov_engine::Transform transform = camera_.WorldTransform();
+        // TODO cast a ray from mouse position
+        const auto ray = borov_engine::math::Ray{transform.position, transform.Forward()};
 
-borov_engine::GeometricPrimitiveComponent &Game::CreateMercuryMesh() {
-    borov_engine::TorusGeometricPrimitiveArguments arguments{
-        .diameter = 0.2f,
-        .thickness = 0.1f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::SlateGray};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &mercury_, color);
-}
+        // ReSharper disable once CppTooWideScopeInitStatement
+        auto is_scene_and_collision = [](const borov_engine::Component &component) {
+            return dynamic_cast<const borov_engine::SceneComponent *>(&component) != nullptr &&
+                   dynamic_cast<const Collision *>(&component) != nullptr;
+        };
+        for (const borov_engine::Component &component : Components() | std::views::filter(is_scene_and_collision)) {
+            const auto &scene_component = dynamic_cast<const borov_engine::SceneComponent &>(component);
+            const auto &collision = dynamic_cast<const Collision &>(component);
+            const auto box = collision.BoxCollision();
+            if (float distance = 1000.0f; ray.Intersects(box, distance)) {
+                if (target == nullptr) {
+                    target = &scene_component;
+                } else if (distance < nearest_distance) {
+                    target = &scene_component;
+                    nearest_distance = distance;
+                }
+            }
+        }
 
-borov_engine::SceneComponent &Game::CreateVenus() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 2.0f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateVenusMesh() {
-    borov_engine::CylinderGeometricPrimitiveArguments arguments{
-        .height = 0.25f,
-        .diameter = 0.25f,
-    };
-    borov_engine::Transform transform{
-        .rotation = borov_engine::math::Quaternion::CreateFromAxisAngle(borov_engine::math::Vector3::Right,
-                                                                        std::numbers::pi_v<float> / 2.0f),
-    };
-    borov_engine::math::Color color{borov_engine::math::colors::linear::LightYellow};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &venus_, color);
-}
-
-borov_engine::SceneComponent &Game::CreateEarth() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 3.0f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateEarthMesh() {
-    borov_engine::GeoSphereGeometricPrimitiveArguments arguments{
-        .diameter = 0.5f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::SpringGreen};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &earth_, color);
-}
-
-borov_engine::SceneComponent &Game::CreateMoon() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 0.5f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &earth_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateMoonMesh() {
-    borov_engine::TetrahedronGeometricPrimitiveArguments arguments{
-        .size = 0.1f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::LightGray};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &moon_, color);
-}
-
-borov_engine::SceneComponent &Game::CreateMars() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 4.5f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateMarsMesh() {
-    borov_engine::IcosahedronGeometricPrimitiveArguments arguments{
-        .size = 0.25f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::OrangeRed};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &mars_, color);
-}
-
-borov_engine::SceneComponent &Game::CreatePhobos() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 0.5f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &mars_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreatePhobosMesh() {
-    borov_engine::TeapotGeometricPrimitiveArguments arguments{
-        .size = 0.1f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::PaleVioletRed};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &phobos_, color);
-}
-
-borov_engine::SceneComponent &Game::CreateDeimos() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitZ * 0.75f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &mars_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateDeimosMesh() {
-    borov_engine::BoxGeometricPrimitiveArguments arguments{
-        .size = borov_engine::math::Vector3::One * 0.1f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::DarkRed};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &deimos_, color);
-}
-
-borov_engine::SceneComponent &Game::CreateJupyter() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 6.5f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateJupyterMesh() {
-    borov_engine::SphereGeometricPrimitiveArguments arguments{
-        .diameter = 1.0f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::DarkOrange};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &jupyter_, color);
-}
-
-borov_engine::SceneComponent &Game::CreateSaturn() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 8.0f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateSaturnMesh() {
-    borov_engine::DodecahedronGeometricPrimitiveArguments arguments{
-        .size = 0.25f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::LightGoldenrodYellow};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &saturn_, color);
-}
-
-borov_engine::SceneComponent &Game::CreateUranus() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 12.0f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateUranusMesh() {
-    borov_engine::SphereGeometricPrimitiveArguments arguments{
-        .diameter = 0.5f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::LightSkyBlue};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &uranus_, color);
-}
-
-borov_engine::SceneComponent &Game::CreateNeptune() {
-    borov_engine::Transform transform{
-        .position = borov_engine::math::Vector3::UnitX * 18.0f,
-    };
-    return AddComponent<borov_engine::SceneComponent>(transform, &sun_);
-}
-
-borov_engine::GeometricPrimitiveComponent &Game::CreateNeptuneMesh() {
-    borov_engine::SphereGeometricPrimitiveArguments arguments{
-        .diameter = 0.75f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::BlueViolet};
-    return AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, &neptune_, color);
+        if (target != nullptr) {
+            CameraManager<OrbitCameraManager>(camera_, *target);
+        }
+    }
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -267,7 +161,7 @@ void Game::MovePlanets(const float delta_time) {
 
     // Rotate the Venus around itself
     const auto venus_around_self = math::Quaternion::CreateFromAxisAngle(math::Vector3::Right, 2.0f * delta_time);
-    auto &venus_mesh_rotation = venus_mesh_.Transform().rotation;
+    auto &venus_mesh_rotation = venus_.Mesh().Transform().rotation;
     venus_mesh_rotation = math::Quaternion::Concatenate(venus_mesh_rotation, venus_around_self);
 
     // Rotate the Moon around the Earth
@@ -276,7 +170,7 @@ void Game::MovePlanets(const float delta_time) {
 
     // Rotate the Moon around itself
     const auto moon_around_self = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 2.0f * delta_time);
-    auto &moon_mesh_rotation = moon_mesh_.Transform().rotation;
+    auto &moon_mesh_rotation = moon_.Mesh().Transform().rotation;
     moon_mesh_rotation = math::Quaternion::Concatenate(moon_mesh_rotation, moon_around_self);
 
     // Rotate the Earth around the Sun
@@ -285,7 +179,7 @@ void Game::MovePlanets(const float delta_time) {
 
     // Rotate the Earth around itself
     const auto earth_around_self = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 2.0f * delta_time);
-    auto &earth_mesh_rotation = earth_mesh_.Transform().rotation;
+    auto &earth_mesh_rotation = earth_.Mesh().Transform().rotation;
     earth_mesh_rotation = math::Quaternion::Concatenate(earth_mesh_rotation, earth_around_self);
 
     // Rotate the Mars around the Sun
@@ -302,7 +196,7 @@ void Game::MovePlanets(const float delta_time) {
 
     // Rotate the Mars around itself
     const auto mars_around_self = math::Quaternion::CreateFromAxisAngle(math::Vector3::Forward, 1.25f * delta_time);
-    auto &mars_mesh_rotation = mars_mesh_.Transform().rotation;
+    auto &mars_mesh_rotation = mars_.Mesh().Transform().rotation;
     mars_mesh_rotation = math::Quaternion::Concatenate(mars_mesh_rotation, mars_around_self);
 
     // Rotate the Jupyter around the Sun
@@ -315,7 +209,7 @@ void Game::MovePlanets(const float delta_time) {
 
     // Rotate the Saturn around itself
     const auto saturn_around_self = math::Quaternion::CreateFromAxisAngle(math::Vector3::One, 0.75f * delta_time);
-    auto &saturn_mesh_rotation = saturn_mesh_.Transform().rotation;
+    auto &saturn_mesh_rotation = saturn_.Mesh().Transform().rotation;
     saturn_mesh_rotation = math::Quaternion::Concatenate(mars_mesh_rotation, saturn_around_self);
 
     // Rotate the Uranus around the Sun
