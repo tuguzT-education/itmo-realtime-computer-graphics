@@ -1,6 +1,9 @@
 #include "borov_engine/geometric_primitive_component.hpp"
 
+#include <../directxtk/Effects.h>
+
 #include "borov_engine/camera.hpp"
+#include "borov_engine/detail/d3d_ptr.hpp"
 
 namespace borov_engine {
 
@@ -230,7 +233,14 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
     const math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
     const math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
 
-    primitive_->Draw(world, view, projection, color_, nullptr, wireframe_);
+    const auto effect = std::make_unique<DirectX::BasicEffect>(&Device());
+    effect->SetColorAndAlpha(color_);
+    effect->SetMatrices(world, view, projection);
+
+    detail::D3DPtr<ID3D11InputLayout> input_layout;
+    primitive_->CreateInputLayout(effect.get(), input_layout.GetAddressOf());
+
+    primitive_->Draw(effect.get(), input_layout.Get());
 }
 
 }  // namespace borov_engine
