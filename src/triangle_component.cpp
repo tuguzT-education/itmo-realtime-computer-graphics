@@ -33,9 +33,9 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path, const D3D_SHADER_MACRO *defin
 }  // namespace detail
 
 TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<Vertex> vertices,
-                                     const std::span<Index> indices, const borov_engine::Transform &transform,
-                                     const SceneComponent *parent)
-    : SceneComponent{game, transform, parent} {
+                                     const std::span<Index> indices, const bool wireframe,
+                                     const borov_engine::Transform &transform, const SceneComponent *parent)
+    : SceneComponent{game, transform, parent}, wireframe_{wireframe} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
@@ -78,6 +78,17 @@ void TriangleComponent::Draw(const Camera *camera) {
     index_buffer_->GetDesc(&index_buffer_desc);
     const UINT index_count = index_buffer_desc.ByteWidth / sizeof(Index);
     device_context.DrawIndexed(index_count, 0, 0);
+}
+
+bool TriangleComponent::Wireframe() const {
+    return wireframe_;
+}
+
+void TriangleComponent::Wireframe(const bool wireframe) {
+    wireframe_ = wireframe;
+
+    rasterizer_state_.Reset();
+    InitializeRasterizerState();
 }
 
 void TriangleComponent::InitializeVertexShader() {
@@ -127,8 +138,8 @@ void TriangleComponent::InitializeInputLayout() {
 }
 
 void TriangleComponent::InitializeRasterizerState() {
-    constexpr D3D11_RASTERIZER_DESC rasterizer_desc{
-        .FillMode = D3D11_FILL_SOLID,
+    const D3D11_RASTERIZER_DESC rasterizer_desc{
+        .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID,
         .CullMode = D3D11_CULL_NONE,
     };
 

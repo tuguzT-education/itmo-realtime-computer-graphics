@@ -18,9 +18,13 @@ class TriangleComponent : public SceneComponent {
     using Index = std::uint32_t;
 
     explicit TriangleComponent(class Game &game, std::span<Vertex> vertices, std::span<Index> indices,
-                               const class Transform &transform = {}, const SceneComponent *parent = nullptr);
+                               bool wireframe = false, const class Transform &transform = {},
+                               const SceneComponent *parent = nullptr);
 
     void Draw(const Camera *camera) override;
+
+    [[nodiscard]] bool Wireframe() const;
+    void Wireframe(bool wireframe);
 
   private:
     struct ConstantBuffer {
@@ -49,6 +53,8 @@ class TriangleComponent : public SceneComponent {
     detail::D3DPtr<ID3D11Buffer> vertex_buffer_;
     detail::D3DPtr<ID3D11VertexShader> vertex_shader_;
     detail::D3DPtr<ID3DBlob> vertex_byte_code_;
+
+    bool wireframe_;
 };
 
 }  // namespace borov_engine

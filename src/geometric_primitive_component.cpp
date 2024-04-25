@@ -240,7 +240,7 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
     detail::D3DPtr<ID3D11InputLayout> input_layout;
     primitive_->CreateInputLayout(effect.get(), input_layout.GetAddressOf());
 
-    primitive_->Draw(effect.get(), input_layout.Get());
+    primitive_->Draw(effect.get(), input_layout.Get(), false, wireframe_);
 }
 
 }  // namespace borov_engine

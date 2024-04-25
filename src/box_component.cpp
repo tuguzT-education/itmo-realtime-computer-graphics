@@ -52,7 +52,7 @@ T &Unmove(T &&t) {
 BoxComponent::BoxComponent(class Game &game, const float length, const float height, const float width,
                            const math::Color color, const class Transform &transform, const SceneComponent *parent)
     : TriangleComponent(game, detail::Unmove(detail::BoxVertices(length, height, width, color)),
-                        detail::Unmove(detail::BoxIndices()), transform, parent),
+                        detail::Unmove(detail::BoxIndices()), false, transform, parent),
       length_{length},
       height_{height},
       width_{width} {}
