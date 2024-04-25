@@ -2,29 +2,34 @@
 
 #include <borov_engine/game.hpp>
 
-namespace detail {
+// namespace detail {
+//
+// borov_engine::GeometricPrimitiveComponent& CreateSunMesh(borov_engine::Game& game,
+//                                                          const borov_engine::SceneComponent* parent = nullptr) {
+//     borov_engine::SphereGeometricPrimitiveArguments arguments{
+//         .diameter = 2.0f,
+//     };
+//     borov_engine::Transform transform;
+//     borov_engine::math::Color color{borov_engine::math::colors::linear::Yellow};
+//     color *= 2.0f;
+//     return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, parent, color);
+// }
 
-borov_engine::GeometricPrimitiveComponent& CreateSunMesh(borov_engine::Game& game,
-                                                         const borov_engine::SceneComponent* parent = nullptr) {
-    borov_engine::SphereGeometricPrimitiveArguments arguments{
-        .diameter = 2.0f,
-    };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::Yellow};
-    color *= 2.0f;
-    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, parent, color);
-}
-
-}  // namespace detail
+// }  // namespace detail
 
 Sun::Sun(borov_engine::Game& game, const borov_engine::Transform& transform, const SceneComponent* parent)
-    : SceneComponent(game, transform, parent), mesh_{detail::CreateSunMesh(Game(), this)} {}
+    : SceneComponent(game, transform, parent),
+      mesh_{
+          Game().AddComponent<borov_engine::BoxComponent>(
+              2.0f, 2.0f, 2.0f, borov_engine::math::Color{borov_engine::math::colors::linear::Yellow},
+              borov_engine::Transform{}, this),
+      } {}
 
-const borov_engine::GeometricPrimitiveComponent& Sun::Mesh() const {
+const borov_engine::BoxComponent& Sun::Mesh() const {
     return mesh_;
 }
 
-borov_engine::GeometricPrimitiveComponent& Sun::Mesh() {
+borov_engine::BoxComponent& Sun::Mesh() {
     return mesh_;
 }
 

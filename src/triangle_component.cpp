@@ -42,15 +42,15 @@ TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<V
     InitializeRasterizerState();
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
-    InitializeConstantBuffer(ConstantBuffer{.wvp_matrix = WorldTransform().ToMatrix()});
+    InitializeConstantBuffer(ConstantBuffer{});
 }
 
 void TriangleComponent::Draw(const Camera *camera) {
     ID3D11DeviceContext &device_context = DeviceContext();
 
-    std::array vertex_buffers = {vertex_buffer_.Get()};
-    std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
-    std::array<std::uint32_t, vertex_buffers.size()> offsets{0};
+    const std::array vertex_buffers = {vertex_buffer_.Get()};
+    constexpr std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
+    constexpr std::array<std::uint32_t, vertex_buffers.size()> offsets{0};
 
     device_context.RSSetState(rasterizer_state_.Get());
     device_context.IASetInputLayout(input_layout_.Get());
@@ -61,21 +61,22 @@ void TriangleComponent::Draw(const Camera *camera) {
     device_context.PSSetShader(index_shader_.Get(), nullptr, 0);
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
-    math::Matrix4x4 world = WorldTransform().ToMatrix();
-    math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
-    math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
-    ConstantBuffer constant_buffer{.wvp_matrix = world * view * projection};
+    const ConstantBuffer constant_buffer{
+        .world = WorldTransform().ToMatrix(),
+        .view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity,
+        .projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity,
+    };
     const HRESULT result = device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
     detail::CheckResult(result, "Failed to map constant buffer data");
     std::memcpy(subresource.pData, &constant_buffer, sizeof(constant_buffer));
     device_context.Unmap(constant_buffer_.Get(), 0);
 
-    std::array constant_buffers{constant_buffer_.Get()};
+    const std::array constant_buffers{constant_buffer_.Get()};
     device_context.VSSetConstantBuffers(0, constant_buffers.size(), constant_buffers.data());
 
     D3D11_BUFFER_DESC index_buffer_desc;
     index_buffer_->GetDesc(&index_buffer_desc);
-    UINT index_count = index_buffer_desc.ByteWidth / sizeof(Index);
+    const UINT index_count = index_buffer_desc.ByteWidth / sizeof(Index);
     device_context.DrawIndexed(index_count, 0, 0);
 }
 

@@ -12,7 +12,9 @@ struct PS_IN
 
 struct Transform
 {
-    float4x4 wvp_matrix;
+    float4x4 world;
+    float4x4 view;
+    float4x4 projection;
 };
 
 cbuffer TransformBuffer : register(b0)
@@ -24,7 +26,8 @@ PS_IN VSMain(VS_IN input)
 {
 	PS_IN output = (PS_IN)0;
 
-	output.position = mul(transform.wvp_matrix, float4(input.position, 1.0f));
+    float4x4 wvp = mul(mul(transform.projection, transform.view), transform.world);
+	output.position = mul(wvp, float4(input.position, 1.0f));
 	output.color = input.color;
 
 	return output;

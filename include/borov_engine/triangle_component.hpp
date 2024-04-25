@@ -24,7 +24,9 @@ class TriangleComponent : public SceneComponent {
 
   private:
     struct ConstantBuffer {
-        alignas(16) math::Matrix4x4 wvp_matrix;
+        alignas(16) math::Matrix4x4 world;
+        alignas(16) math::Matrix4x4 view;
+        alignas(16) math::Matrix4x4 projection;
     };
 
     void InitializeVertexShader();
