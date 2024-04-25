@@ -179,6 +179,13 @@ void Game::Update(const float delta_time) {
     // Rotate the Neptune around the Sun
     const auto neptune_around_sun = math::Quaternion::CreateFromAxisAngle(math::Vector3::Up, 0.03f * delta_time);
     neptune_.Transform().RotateAround(math::Vector3::Zero, neptune_around_sun);
+
+    // Rotate the Sun around itself
+    math::Vector3 sun_axis = math::Vector3::Right + math::Vector3::Forward;
+    sun_axis.Normalize();
+    const auto sun_around_self = math::Quaternion::CreateFromAxisAngle(sun_axis, 2.0f * delta_time);
+    auto &sun_mesh_rotation = sun_.Mesh().Transform().rotation;
+    sun_mesh_rotation = math::Quaternion::Concatenate(sun_mesh_rotation, sun_around_self);
 }
 
 void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {

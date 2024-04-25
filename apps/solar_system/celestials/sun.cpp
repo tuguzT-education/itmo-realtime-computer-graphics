@@ -21,7 +21,7 @@ Sun::Sun(borov_engine::Game& game, const borov_engine::Transform& transform, con
     : SceneComponent(game, transform, parent),
       mesh_{
           Game().AddComponent<borov_engine::BoxComponent>(
-              2.0f, 2.0f, 2.0f, borov_engine::math::Color{borov_engine::math::colors::linear::Yellow},
+              1.5f, 1.5f, 1.5f, borov_engine::math::Color{borov_engine::math::colors::linear::Yellow},
               borov_engine::Transform{}, this),
       } {}
 
@@ -37,6 +37,6 @@ borov_engine::math::AxisAlignedBox Sun::BoxCollision() const {
     auto [position, rotation, scale] = WorldTransform();
     return borov_engine::math::AxisAlignedBox{
         position,
-        borov_engine::math::Vector3::One * scale,
+        borov_engine::math::Vector3::One * 0.75f * scale,
     };
 }
