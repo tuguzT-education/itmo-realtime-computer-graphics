@@ -86,6 +86,7 @@ class Game {
     void InitializeDevice();
     void InitializeSwapChain(const class Window &window);
     void InitializeRenderTargetView();
+    void InitializeDepthStencilView();
 
     void DrawInternal();
     void OnWindowResize(WindowResizeData data);
@@ -103,6 +104,9 @@ class Game {
     std::uint32_t target_height_;
     bool should_exit_;
     bool is_running_;
+
+    detail::D3DPtr<ID3D11DepthStencilView> depth_stencil_view_;
+    detail::D3DPtr<ID3D11Texture2D> depth_buffer_;
 
     detail::D3DPtr<ID3D11RenderTargetView> render_target_view_;
     detail::D3DPtr<IDXGISwapChain> swap_chain_;

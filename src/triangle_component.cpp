@@ -86,8 +86,6 @@ bool TriangleComponent::Wireframe() const {
 
 void TriangleComponent::Wireframe(const bool wireframe) {
     wireframe_ = wireframe;
-
-    rasterizer_state_.Reset();
     InitializeRasterizerState();
 }
 

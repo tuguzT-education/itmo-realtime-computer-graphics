@@ -21,6 +21,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     InitializeDevice();
     InitializeSwapChain(window);
     InitializeRenderTargetView();
+    InitializeDepthStencilView();
 
     ViewportManager<borov_engine::ViewportManager>();
 
@@ -256,6 +257,28 @@ void Game::InitializeRenderTargetView() {
     detail::CheckResult(result, "Failed to create render target view");
 }
 
+void Game::InitializeDepthStencilView() {
+    const D3D11_TEXTURE2D_DESC depth_buffer_desc{
+        .Width = target_width_,
+        .Height = target_height_,
+        .MipLevels = 1,
+        .ArraySize = 1,
+        .Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
+        .SampleDesc =
+            DXGI_SAMPLE_DESC{
+                .Count = 1,
+                .Quality = 0,
+            },
+        .Usage = D3D11_USAGE_DEFAULT,
+        .BindFlags = D3D11_BIND_DEPTH_STENCIL,
+    };
+    HRESULT result = device_->CreateTexture2D(&depth_buffer_desc, nullptr, &depth_buffer_);
+    detail::CheckResult(result, "Failed to create depth buffer");
+
+    result = device_->CreateDepthStencilView(depth_buffer_.Get(), nullptr, &depth_stencil_view_);
+    detail::CheckResult(result, "Failed to create depth stencil view");
+}
+
 void Game::Update(const float delta_time) {
     if (camera_manager_ != nullptr) {
         camera_manager_->Update(delta_time);
@@ -290,6 +313,7 @@ void Game::OnTargetResize() {
         detail::CheckResult(result, "Failed to resize swap chain buffers");
     }
     InitializeRenderTargetView();
+    InitializeDepthStencilView();
 
     if (camera_manager_ != nullptr) {
         camera_manager_->OnTargetResize();
@@ -305,14 +329,15 @@ void Game::DrawInternal() {
     device_context_->ClearState();
 
     const std::array render_targets{render_target_view_.Get()};
-    device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), nullptr);
+    device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), depth_stencil_view_.Get());
 
     device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
 
     Draw();
 
-    constexpr std::array<ID3D11RenderTargetView *, 0> no_render_targets = {};
+    constexpr std::array<ID3D11RenderTargetView *, 0> no_render_targets{};
     device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
+    device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     const HRESULT result = swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
     detail::CheckResult(result, "Failed to present into swapchain");

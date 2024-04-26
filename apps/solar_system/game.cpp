@@ -214,6 +214,7 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
                 const bool wireframe = triangle_component.Wireframe();
                 triangle_component.Wireframe() = !wireframe;
             }
+            break;
         }
         case borov_engine::InputKey::LeftButton: {
             const borov_engine::Window *window = Window();
