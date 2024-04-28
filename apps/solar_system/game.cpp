@@ -1,7 +1,8 @@
 #include "game.hpp"
 
-#include "camera_manager.hpp"
-#include "orbit_camera_manager.hpp"
+#include <borov_engine/orbit_camera_manager.hpp>
+#include <borov_engine/spectator_camera_manager.hpp>
+
 #include "viewport_manager.hpp"
 
 Game::Game(borov_engine::Window &window, borov_engine::Input &input)
@@ -94,7 +95,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
               },
               &sun_),
       } {
-    CameraManager<::CameraManager>(camera_);
+    CameraManager<borov_engine::SpectatorCameraManager>(camera_);
     ViewportManager<::ViewportManager>();
 
     input.OnInputKeyDown().AddRaw(this, &Game::OnInputKeyDown);
@@ -191,7 +192,7 @@ void Game::Update(const float delta_time) {
 void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
     switch (input_key) {
         case borov_engine::InputKey::Escape: {
-            CameraManager<::CameraManager>(camera_);
+            CameraManager<borov_engine::SpectatorCameraManager>(camera_);
             break;
         }
         case borov_engine::InputKey::G: {
@@ -253,7 +254,7 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
             }
 
             if (target != nullptr) {
-                CameraManager<OrbitCameraManager>(camera_, *target);
+                CameraManager<borov_engine::OrbitCameraManager>(camera_, *target);
             }
             break;
         }

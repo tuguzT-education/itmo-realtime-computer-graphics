@@ -33,6 +33,8 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/camera.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/camera_manager.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/spectator_camera_manager.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/orbit_camera_manager.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/viewport.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/viewport_manager.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/transform.hpp
@@ -55,6 +57,8 @@ set(SOURCE_LIST
         component.cpp
         camera.cpp
         camera_manager.cpp
+        spectator_camera_manager.cpp
+        orbit_camera_manager.cpp
         viewport.cpp
         viewport_manager.cpp
         transform.cpp

@@ -11,8 +11,6 @@ set(HEADER_LIST
         celestials/saturn.hpp
         celestials/uranus.hpp
         celestials/neptune.hpp
-        camera_manager.hpp
-        orbit_camera_manager.hpp
         viewport_manager.hpp
         collision.hpp
         game.hpp)
@@ -29,8 +27,6 @@ set(SOURCE_LIST
         celestials/saturn.cpp
         celestials/uranus.cpp
         celestials/neptune.cpp
-        camera_manager.cpp
-        orbit_camera_manager.cpp
         viewport_manager.cpp
         collision.cpp
         game.cpp
