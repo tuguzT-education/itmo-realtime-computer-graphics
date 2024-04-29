@@ -13,6 +13,9 @@ using Vector2 = DirectX::SimpleMath::Vector2;
 using Vector3 = DirectX::SimpleMath::Vector3;
 using Vector4 = DirectX::SimpleMath::Vector4;
 
+void Normalize(const Vector3 &vector, Vector3 &result);
+Vector3 Normalize(const Vector3 &vector);
+
 using Color = DirectX::SimpleMath::Color;
 
 namespace colors {
@@ -45,6 +48,39 @@ using Box = DirectX::BoundingOrientedBox;
 using AxisAlignedBox = DirectX::BoundingBox;
 using Sphere = DirectX::BoundingSphere;
 using Frustum = DirectX::BoundingFrustum;
+
+struct Triangle {
+    union {
+        struct {
+            Vector3 point0;
+            Vector3 point1;
+            Vector3 point2;
+        };
+        Vector3 points[3];
+    };
+
+    [[nodiscard]] Vector3 Tangent() const;
+    [[nodiscard]] Vector3 Normal() const;
+    [[nodiscard]] Vector3 Binormal() const;
+
+    [[nodiscard]] Plane Plane() const;
+
+    [[nodiscard]] bool Intersects(const AxisAlignedBox &axis_aligned_box) const;
+    [[nodiscard]] bool Intersects(const Box &box) const;
+    [[nodiscard]] bool Intersects(Sphere sphere) const;
+    [[nodiscard]] bool Intersects(const Frustum &frustum) const;
+    [[nodiscard]] bool Intersects(const Ray &ray, float &dist) const;
+    [[nodiscard]] bool Intersects(const Triangle &other) const;
+    [[nodiscard]] PlaneIntersectionType Intersects(math::Plane plane) const;
+
+    [[nodiscard]] ContainmentType ContainedBy(const AxisAlignedBox &axis_aligned_box) const;
+    [[nodiscard]] ContainmentType ContainedBy(const Box &box) const;
+    [[nodiscard]] ContainmentType ContainedBy(Sphere sphere) const;
+    [[nodiscard]] ContainmentType ContainedBy(const Frustum &frustum) const;
+    [[nodiscard]] ContainmentType ContainedBy(DirectX::GXMVECTOR plane0, DirectX::HXMVECTOR plane1,
+                                              DirectX::HXMVECTOR plane2, DirectX::CXMVECTOR plane3,
+                                              DirectX::CXMVECTOR plane4, DirectX::CXMVECTOR plane5) const;
+};
 
 }  // namespace borov_engine::math
 

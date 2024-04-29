@@ -182,8 +182,7 @@ void Game::Update(const float delta_time) {
     neptune_.Transform().RotateAround(math::Vector3::Zero, neptune_around_sun);
 
     // Rotate the Sun around itself
-    math::Vector3 sun_axis = math::Vector3::Right + math::Vector3::Forward;
-    sun_axis.Normalize();
+    const math::Vector3 sun_axis = math::Normalize(math::Vector3::Right + math::Vector3::Forward);
     const auto sun_around_self = math::Quaternion::CreateFromAxisAngle(sun_axis, 2.0f * delta_time);
     auto &sun_mesh_rotation = sun_.Mesh().Transform().rotation;
     sun_mesh_rotation = math::Quaternion::Concatenate(sun_mesh_rotation, sun_around_self);
@@ -230,8 +229,7 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
             const math::Point cursor_position = window->CursorPosition();
             const math::Vector3 world_cursor_position = ScreenToWorld(cursor_position);
             const math::Vector3 ray_position = camera_.WorldTransform().position;
-            math::Vector3 ray_direction = world_cursor_position - ray_position;
-            ray_direction.Normalize();
+            const math::Vector3 ray_direction = math::Normalize(world_cursor_position - ray_position);
             const math::Ray ray{ray_position, ray_direction};
 
             // ReSharper disable once CppTooWideScopeInitStatement

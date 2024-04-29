@@ -13,9 +13,7 @@ void Ball::Reset() {
 }
 
 void Ball::Update(const float delta_time) {
-    borov_engine::math::Vector3 normal;
-    velocity_.Normalize(normal);
-    velocity_ += normal * (0.05f * delta_time);
+    velocity_ += borov_engine::math::Normalize(velocity_) * (0.05f * delta_time);
 
     auto &position = Transform().position;
     if (position.x < -0.975f || position.x > 0.975f) {
@@ -45,10 +43,10 @@ borov_engine::math::Vector3 Ball::RandomVelocity() {
     static std::default_random_engine engine{device()};
     static std::uniform_real_distribution distribution{-1.0f, 1.0f};
 
-    float x = distribution(engine);
-    x += x > 0.0f ? 1.0f : -1.0f;
-    float y = distribution(engine);
-    borov_engine::math::Vector3 vector{x, y, 0.0f};
-    vector.Normalize();
-    return vector;
+    namespace math = borov_engine::math;
+
+    const float temp = distribution(engine);
+    const float x = temp + (temp > 0.0f ? 1.0f : -1.0f);
+    const float y = distribution(engine);
+    return math::Normalize(math::Vector3{x, y, 0.0f});
 }
