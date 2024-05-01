@@ -13,10 +13,6 @@ namespace borov_engine {
 
 CollisionPrimitive::~CollisionPrimitive() = default;
 
-bool CollisionPrimitive::Intersects(const CollisionPrimitive& other) const {
-    return false;
-}
-
 SphereCollisionPrimitive::SphereCollisionPrimitive(const PrimitiveType& primitive) : sphere_{primitive} {}
 
 auto SphereCollisionPrimitive::Primitive() const -> const PrimitiveType& {
@@ -51,6 +47,10 @@ bool SphereCollisionPrimitive::Intersects(const CollisionPrimitive& other) const
         return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
+}
+
+bool SphereCollisionPrimitive::Intersects(const math::Ray& ray, float& dist) const {
+    return ray.Intersects(sphere_, dist);
 }
 
 AxisAlignedBoxCollisionPrimitive::AxisAlignedBoxCollisionPrimitive(const PrimitiveType& primitive) : box_{primitive} {}
@@ -89,6 +89,10 @@ bool AxisAlignedBoxCollisionPrimitive::Intersects(const CollisionPrimitive& othe
     return other.Intersects(*this);
 }
 
+bool AxisAlignedBoxCollisionPrimitive::Intersects(const math::Ray& ray, float& dist) const {
+    return ray.Intersects(box_, dist);
+}
+
 BoxCollisionPrimitive::BoxCollisionPrimitive(const PrimitiveType& primitive) : box_{primitive} {}
 
 auto BoxCollisionPrimitive::Primitive() const -> const PrimitiveType& {
@@ -123,6 +127,10 @@ bool BoxCollisionPrimitive::Intersects(const CollisionPrimitive& other) const {
         return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
+}
+
+bool BoxCollisionPrimitive::Intersects(const math::Ray& ray, float& dist) const {
+    return box_.Intersects(ray.position, ray.direction, dist);
 }
 
 FrustumCollisionPrimitive::FrustumCollisionPrimitive(const PrimitiveType& primitive) : frustum_{primitive} {}
@@ -161,6 +169,10 @@ bool FrustumCollisionPrimitive::Intersects(const CollisionPrimitive& other) cons
     return other.Intersects(*this);
 }
 
+bool FrustumCollisionPrimitive::Intersects(const math::Ray& ray, float& dist) const {
+    return frustum_.Intersects(ray.position, ray.direction, dist);
+}
+
 PlaneCollisionPrimitive::PlaneCollisionPrimitive(const PrimitiveType& primitive) : plane_{primitive} {}
 
 auto PlaneCollisionPrimitive::Primitive() const -> const PrimitiveType& {
@@ -197,6 +209,10 @@ bool PlaneCollisionPrimitive::Intersects(const CollisionPrimitive& other) const 
     return other.Intersects(*this);
 }
 
+bool PlaneCollisionPrimitive::Intersects(const math::Ray& ray, float& dist) const {
+    return ray.Intersects(plane_, dist);
+}
+
 TriangleCollisionPrimitive::TriangleCollisionPrimitive(const PrimitiveType& primitive) : triangle_{primitive} {}
 
 auto TriangleCollisionPrimitive::Primitive() const -> const PrimitiveType& {
@@ -231,6 +247,10 @@ bool TriangleCollisionPrimitive::Intersects(const CollisionPrimitive& other) con
         return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
+}
+
+bool TriangleCollisionPrimitive::Intersects(const math::Ray& ray, float& dist) const {
+    return triangle_.Intersects(ray, dist);
 }
 
 CustomCollisionPrimitive::CustomCollisionPrimitive(const VertexCollection& vertices, const IndexCollection& indices)
@@ -309,6 +329,10 @@ bool CustomCollisionPrimitive::Intersects(const CollisionPrimitive& other) const
         return false;
     }
     return other.Intersects(*this);
+}
+
+bool CustomCollisionPrimitive::Intersects(const math::Ray& ray, float& dist) const {
+    return ranges::any_of(Triangles(), [&](const math::Triangle& triangle) { return triangle.Intersects(ray, dist); });
 }
 
 }  // namespace borov_engine

@@ -11,7 +11,8 @@ class CollisionPrimitive {
   public:
     virtual ~CollisionPrimitive();
 
-    [[nodiscard]] virtual bool Intersects(const CollisionPrimitive &other) const;
+    [[nodiscard]] virtual bool Intersects(const CollisionPrimitive &other) const = 0;
+    [[nodiscard]] virtual bool Intersects(const math::Ray &ray, float &dist) const = 0;
 };
 
 class SphereCollisionPrimitive : public CollisionPrimitive {
@@ -24,6 +25,7 @@ class SphereCollisionPrimitive : public CollisionPrimitive {
     [[nodiscard]] PrimitiveType &Primitive();
 
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType sphere_;
@@ -39,6 +41,7 @@ class AxisAlignedBoxCollisionPrimitive : public CollisionPrimitive {
     [[nodiscard]] PrimitiveType &Primitive();
 
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType box_;
@@ -54,6 +57,7 @@ class BoxCollisionPrimitive : public CollisionPrimitive {
     [[nodiscard]] PrimitiveType &Primitive();
 
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType box_;
@@ -69,6 +73,7 @@ class FrustumCollisionPrimitive : public CollisionPrimitive {
     [[nodiscard]] PrimitiveType &Primitive();
 
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType frustum_;
@@ -84,6 +89,7 @@ class PlaneCollisionPrimitive : public CollisionPrimitive {
     [[nodiscard]] PrimitiveType &Primitive();
 
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType plane_;
@@ -99,6 +105,7 @@ class TriangleCollisionPrimitive : public CollisionPrimitive {
     [[nodiscard]] PrimitiveType &Primitive();
 
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType triangle_;
@@ -124,6 +131,7 @@ class CustomCollisionPrimitive : public CollisionPrimitive {
     [[nodiscard]] std::vector<math::Triangle> Triangles() const;
 
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     VertexCollection vertices_;
