@@ -36,6 +36,8 @@ using Plane = DirectX::SimpleMath::Plane;
 using Ray = DirectX::SimpleMath::Ray;
 using Rectangle = DirectX::SimpleMath::Rectangle;
 
+bool Intersects(Plane lhs, Plane rhs);
+
 struct Point {
     std::int32_t x;
     std::int32_t y;
@@ -50,14 +52,9 @@ using Sphere = DirectX::BoundingSphere;
 using Frustum = DirectX::BoundingFrustum;
 
 struct Triangle {
-    union {
-        struct {
-            Vector3 point0;
-            Vector3 point1;
-            Vector3 point2;
-        };
-        Vector3 points[3];
-    };
+    Vector3 point0;
+    Vector3 point1;
+    Vector3 point2;
 
     [[nodiscard]] Vector3 Tangent() const;
     [[nodiscard]] Vector3 Normal() const;
@@ -77,9 +74,8 @@ struct Triangle {
     [[nodiscard]] ContainmentType ContainedBy(const Box &box) const;
     [[nodiscard]] ContainmentType ContainedBy(Sphere sphere) const;
     [[nodiscard]] ContainmentType ContainedBy(const Frustum &frustum) const;
-    [[nodiscard]] ContainmentType ContainedBy(DirectX::GXMVECTOR plane0, DirectX::HXMVECTOR plane1,
-                                              DirectX::HXMVECTOR plane2, DirectX::CXMVECTOR plane3,
-                                              DirectX::CXMVECTOR plane4, DirectX::CXMVECTOR plane5) const;
+    [[nodiscard]] ContainmentType ContainedBy(math::Plane plane0, math::Plane plane1, math::Plane plane2,
+                                              math::Plane plane3, math::Plane plane4, math::Plane plane5) const;
 };
 
 }  // namespace borov_engine::math

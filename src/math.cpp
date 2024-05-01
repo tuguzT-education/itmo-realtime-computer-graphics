@@ -23,12 +23,25 @@ Vector3 RotateAround(const Vector3 &position, const Vector3 &rotation_point, con
     return result;
 }
 
+bool Intersects(const Plane lhs, const Plane rhs) {
+    DirectX::XMVECTOR line_point_1_xm, line_point_2_xm;
+    XMPlaneIntersectPlane(&line_point_1_xm, &line_point_2_xm, lhs, rhs);
+
+    const Vector3 line_point_1{line_point_1_xm}, line_point_2{line_point_2_xm};
+    auto all_nan = [](const Vector3 &vector) {
+        auto &[x, y, z] = vector;
+        return std::isnan(x) && std::isnan(y) && std::isnan(z);
+    };
+    const bool parallel = all_nan(line_point_1) && all_nan(line_point_2);
+    return !parallel;
+}
+
 Vector3 Triangle::Tangent() const {
     return Normalize(point1 - point0);
 }
 
 Vector3 Triangle::Normal() const {
-    const Vector3 cross = point0.Cross(point1);
+    const Vector3 cross = (point1 - point0).Cross(point2 - point1);
     return Normalize(cross);
 }
 
@@ -86,9 +99,9 @@ ContainmentType Triangle::ContainedBy(const Frustum &frustum) const {
     return frustum.Contains(point0, point1, point2);
 }
 
-ContainmentType Triangle::ContainedBy(DirectX::GXMVECTOR plane0, DirectX::HXMVECTOR plane1, DirectX::HXMVECTOR plane2,
-                                      DirectX::CXMVECTOR plane3, DirectX::CXMVECTOR plane4,
-                                      DirectX::CXMVECTOR plane5) const {
+ContainmentType Triangle::ContainedBy(const math::Plane plane0, const math::Plane plane1, const math::Plane plane2,
+                                      const math::Plane plane3, const math::Plane plane4,
+                                      const math::Plane plane5) const {
     return DirectX::TriangleTests::ContainedBy(point0, point1, point2, plane0, plane1, plane2, plane3, plane4, plane5);
 }
 
