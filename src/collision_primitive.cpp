@@ -3,8 +3,7 @@
 #undef min
 #undef max
 
-#include <algorithm>
-#include <range/v3/range/concepts.hpp>
+#include <range/v3/algorithm/any_of.hpp>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/chunk.hpp>
 #include <range/v3/view/filter.hpp>
@@ -49,7 +48,7 @@ bool SphereCollisionPrimitive::Intersects(const CollisionPrimitive& other) const
     }
     if (const auto custom = dynamic_cast<const CustomCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(sphere_); };
-        return std::ranges::any_of(custom->Triangles(), intersects);
+        return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
 }
@@ -85,7 +84,7 @@ bool AxisAlignedBoxCollisionPrimitive::Intersects(const CollisionPrimitive& othe
     }
     if (const auto custom = dynamic_cast<const CustomCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(box_); };
-        return std::ranges::any_of(custom->Triangles(), intersects);
+        return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
 }
@@ -121,7 +120,7 @@ bool BoxCollisionPrimitive::Intersects(const CollisionPrimitive& other) const {
     }
     if (const auto custom = dynamic_cast<const CustomCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(box_); };
-        return std::ranges::any_of(custom->Triangles(), intersects);
+        return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
 }
@@ -157,7 +156,7 @@ bool FrustumCollisionPrimitive::Intersects(const CollisionPrimitive& other) cons
     }
     if (const auto custom = dynamic_cast<const CustomCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(frustum_); };
-        return std::ranges::any_of(custom->Triangles(), intersects);
+        return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
 }
@@ -193,7 +192,7 @@ bool PlaneCollisionPrimitive::Intersects(const CollisionPrimitive& other) const 
     }
     if (const auto custom = dynamic_cast<const CustomCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(plane_); };
-        return std::ranges::any_of(custom->Triangles(), intersects);
+        return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
 }
@@ -229,7 +228,7 @@ bool TriangleCollisionPrimitive::Intersects(const CollisionPrimitive& other) con
     }
     if (const auto custom = dynamic_cast<const CustomCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(triangle_); };
-        return std::ranges::any_of(custom->Triangles(), intersects);
+        return ranges::any_of(custom->Triangles(), intersects);
     }
     return other.Intersects(*this);
 }
@@ -259,9 +258,8 @@ auto CustomCollisionPrimitive::Indices() -> IndexCollection& {
 std::vector<math::Triangle> CustomCollisionPrimitive::Triangles() const {
     using namespace ranges;
 
-    auto chunks = indices_ | views::chunk(3) | views::filter([](sized_range auto chunk) { return size(chunk) == 3; });
-    auto triangles = chunks | views::transform([=](range auto chunk) {
-                         const std::vector<Index> indices = chunk | to<std::vector>();
+    auto chunks = indices_ | views::chunk(3) | views::filter([](auto chunk) { return size(chunk) == 3; });
+    auto triangles = chunks | views::transform([=](auto indices) {
                          return math::Triangle{
                              .point0 = vertices_[indices[0]],
                              .point1 = vertices_[indices[1]],
@@ -274,37 +272,37 @@ std::vector<math::Triangle> CustomCollisionPrimitive::Triangles() const {
 bool CustomCollisionPrimitive::Intersects(const CollisionPrimitive& other) const {
     if (const auto sphere = dynamic_cast<const SphereCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(sphere->Primitive()); };
-        return std::ranges::any_of(Triangles(), intersects);
+        return ranges::any_of(Triangles(), intersects);
     }
     if (const auto axis_aligned_box = dynamic_cast<const AxisAlignedBoxCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) {
             return triangle.Intersects(axis_aligned_box->Primitive());
         };
-        return std::ranges::any_of(Triangles(), intersects);
+        return ranges::any_of(Triangles(), intersects);
     }
     if (const auto box = dynamic_cast<const BoxCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(box->Primitive()); };
-        return std::ranges::any_of(Triangles(), intersects);
+        return ranges::any_of(Triangles(), intersects);
     }
     if (const auto frustum = dynamic_cast<const FrustumCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(frustum->Primitive()); };
-        return std::ranges::any_of(Triangles(), intersects);
+        return ranges::any_of(Triangles(), intersects);
     }
     if (const auto plane = dynamic_cast<const PlaneCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& triangle) { return triangle.Intersects(plane->Primitive()); };
-        return std::ranges::any_of(Triangles(), intersects);
+        return ranges::any_of(Triangles(), intersects);
     }
     if (const auto triangle = dynamic_cast<const TriangleCollisionPrimitive*>(&other)) {
         auto intersects = [=](const math::Triangle& my_triangle) {
             return my_triangle.Intersects(triangle->Primitive());
         };
-        return std::ranges::any_of(Triangles(), intersects);
+        return ranges::any_of(Triangles(), intersects);
     }
     if (const auto custom = dynamic_cast<const CustomCollisionPrimitive*>(&other)) {
         for (const math::Triangle& my_triangle : Triangles()) {
             // ReSharper disable once CppTooWideScopeInitStatement
             auto intersects = [=](const math::Triangle& triangle) { return my_triangle.Intersects(triangle); };
-            if (std::ranges::any_of(custom->Triangles(), intersects)) {
+            if (ranges::any_of(custom->Triangles(), intersects)) {
                 return true;
             }
         }
