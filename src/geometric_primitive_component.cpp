@@ -173,7 +173,9 @@ GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &gam
       color_{color},
       wireframe_{wireframe},
       primitive_{CreatePrimitive(&DeviceContext(), arguments)},
-      primitive_arguments_{arguments} {}
+      primitive_arguments_{arguments} {
+    LoadTexture(texture_path);
+}
 
 GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &game,
                                                          const GeometricPrimitiveType primitive_type,
