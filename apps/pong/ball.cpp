@@ -29,8 +29,7 @@ void Ball::Update(const float delta_time) {
             continue;
         }
 
-        borov_engine::math::Box box = Collision();
-        if (borov_engine::math::Box player_box = player->Collision(); box.Intersects(player_box)) {
+        if (player->Intersects(*this)) {
             velocity_.x = -velocity_.x;
         }
     }

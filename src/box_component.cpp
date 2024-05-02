@@ -69,11 +69,20 @@ float BoxComponent::Width() const {
     return width_;
 }
 
-math::Box BoxComponent::Collision() const {
-    const math::Vector3 center = Transform().position;
-    const math::Vector3 extents = math::Vector3{Length() / 2, Height() / 2, Width() / 2} * Transform().scale;
-    const math::Quaternion orientation = Transform().rotation;
-    return math::Box{center, extents, orientation};
+bool BoxComponent::Intersects(const class CollisionPrimitive &other) const {
+    return CollisionPrimitive().Intersects(other);
+}
+
+bool BoxComponent::Intersects(const math::Ray &ray, float &dist) const {
+    return CollisionPrimitive().Intersects(ray, dist);
+}
+
+BoxCollisionPrimitive BoxComponent::CollisionPrimitive() const {
+    const auto [center, orientation, scale] = WorldTransform();
+    const math::Vector3 extents = math::Vector3{Length() / 2, Height() / 2, Width() / 2} * scale;
+
+    const math::Box box{center, extents, orientation};
+    return BoxCollisionPrimitive{box};
 }
 
 }  // namespace borov_engine
