@@ -109,6 +109,8 @@ Game::~Game() {
 }
 
 void Game::Update(const float delta_time) {
+    borov_engine::Game::Update(delta_time);
+
     namespace math = borov_engine::math;
 
     // Rotate the Mercury around the Sun
@@ -185,8 +187,6 @@ void Game::Update(const float delta_time) {
     const auto sun_around_self = math::Quaternion::CreateFromAxisAngle(sun_axis, 2.0f * delta_time);
     auto &sun_mesh_rotation = sun_.Mesh().Transform().rotation;
     sun_mesh_rotation = math::Quaternion::Concatenate(sun_mesh_rotation, sun_around_self);
-
-    borov_engine::Game::Update(delta_time);
 }
 
 void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {

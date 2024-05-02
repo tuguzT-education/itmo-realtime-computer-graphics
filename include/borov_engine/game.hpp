@@ -88,6 +88,7 @@ class Game {
     void InitializeRenderTargetView();
     void InitializeDepthStencilView();
 
+    void UpdateInternal(float delta_time);
     void DrawInternal();
     void OnWindowResize(WindowResizeData data);
 

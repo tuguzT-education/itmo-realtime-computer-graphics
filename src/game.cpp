@@ -170,7 +170,7 @@ void Game::Run() {
 
         while (lag >= time_per_update_) {
             const float delta_time = Timer::SecondsFrom(time_per_update_);
-            Update(delta_time);
+            UpdateInternal(delta_time);
             lag -= time_per_update_;
         }
 
@@ -279,23 +279,45 @@ void Game::InitializeDepthStencilView() {
     detail::CheckResult(result, "Failed to create depth stencil view");
 }
 
-void Game::Update(const float delta_time) {
+void Game::UpdateInternal(const float delta_time) {
+    Update(delta_time);
+
     if (camera_manager_ != nullptr) {
         camera_manager_->Update(delta_time);
     }
     viewport_manager_->Update(delta_time);
+}
 
+void Game::Update(const float delta_time) {
     for (const auto &component : components_) {
         component->Update(delta_time);
     }
 }
 
-void Game::Draw() {
+void Game::DrawInternal() {
+    device_context_->ClearState();
+
+    const std::array render_targets{render_target_view_.Get()};
+    device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), depth_stencil_view_.Get());
+
+    device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
+
+    Draw();
+
     if (camera_manager_ != nullptr) {
         camera_manager_->Draw(nullptr);
     }
     viewport_manager_->Draw(nullptr);
 
+    constexpr std::array<ID3D11RenderTargetView *, 0> no_render_targets{};
+    device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
+    device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+    const HRESULT result = swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+    detail::CheckResult(result, "Failed to present into swapchain");
+}
+
+void Game::Draw() {
     for (const auto &viewport : viewport_manager_->Viewports()) {
         device_context_->RSSetViewports(1, viewport.Get11());
 
@@ -323,24 +345,6 @@ void Game::OnTargetResize() {
     for (const auto &component : components_) {
         component->OnTargetResize();
     }
-}
-
-void Game::DrawInternal() {
-    device_context_->ClearState();
-
-    const std::array render_targets{render_target_view_.Get()};
-    device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), depth_stencil_view_.Get());
-
-    device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
-
-    Draw();
-
-    constexpr std::array<ID3D11RenderTargetView *, 0> no_render_targets{};
-    device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
-    device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-    const HRESULT result = swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
-    detail::CheckResult(result, "Failed to present into swapchain");
 }
 
 void Game::OnWindowResize([[maybe_unused]] WindowResizeData data) {
