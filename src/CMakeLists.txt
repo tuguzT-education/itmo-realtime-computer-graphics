@@ -23,6 +23,8 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/check_result.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/check_result.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/d3d_ptr.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/texture.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/shader.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/math.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/collision_primitive.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/collision_primitive.inl
@@ -51,6 +53,8 @@ set(SOURCE_LIST
         detail/err_handling_api.cpp
         detail/string_api_set.cpp
         detail/check_result.cpp
+        detail/texture.cpp
+        detail/shader.cpp
         math.cpp
         collision_primitive.cpp
         window.cpp

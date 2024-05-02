@@ -8,40 +8,10 @@
 
 #include "borov_engine/camera.hpp"
 #include "borov_engine/detail/check_result.hpp"
-#include "borov_engine/detail/string_api_set.hpp"
+#include "borov_engine/detail/shader.hpp"
+#include "borov_engine/detail/texture.hpp"
 
 namespace borov_engine {
-
-namespace detail {
-
-D3DPtr<ID3DBlob> ShaderFromFile(const char *path, const D3D_SHADER_MACRO *defines, ID3DInclude *include,
-                                const char *entrypoint, const char *target, const UINT flags_1, const UINT flags_2) {
-    D3DPtr<ID3DBlob> shader;
-
-    D3DPtr<ID3DBlob> error_messages;
-    const std::wstring w_path = MultiByteToWideChar(CP_UTF8, 0, path);
-    const HRESULT result = D3DCompileFromFile(w_path.c_str(), defines, include, entrypoint, target, flags_1, flags_2,
-                                              &shader, &error_messages);
-    CheckResult(result, [&] {
-        const char *message = error_messages ? static_cast<const char *>(error_messages->GetBufferPointer())
-                                             : "file is missing";
-        return std::format("Failed to compile shader from file '{}':\n{}", path, message);
-    });
-
-    return shader;
-}
-
-D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device, const char *path) {
-    D3DPtr<ID3D11ShaderResourceView> texture;
-
-    const std::wstring w_path = MultiByteToWideChar(CP_UTF8, 0, path);
-    const HRESULT result = DirectX::CreateWICTextureFromFile(&device, w_path.c_str(), nullptr, &texture);
-    CheckResult(result, [&] { return std::format("Failed to create texture from file '{}'", path); });
-
-    return texture;
-}
-
-}  // namespace detail
 
 TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<const Vertex> vertices,
                                      const std::span<const Index> indices, const char *texture_path,
