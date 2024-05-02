@@ -14,7 +14,7 @@
 namespace borov_engine {
 
 TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<const Vertex> vertices,
-                                     const std::span<const Index> indices, const char *texture_path,
+                                     const std::span<const Index> indices, const std::string_view texture_path,
                                      const bool wireframe, const borov_engine::Transform &transform,
                                      const SceneComponent *parent)
     : SceneComponent{game, transform, parent}, wireframe_{wireframe} {
@@ -34,8 +34,8 @@ void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::
     InitializeIndexBuffer(indices);
 }
 
-void TriangleComponent::LoadTexture(const char *texture_path) {
-    if (texture_path == nullptr) {
+void TriangleComponent::LoadTexture(const std::string_view texture_path) {
+    if (texture_path.empty()) {
         return;
     }
 

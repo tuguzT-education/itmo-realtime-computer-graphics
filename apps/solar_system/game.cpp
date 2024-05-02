@@ -213,7 +213,7 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
             for (borov_engine::Component &component : Components() | std::views::filter(is_primitive)) {
                 auto &triangle_component = dynamic_cast<borov_engine::GeometricPrimitiveComponent &>(component);
                 const bool wireframe = triangle_component.Wireframe();
-                triangle_component.Wireframe() = !wireframe;
+                triangle_component.Wireframe(!wireframe);
             }
             break;
         }

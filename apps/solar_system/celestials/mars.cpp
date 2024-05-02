@@ -11,7 +11,7 @@ borov_engine::GeometricPrimitiveComponent& CreateMarsMesh(borov_engine::Game& ga
     };
     borov_engine::Transform transform;
     borov_engine::math::Color color{borov_engine::math::colors::linear::OrangeRed};
-    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, parent, color);
+    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, color, "", false, transform, parent);
 }
 
 }  // namespace detail

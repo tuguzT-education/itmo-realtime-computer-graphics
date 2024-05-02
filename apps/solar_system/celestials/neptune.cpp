@@ -11,7 +11,7 @@ borov_engine::GeometricPrimitiveComponent& CreateNeptuneMesh(borov_engine::Game&
     };
     borov_engine::Transform transform;
     borov_engine::math::Color color{borov_engine::math::colors::linear::BlueViolet};
-    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, parent, color);
+    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, color, "", false, transform, parent);
 }
 
 }  // namespace detail

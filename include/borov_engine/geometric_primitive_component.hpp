@@ -5,14 +5,16 @@
 
 #include <GeometricPrimitive.h>
 
+#include <string_view>
 #include <variant>
 
+#include "detail/d3d_ptr.hpp"
 #include "scene_component.hpp"
 
 namespace borov_engine {
 
 using GeometricPrimitive = DirectX::GeometricPrimitive;
-using HeapGeometricPrimitive = std::unique_ptr<GeometricPrimitive>;
+using UniqueGeometricPrimitive = std::unique_ptr<GeometricPrimitive>;
 
 enum class GeometricPrimitiveType : std::uint8_t {
     Cube,
@@ -35,8 +37,8 @@ struct CubeGeometricPrimitiveArguments {
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateCube(ID3D11DeviceContext *device_context,
-                                  const CubeGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateCube(ID3D11DeviceContext *device_context,
+                                    const CubeGeometricPrimitiveArguments &arguments);
 
 struct BoxGeometricPrimitiveArguments {
     math::Vector3 size = math::Vector3::One;
@@ -44,7 +46,8 @@ struct BoxGeometricPrimitiveArguments {
     bool invert_normals = false;
 };
 
-HeapGeometricPrimitive CreateBox(ID3D11DeviceContext *device_context, const BoxGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateBox(ID3D11DeviceContext *device_context,
+                                   const BoxGeometricPrimitiveArguments &arguments);
 
 struct SphereGeometricPrimitiveArguments {
     float diameter = 1.0;
@@ -53,8 +56,8 @@ struct SphereGeometricPrimitiveArguments {
     bool invert_normals = false;
 };
 
-HeapGeometricPrimitive CreateSphere(ID3D11DeviceContext *device_context,
-                                    const SphereGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateSphere(ID3D11DeviceContext *device_context,
+                                      const SphereGeometricPrimitiveArguments &arguments);
 
 struct GeoSphereGeometricPrimitiveArguments {
     float diameter = 1.0f;
@@ -62,8 +65,8 @@ struct GeoSphereGeometricPrimitiveArguments {
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateGeoSphere(ID3D11DeviceContext *device_context,
-                                       const GeoSphereGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateGeoSphere(ID3D11DeviceContext *device_context,
+                                         const GeoSphereGeometricPrimitiveArguments &arguments);
 
 struct CylinderGeometricPrimitiveArguments {
     float height = 1.0f;
@@ -72,8 +75,8 @@ struct CylinderGeometricPrimitiveArguments {
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateCylinder(ID3D11DeviceContext *device_context,
-                                      const CylinderGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateCylinder(ID3D11DeviceContext *device_context,
+                                        const CylinderGeometricPrimitiveArguments &arguments);
 
 struct ConeGeometricPrimitiveArguments {
     float diameter = 1.0f;
@@ -82,8 +85,8 @@ struct ConeGeometricPrimitiveArguments {
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateCone(ID3D11DeviceContext *device_context,
-                                  const ConeGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateCone(ID3D11DeviceContext *device_context,
+                                    const ConeGeometricPrimitiveArguments &arguments);
 
 struct TorusGeometricPrimitiveArguments {
     float diameter = 1.0f;
@@ -92,40 +95,40 @@ struct TorusGeometricPrimitiveArguments {
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateTorus(ID3D11DeviceContext *device_context,
-                                   const TorusGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateTorus(ID3D11DeviceContext *device_context,
+                                     const TorusGeometricPrimitiveArguments &arguments);
 
 struct TetrahedronGeometricPrimitiveArguments {
     float size = 1.0f;
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateTetrahedron(ID3D11DeviceContext *device_context,
-                                         const TetrahedronGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateTetrahedron(ID3D11DeviceContext *device_context,
+                                           const TetrahedronGeometricPrimitiveArguments &arguments);
 
 struct OctahedronGeometricPrimitiveArguments {
     float size = 1.0f;
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateOctahedron(ID3D11DeviceContext *device_context,
-                                        const OctahedronGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateOctahedron(ID3D11DeviceContext *device_context,
+                                          const OctahedronGeometricPrimitiveArguments &arguments);
 
 struct DodecahedronGeometricPrimitiveArguments {
     float size = 1.0f;
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateDodecahedron(ID3D11DeviceContext *device_context,
-                                          const DodecahedronGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateDodecahedron(ID3D11DeviceContext *device_context,
+                                            const DodecahedronGeometricPrimitiveArguments &arguments);
 
 struct IcosahedronGeometricPrimitiveArguments {
     float size = 1.0f;
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateIcosahedron(ID3D11DeviceContext *device_context,
-                                         const IcosahedronGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateIcosahedron(ID3D11DeviceContext *device_context,
+                                           const IcosahedronGeometricPrimitiveArguments &arguments);
 
 struct TeapotGeometricPrimitiveArguments {
     float size = 1.0f;
@@ -133,16 +136,16 @@ struct TeapotGeometricPrimitiveArguments {
     bool right_handed_coords = true;
 };
 
-HeapGeometricPrimitive CreateTeapot(ID3D11DeviceContext *device_context,
-                                    const TeapotGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateTeapot(ID3D11DeviceContext *device_context,
+                                      const TeapotGeometricPrimitiveArguments &arguments);
 
 struct CustomGeometricPrimitiveArguments {
     GeometricPrimitive::VertexCollection vertices;
     GeometricPrimitive::IndexCollection indices;
 };
 
-HeapGeometricPrimitive CreateCustom(ID3D11DeviceContext *device_context,
-                                    const CustomGeometricPrimitiveArguments &arguments);
+UniqueGeometricPrimitive CreateCustom(ID3D11DeviceContext *device_context,
+                                      const CustomGeometricPrimitiveArguments &arguments);
 
 using GeometricPrimitiveArguments =
     std::variant<CubeGeometricPrimitiveArguments, BoxGeometricPrimitiveArguments, SphereGeometricPrimitiveArguments,
@@ -152,8 +155,8 @@ using GeometricPrimitiveArguments =
                  DodecahedronGeometricPrimitiveArguments, IcosahedronGeometricPrimitiveArguments,
                  TeapotGeometricPrimitiveArguments, CustomGeometricPrimitiveArguments>;
 
-HeapGeometricPrimitive CreatePrimitive(ID3D11DeviceContext *device_context,
-                                       const GeometricPrimitiveArguments &primitive_arguments);
+UniqueGeometricPrimitive CreatePrimitive(ID3D11DeviceContext *device_context,
+                                         const GeometricPrimitiveArguments &primitive_arguments);
 
 GeometricPrimitiveType PrimitiveType(const GeometricPrimitiveArguments &arguments);
 GeometricPrimitiveArguments PrimitiveArguments(GeometricPrimitiveType primitive_type);
@@ -161,17 +164,21 @@ GeometricPrimitiveArguments PrimitiveArguments(GeometricPrimitiveType primitive_
 class GeometricPrimitiveComponent : public SceneComponent {
   public:
     explicit GeometricPrimitiveComponent(class Game &game, const GeometricPrimitiveArguments &arguments,
-                                         const class Transform &transform = {}, const SceneComponent *parent = nullptr,
-                                         math::Color color = math::colors::linear::White.v, bool wireframe = false);
+                                         math::Color color = math::colors::linear::White.v,
+                                         std::string_view texture_path = {}, bool wireframe = false,
+                                         const class Transform &transform = {}, const SceneComponent *parent = nullptr);
 
     explicit GeometricPrimitiveComponent(class Game &game, GeometricPrimitiveType primitive_type,
-                                         const class Transform &transform = {}, const SceneComponent *parent = nullptr,
-                                         math::Color color = math::colors::linear::White.v, bool wireframe = false);
+                                         math::Color color = math::colors::linear::White.v,
+                                         std::string_view texture_path = {}, bool wireframe = false,
+                                         const class Transform &transform = {}, const SceneComponent *parent = nullptr);
 
     [[nodiscard]] const GeometricPrimitive *Primitive() const;
     [[nodiscard]] GeometricPrimitive *Primitive();
     GeometricPrimitive &Primitive(const GeometricPrimitiveArguments &arguments);
     GeometricPrimitive &Primitive(GeometricPrimitiveType primitive_type);
+
+    void LoadTexture(std::string_view texture_path);
 
     [[nodiscard]] GeometricPrimitiveType PrimitiveType() const;
     [[nodiscard]] const GeometricPrimitiveArguments &PrimitiveArguments() const;
@@ -180,14 +187,16 @@ class GeometricPrimitiveComponent : public SceneComponent {
     [[nodiscard]] math::Color &Color();
 
     [[nodiscard]] bool Wireframe() const;
-    [[nodiscard]] bool &Wireframe();
+    void Wireframe(bool wireframe);
 
     void Draw(const Camera *camera) override;
 
   private:
     math::Color color_;
     bool wireframe_;
-    HeapGeometricPrimitive primitive_;
+
+    detail::D3DPtr<ID3D11ShaderResourceView> texture_;
+    UniqueGeometricPrimitive primitive_;
     GeometricPrimitiveArguments primitive_arguments_;
 };
 

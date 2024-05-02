@@ -6,7 +6,7 @@ Sun::Sun(borov_engine::Game& game, const borov_engine::Transform& transform, con
     : SceneComponent(game, transform, parent),
       mesh_{
           Game().AddComponent<borov_engine::BoxComponent>(
-              1.5f, 1.5f, 1.5f, borov_engine::math::Color{borov_engine::math::colors::linear::Yellow}, nullptr,
+              1.5f, 1.5f, 1.5f, borov_engine::math::Color{borov_engine::math::colors::linear::Yellow}, "",
               borov_engine::Transform{}, this),
       } {}
 

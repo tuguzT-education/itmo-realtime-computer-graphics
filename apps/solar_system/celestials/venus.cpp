@@ -15,7 +15,7 @@ borov_engine::GeometricPrimitiveComponent& CreateVenusMesh(borov_engine::Game& g
                                                                         std::numbers::pi_v<float> / 2.0f),
     };
     borov_engine::math::Color color{borov_engine::math::colors::linear::LightYellow};
-    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, transform, parent, color);
+    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, color, "", false, transform, parent);
 }
 
 }  // namespace detail
