@@ -5,7 +5,7 @@
 namespace detail {
 
 borov_engine::GeometricPrimitiveComponent& CreateDeimosMesh(borov_engine::Game& game,
-                                                            const borov_engine::SceneComponent* parent = nullptr) {
+                                                            const borov_engine::SceneComponent* parent) {
     borov_engine::BoxGeometricPrimitiveArguments arguments{
         .size = borov_engine::math::Vector3::One * 0.1f,
     };
@@ -27,10 +27,22 @@ borov_engine::GeometricPrimitiveComponent& Deimos::Mesh() {
     return mesh_;
 }
 
-borov_engine::math::AxisAlignedBox Deimos::BoxCollision() const {
-    auto [position, rotation, scale] = WorldTransform();
-    return borov_engine::math::AxisAlignedBox{
+bool Deimos::Intersects(const borov_engine::CollisionPrimitive& other) const {
+    return CollisionPrimitive().Intersects(other);
+}
+
+bool Deimos::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
+    return CollisionPrimitive().Intersects(ray, dist);
+}
+
+borov_engine::BoxCollisionPrimitive Deimos::CollisionPrimitive() const {
+    auto [position, rotation, scale] = mesh_.get().WorldTransform();
+    rotation.Normalize();
+
+    const borov_engine::math::Box box{
         position,
         borov_engine::math::Vector3::One * 0.05f * scale,
+        rotation,
     };
+    return borov_engine::BoxCollisionPrimitive{box};
 }

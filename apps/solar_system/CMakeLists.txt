@@ -12,7 +12,6 @@ set(HEADER_LIST
         celestials/uranus.hpp
         celestials/neptune.hpp
         viewport_manager.hpp
-        collision.hpp
         game.hpp)
 set(SOURCE_LIST
         celestials/sun.cpp
@@ -28,7 +27,6 @@ set(SOURCE_LIST
         celestials/uranus.cpp
         celestials/neptune.cpp
         viewport_manager.cpp
-        collision.cpp
         game.cpp
         main.cpp)
 

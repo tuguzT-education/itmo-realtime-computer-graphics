@@ -5,7 +5,7 @@
 namespace detail {
 
 borov_engine::GeometricPrimitiveComponent& CreateNeptuneMesh(borov_engine::Game& game,
-                                                             const borov_engine::SceneComponent* parent = nullptr) {
+                                                             const borov_engine::SceneComponent* parent) {
     borov_engine::SphereGeometricPrimitiveArguments arguments{
         .diameter = 0.75f,
     };
@@ -27,10 +27,17 @@ borov_engine::GeometricPrimitiveComponent& Neptune::Mesh() {
     return mesh_;
 }
 
-borov_engine::math::AxisAlignedBox Neptune::BoxCollision() const {
-    auto [position, rotation, scale] = WorldTransform();
-    return borov_engine::math::AxisAlignedBox{
-        position,
-        borov_engine::math::Vector3::One * 0.375f * scale,
-    };
+bool Neptune::Intersects(const borov_engine::CollisionPrimitive& other) const {
+    return CollisionPrimitive().Intersects(other);
+}
+
+bool Neptune::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
+    return CollisionPrimitive().Intersects(ray, dist);
+}
+
+borov_engine::SphereCollisionPrimitive Neptune::CollisionPrimitive() const {
+    auto [position, rotation, scale] = mesh_.get().WorldTransform();
+
+    const borov_engine::math::Sphere sphere{position, 0.375f};
+    return borov_engine::SphereCollisionPrimitive{sphere};
 }

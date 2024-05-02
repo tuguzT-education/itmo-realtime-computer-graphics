@@ -5,7 +5,7 @@
 namespace detail {
 
 borov_engine::GeometricPrimitiveComponent& CreateMercuryMesh(borov_engine::Game& game,
-                                                             const borov_engine::SceneComponent* parent = nullptr) {
+                                                             const borov_engine::SceneComponent* parent) {
     borov_engine::TorusGeometricPrimitiveArguments arguments{
         .diameter = 0.2f,
         .thickness = 0.1f,
@@ -28,10 +28,17 @@ borov_engine::GeometricPrimitiveComponent& Mercury::Mesh() {
     return mesh_;
 }
 
-borov_engine::math::AxisAlignedBox Mercury::BoxCollision() const {
-    auto [position, rotation, scale] = WorldTransform();
-    return borov_engine::math::AxisAlignedBox{
-        position,
-        borov_engine::math::Vector3::One * 0.1f * scale,
-    };
+bool Mercury::Intersects(const borov_engine::CollisionPrimitive& other) const {
+    return CollisionPrimitive().Intersects(other);
+}
+
+bool Mercury::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
+    return CollisionPrimitive().Intersects(ray, dist);
+}
+
+borov_engine::SphereCollisionPrimitive Mercury::CollisionPrimitive() const {
+    auto [position, rotation, scale] = mesh_.get().WorldTransform();
+
+    const borov_engine::math::Sphere sphere{position, 0.125f};
+    return borov_engine::SphereCollisionPrimitive{sphere};
 }

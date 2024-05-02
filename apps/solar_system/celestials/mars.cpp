@@ -5,7 +5,7 @@
 namespace detail {
 
 borov_engine::GeometricPrimitiveComponent& CreateMarsMesh(borov_engine::Game& game,
-                                                          const borov_engine::SceneComponent* parent = nullptr) {
+                                                          const borov_engine::SceneComponent* parent) {
     borov_engine::IcosahedronGeometricPrimitiveArguments arguments{
         .size = 0.25f,
     };
@@ -27,10 +27,17 @@ borov_engine::GeometricPrimitiveComponent& Mars::Mesh() {
     return mesh_;
 }
 
-borov_engine::math::AxisAlignedBox Mars::BoxCollision() const {
-    auto [position, rotation, scale] = WorldTransform();
-    return borov_engine::math::AxisAlignedBox{
-        position,
-        borov_engine::math::Vector3::One * 0.25f * scale,
-    };
+bool Mars::Intersects(const borov_engine::CollisionPrimitive& other) const {
+    return CollisionPrimitive().Intersects(other);
+}
+
+bool Mars::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
+    return CollisionPrimitive().Intersects(ray, dist);
+}
+
+borov_engine::SphereCollisionPrimitive Mars::CollisionPrimitive() const {
+    auto [position, rotation, scale] = mesh_.get().WorldTransform();
+
+    const borov_engine::math::Sphere sphere{position, 0.25f};
+    return borov_engine::SphereCollisionPrimitive{sphere};
 }

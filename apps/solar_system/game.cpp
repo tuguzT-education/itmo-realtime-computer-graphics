@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include <borov_engine/collision_primitive.hpp>
 #include <borov_engine/orbit_camera_manager.hpp>
 #include <borov_engine/spectator_camera_manager.hpp>
 
@@ -235,13 +236,12 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
             // ReSharper disable once CppTooWideScopeInitStatement
             auto is_scene_and_collision = [](const borov_engine::Component &component) {
                 return dynamic_cast<const borov_engine::SceneComponent *>(&component) != nullptr &&
-                       dynamic_cast<const Collision *>(&component) != nullptr;
+                       dynamic_cast<const borov_engine::CollisionPrimitive *>(&component) != nullptr;
             };
             for (const borov_engine::Component &component : Components() | std::views::filter(is_scene_and_collision)) {
                 const auto &scene_component = dynamic_cast<const borov_engine::SceneComponent &>(component);
-                const auto &collision = dynamic_cast<const Collision &>(component);
-                const auto box = collision.BoxCollision();
-                if (float distance = 1000.0f; ray.Intersects(box, distance)) {
+                const auto &collision_primitive = dynamic_cast<const borov_engine::CollisionPrimitive &>(component);
+                if (float distance = 1000.0f; collision_primitive.Intersects(ray, distance)) {
                     if (target == nullptr) {
                         target = &scene_component;
                     } else if (distance < nearest_distance) {
