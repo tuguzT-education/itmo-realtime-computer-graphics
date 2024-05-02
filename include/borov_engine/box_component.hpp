@@ -11,8 +11,8 @@ namespace borov_engine {
 class BoxComponent : public TriangleComponent, public CollisionPrimitive {
   public:
     explicit BoxComponent(class Game& game, float length, float height, float width,
-                          math::Color color = {1.0f, 1.0f, 1.0f}, const class Transform& transform = {},
-                          const SceneComponent* parent = nullptr);
+                          math::Color color = {1.0f, 1.0f, 1.0f}, const char* texture_path = nullptr,
+                          const class Transform& transform = {}, const SceneComponent* parent = nullptr);
 
     [[nodiscard]] float Length() const;
     [[nodiscard]] float Height() const;

@@ -6,7 +6,7 @@ Earth::Earth(borov_engine::Game& game, const borov_engine::Transform& transform,
     : SceneComponent(game, transform, parent),
       mesh_{
           Game().AddComponent<borov_engine::BoxComponent>(
-              0.5f, 0.5f, 0.5f, borov_engine::math::Color{borov_engine::math::colors::linear::SpringGreen},
+              0.5f, 0.5f, 0.5f, borov_engine::math::Color{borov_engine::math::colors::linear::SpringGreen}, nullptr,
               borov_engine::Transform{}, this),
       } {}
 

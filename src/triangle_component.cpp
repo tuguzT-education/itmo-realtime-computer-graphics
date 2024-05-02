@@ -44,19 +44,41 @@ D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device, const cha
 }  // namespace detail
 
 TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<const Vertex> vertices,
-                                     const std::span<const Index> indices, const bool wireframe,
-                                     const borov_engine::Transform &transform, const SceneComponent *parent)
+                                     const std::span<const Index> indices, const char *texture_path,
+                                     const bool wireframe, const borov_engine::Transform &transform,
+                                     const SceneComponent *parent)
     : SceneComponent{game, transform, parent}, wireframe_{wireframe} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeSamplerState();
-    InitializeVertexBuffer(vertices);
-    InitializeIndexBuffer(indices);
     InitializeConstantBuffer(ConstantBuffer{});
 
-    texture_ = detail::TextureFromFile(Device(), "resources/textures/cardboard.jpg");
+    Load(vertices, indices);
+    LoadTexture(texture_path);
+}
+
+void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::span<const Index> indices) {
+    InitializeVertexBuffer(vertices);
+    InitializeIndexBuffer(indices);
+}
+
+void TriangleComponent::LoadTexture(const char *texture_path) {
+    if (texture_path == nullptr) {
+        return;
+    }
+
+    texture_ = detail::TextureFromFile(Device(), texture_path);
+}
+
+bool TriangleComponent::Wireframe() const {
+    return wireframe_;
+}
+
+void TriangleComponent::Wireframe(const bool wireframe) {
+    wireframe_ = wireframe;
+    InitializeRasterizerState();
 }
 
 void TriangleComponent::Draw(const Camera *camera) {
@@ -102,15 +124,6 @@ void TriangleComponent::Draw(const Camera *camera) {
     device_context.DrawIndexed(index_count, 0, 0);
 }
 
-bool TriangleComponent::Wireframe() const {
-    return wireframe_;
-}
-
-void TriangleComponent::Wireframe(const bool wireframe) {
-    wireframe_ = wireframe;
-    InitializeRasterizerState();
-}
-
 void TriangleComponent::InitializeVertexShader() {
     vertex_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "VSMain",
                                                "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
@@ -140,7 +153,7 @@ void TriangleComponent::InitializeInputLayout() {
 void TriangleComponent::InitializeRasterizerState() {
     const D3D11_RASTERIZER_DESC rasterizer_desc{
         .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID,
-        .CullMode = D3D11_CULL_NONE,
+        .CullMode = D3D11_CULL_FRONT,
     };
 
     const HRESULT result = Device().CreateRasterizerState(&rasterizer_desc, &rasterizer_state_);

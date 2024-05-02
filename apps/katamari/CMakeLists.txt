@@ -1,8 +1,10 @@
 set(HEADER_LIST
-        game.hpp)
+        game.hpp
+        player.hpp)
 set(SOURCE_LIST
         game.cpp
-        main.cpp)
+        main.cpp
+        player.cpp)
 
 add_executable(katamari ${SOURCE_LIST} ${HEADER_LIST})
 target_compile_features(katamari PRIVATE cxx_std_20)

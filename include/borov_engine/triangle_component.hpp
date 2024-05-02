@@ -18,13 +18,16 @@ class TriangleComponent : public SceneComponent {
     using Index = std::uint32_t;
 
     explicit TriangleComponent(class Game &game, std::span<const Vertex> vertices, std::span<const Index> indices,
-                               bool wireframe = false, const class Transform &transform = {},
-                               const SceneComponent *parent = nullptr);
+                               const char *texture_path = nullptr, bool wireframe = false,
+                               const class Transform &transform = {}, const SceneComponent *parent = nullptr);
 
-    void Draw(const Camera *camera) override;
+    void Load(std::span<const Vertex> vertices, std::span<const Index> indices);
+    void LoadTexture(const char *texture_path);
 
     [[nodiscard]] bool Wireframe() const;
     void Wireframe(bool wireframe);
+
+    void Draw(const Camera *camera) override;
 
   private:
     struct ConstantBuffer {
