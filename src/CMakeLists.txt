@@ -25,6 +25,7 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/d3d_ptr.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/math.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/collision_primitive.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/collision_primitive.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/window.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/input_key.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/input.hpp

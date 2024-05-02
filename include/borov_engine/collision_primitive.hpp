@@ -111,6 +111,9 @@ class TriangleCollisionPrimitive : public CollisionPrimitive {
     PrimitiveType triangle_;
 };
 
+template <typename View>
+concept TrianglesRange = std::ranges::range<View> && std::same_as<std::ranges::range_value_t<View>, math::Triangle>;
+
 class CustomCollisionPrimitive : public CollisionPrimitive {
   public:
     using Vertex = math::Vector3;
@@ -128,7 +131,7 @@ class CustomCollisionPrimitive : public CollisionPrimitive {
     [[nodiscard]] const IndexCollection &Indices() const;
     [[nodiscard]] IndexCollection &Indices();
 
-    [[nodiscard]] std::vector<math::Triangle> Triangles() const;
+    [[nodiscard]] TrianglesRange auto Triangles() const;
 
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
     [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
@@ -139,5 +142,7 @@ class CustomCollisionPrimitive : public CollisionPrimitive {
 };
 
 }  // namespace borov_engine
+
+#include "collision_primitive.inl"
 
 #endif  // BOROV_ENGINE_COLLISION_PRIMITIVE_HPP_INCLUDED
