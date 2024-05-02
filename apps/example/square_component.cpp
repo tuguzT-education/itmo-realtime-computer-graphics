@@ -4,26 +4,30 @@
 
 namespace detail {
 
-std::array vertices{
+const std::array vertices{
     borov_engine::TriangleComponent::Vertex{
         borov_engine::math::Vector3{0.5f, 0.5f, 0.0f},
-        borov_engine::math::Color{1.0f, 0.0f, 0.0f},
+        borov_engine::math::colors::linear::Red,
+        borov_engine::math::Vector2{1.0f, 0.0f},
     },
     borov_engine::TriangleComponent::Vertex{
         borov_engine::math::Vector3{-0.5f, -0.5f, 0.0f},
-        borov_engine::math::Color{0.0f, 0.0f, 1.0f},
+        borov_engine::math::colors::linear::Blue,
+        borov_engine::math::Vector2{0.0f, 1.0f},
     },
     borov_engine::TriangleComponent::Vertex{
         borov_engine::math::Vector3{0.5f, -0.5f, 0.0f},
-        borov_engine::math::Color{0.0f, 1.0f, 0.0f},
+        borov_engine::math::colors::linear::Lime,
+        borov_engine::math::Vector2{1.0f, 1.0f},
     },
     borov_engine::TriangleComponent::Vertex{
         borov_engine::math::Vector3{-0.5f, 0.5f, 0.0f},
-        borov_engine::math::Color{1.0f, 1.0f, 1.0f},
+        borov_engine::math::colors::linear::White,
+        borov_engine::math::Vector2{0.0f, 0.0f},
     },
 };
 
-std::array<SquareComponent::Index, 6> indices{0, 1, 2, 1, 0, 3};
+constexpr std::array<SquareComponent::Index, 6> indices{0, 1, 2, 1, 0, 3};
 
 }  // namespace detail
 

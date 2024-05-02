@@ -1,15 +1,3 @@
-struct VS_IN
-{
-	float3 position : POSITION0;
-	float4 color : COLOR0;
-};
-
-struct PS_IN
-{
-	float4 position : SV_POSITION;
- 	float4 color : COLOR;
-};
-
 struct Transform
 {
     float4x4 world;
@@ -17,24 +5,46 @@ struct Transform
     float4x4 projection;
 };
 
-cbuffer TransformBuffer : register(b0)
+cbuffer ConstantBuffer : register(b0)
 {
     Transform transform;
+    bool has_texture;
 }
 
-PS_IN VSMain(VS_IN input)
+struct VS_Input
 {
-	PS_IN output = (PS_IN)0;
+	float3 position : SV_Position;
+	float4 color : COLOR;
+	float2 texcoord : TEXCOORD;
+};
+
+struct VS_Output
+{
+    float4 position : SV_Position;
+    float4 color : COLOR;
+    float2 texcoord : TEXCOORD;
+};
+
+VS_Output VSMain(VS_Input input)
+{
+	VS_Output output = (VS_Output)0;
 
     float4x4 wvp = mul(mul(transform.projection, transform.view), transform.world);
 	output.position = mul(wvp, float4(input.position, 1.0f));
 	output.color = input.color;
+	output.texcoord = input.texcoord;
 
 	return output;
 }
 
-float4 PSMain(PS_IN input) : SV_Target
+Texture2D DiffuseMap : register(t0);
+SamplerState Sampler : register(s0);
+
+typedef VS_Output PS_Input;
+
+float4 PSMain(PS_Input input) : SV_Target
 {
-	float4 color = input.color;
+	float4 color = has_texture ? DiffuseMap.Sample(Sampler, input.texcoord) : float4(1.0f, 1.0f, 1.0f, 1.0f);
+	color *= input.color;
 	return color;
 }

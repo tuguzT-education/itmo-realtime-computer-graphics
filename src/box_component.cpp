@@ -8,24 +8,22 @@ namespace detail {
 
 std::array<BoxComponent::Vertex, 8> BoxVertices(const float length, const float height, const float width,
                                                 const math::Color color) {
-    float right = length / 2;
-    float left = -length / 2;
-    float top = height / 2;
-    float bottom = -height / 2;
-    float forward = width / 2;
-    float backward = -width / 2;
-    // clang-format off
+    const float right = length / 2;
+    const float left = -length / 2;
+    const float top = height / 2;
+    const float bottom = -height / 2;
+    const float forward = width / 2;
+    const float backward = -width / 2;
     return {
-        BoxComponent::Vertex{{left, top, backward}, color},
-        BoxComponent::Vertex{{right, top, backward}, color},
-        BoxComponent::Vertex{{left, bottom, backward}, color},
-        BoxComponent::Vertex{{right, bottom, backward}, color},
-        BoxComponent::Vertex{{left, top, forward}, color},
-        BoxComponent::Vertex{{right, top, forward}, color},
-        BoxComponent::Vertex{{left, bottom, forward}, color},
-        BoxComponent::Vertex{{right, bottom, forward}, color},
+        BoxComponent::Vertex{math::Vector3{left, top, backward}, color, math::Vector2{}},
+        BoxComponent::Vertex{math::Vector3{right, top, backward}, color, math::Vector2{}},
+        BoxComponent::Vertex{math::Vector3{left, bottom, backward}, color, math::Vector2{}},
+        BoxComponent::Vertex{math::Vector3{right, bottom, backward}, color, math::Vector2{}},
+        BoxComponent::Vertex{math::Vector3{left, top, forward}, color, math::Vector2{}},
+        BoxComponent::Vertex{math::Vector3{right, top, forward}, color, math::Vector2{}},
+        BoxComponent::Vertex{math::Vector3{left, bottom, forward}, color, math::Vector2{}},
+        BoxComponent::Vertex{math::Vector3{right, bottom, forward}, color, math::Vector2{}},
     };
-    // clang-format on
 }
 
 std::array<BoxComponent::Index, 36> BoxIndices() {

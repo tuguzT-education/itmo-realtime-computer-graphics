@@ -14,10 +14,10 @@ namespace borov_engine {
 
 class TriangleComponent : public SceneComponent {
   public:
-    using Vertex = DirectX::VertexPositionColor;
+    using Vertex = DirectX::VertexPositionColorTexture;
     using Index = std::uint32_t;
 
-    explicit TriangleComponent(class Game &game, std::span<Vertex> vertices, std::span<Index> indices,
+    explicit TriangleComponent(class Game &game, std::span<const Vertex> vertices, std::span<const Index> indices,
                                bool wireframe = false, const class Transform &transform = {},
                                const SceneComponent *parent = nullptr);
 
@@ -31,15 +31,20 @@ class TriangleComponent : public SceneComponent {
         alignas(16) math::Matrix4x4 world;
         alignas(16) math::Matrix4x4 view;
         alignas(16) math::Matrix4x4 projection;
+        std::uint32_t has_texture = false;
     };
 
     void InitializeVertexShader();
     void InitializeIndexShader();
     void InitializeInputLayout();
     void InitializeRasterizerState();
-    void InitializeVertexBuffer(std::span<Vertex> vertices);
-    void InitializeIndexBuffer(std::span<Index> indices);
+    void InitializeSamplerState();
+    void InitializeVertexBuffer(std::span<const Vertex> vertices);
+    void InitializeIndexBuffer(std::span<const Index> indices);
     void InitializeConstantBuffer(ConstantBuffer constant_buffer);
+
+    detail::D3DPtr<ID3D11SamplerState> sampler_state_;
+    detail::D3DPtr<ID3D11ShaderResourceView> texture_;
 
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;

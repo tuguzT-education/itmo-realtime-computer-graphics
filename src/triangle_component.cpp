@@ -1,5 +1,6 @@
 #include "borov_engine/triangle_component.hpp"
 
+#include <WICTextureLoader.h>
 #include <d3dcompiler.h>
 
 #include <array>
@@ -13,8 +14,8 @@ namespace borov_engine {
 
 namespace detail {
 
-D3DPtr<ID3DBlob> CompileFromFile(const char *path, const D3D_SHADER_MACRO *defines, ID3DInclude *include,
-                                 const char *entrypoint, const char *target, const UINT flags_1, const UINT flags_2) {
+D3DPtr<ID3DBlob> ShaderFromFile(const char *path, const D3D_SHADER_MACRO *defines, ID3DInclude *include,
+                                const char *entrypoint, const char *target, const UINT flags_1, const UINT flags_2) {
     D3DPtr<ID3DBlob> shader;
 
     D3DPtr<ID3DBlob> error_messages;
@@ -22,27 +23,40 @@ D3DPtr<ID3DBlob> CompileFromFile(const char *path, const D3D_SHADER_MACRO *defin
     const HRESULT result = D3DCompileFromFile(w_path.c_str(), defines, include, entrypoint, target, flags_1, flags_2,
                                               &shader, &error_messages);
     CheckResult(result, [&] {
-        const char *message =
-            error_messages ? static_cast<const char *>(error_messages->GetBufferPointer()) : "file is missing";
-        return std::format("Failed to compile vertex shader file '{}':\n{}", path, message);
+        const char *message = error_messages ? static_cast<const char *>(error_messages->GetBufferPointer())
+                                             : "file is missing";
+        return std::format("Failed to compile shader from file '{}':\n{}", path, message);
     });
 
     return shader;
 }
 
+D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device, const char *path) {
+    D3DPtr<ID3D11ShaderResourceView> texture;
+
+    const std::wstring w_path = MultiByteToWideChar(CP_UTF8, 0, path);
+    const HRESULT result = DirectX::CreateWICTextureFromFile(&device, w_path.c_str(), nullptr, &texture);
+    CheckResult(result, [&] { return std::format("Failed to create texture from file '{}'", path); });
+
+    return texture;
+}
+
 }  // namespace detail
 
-TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<Vertex> vertices,
-                                     const std::span<Index> indices, const bool wireframe,
+TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<const Vertex> vertices,
+                                     const std::span<const Index> indices, const bool wireframe,
                                      const borov_engine::Transform &transform, const SceneComponent *parent)
     : SceneComponent{game, transform, parent}, wireframe_{wireframe} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
     InitializeRasterizerState();
+    InitializeSamplerState();
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
     InitializeConstantBuffer(ConstantBuffer{});
+
+    texture_ = detail::TextureFromFile(Device(), "resources/textures/cardboard.jpg");
 }
 
 void TriangleComponent::Draw(const Camera *camera) {
@@ -65,6 +79,7 @@ void TriangleComponent::Draw(const Camera *camera) {
         .world = WorldTransform().ToMatrix(),
         .view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity,
         .projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity,
+        .has_texture = texture_ != nullptr,
     };
     const HRESULT result = device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
     detail::CheckResult(result, "Failed to map constant buffer data");
@@ -73,6 +88,13 @@ void TriangleComponent::Draw(const Camera *camera) {
 
     const std::array constant_buffers{constant_buffer_.Get()};
     device_context.VSSetConstantBuffers(0, constant_buffers.size(), constant_buffers.data());
+    device_context.PSSetConstantBuffers(0, constant_buffers.size(), constant_buffers.data());
+
+    const std::array shader_resources{texture_.Get()};
+    device_context.PSSetShaderResources(0, shader_resources.size(), shader_resources.data());
+
+    const std::array sampler_states{sampler_state_.Get()};
+    device_context.PSSetSamplers(0, sampler_states.size(), sampler_states.data());
 
     D3D11_BUFFER_DESC index_buffer_desc;
     index_buffer_->GetDesc(&index_buffer_desc);
@@ -90,8 +112,8 @@ void TriangleComponent::Wireframe(const bool wireframe) {
 }
 
 void TriangleComponent::InitializeVertexShader() {
-    vertex_byte_code_ = detail::CompileFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "VSMain",
-                                                "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+    vertex_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "VSMain",
+                                               "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
     const HRESULT result = Device().CreateVertexShader(vertex_byte_code_->GetBufferPointer(),
                                                        vertex_byte_code_->GetBufferSize(), nullptr, &vertex_shader_);
@@ -99,8 +121,8 @@ void TriangleComponent::InitializeVertexShader() {
 }
 
 void TriangleComponent::InitializeIndexShader() {
-    index_byte_code_ = detail::CompileFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "PSMain",
-                                               "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+    index_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "PSMain",
+                                              "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
     const HRESULT result = Device().CreatePixelShader(index_byte_code_->GetBufferPointer(),
                                                       index_byte_code_->GetBufferSize(), nullptr, &index_shader_);
@@ -108,30 +130,10 @@ void TriangleComponent::InitializeIndexShader() {
 }
 
 void TriangleComponent::InitializeInputLayout() {
-    constexpr std::array input_elements{
-        D3D11_INPUT_ELEMENT_DESC{
-            .SemanticName = "POSITION",
-            .SemanticIndex = 0,
-            .Format = DXGI_FORMAT_R32G32B32_FLOAT,
-            .InputSlot = 0,
-            .AlignedByteOffset = 0,
-            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-            .InstanceDataStepRate = 0,
-        },
-        D3D11_INPUT_ELEMENT_DESC{
-            .SemanticName = "COLOR",
-            .SemanticIndex = 0,
-            .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
-            .InputSlot = 0,
-            .AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
-            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-            .InstanceDataStepRate = 0,
-        },
-    };
-
-    const HRESULT result =
-        Device().CreateInputLayout(input_elements.data(), input_elements.size(), vertex_byte_code_->GetBufferPointer(),
-                                   vertex_byte_code_->GetBufferSize(), &input_layout_);
+    const std::array input_elements = std::to_array(Vertex::InputElements);
+    const HRESULT result = Device().CreateInputLayout(input_elements.data(), input_elements.size(),
+                                                      vertex_byte_code_->GetBufferPointer(),
+                                                      vertex_byte_code_->GetBufferSize(), &input_layout_);
     detail::CheckResult(result, "Failed to create input layout");
 }
 
@@ -145,7 +147,22 @@ void TriangleComponent::InitializeRasterizerState() {
     detail::CheckResult(result, "Failed to create rasterizer state");
 }
 
-void TriangleComponent::InitializeVertexBuffer(std::span<Vertex> vertices) {
+void TriangleComponent::InitializeSamplerState() {
+    constexpr D3D11_SAMPLER_DESC sampler_desc{
+        .Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+        .AddressU = D3D11_TEXTURE_ADDRESS_CLAMP,
+        .AddressV = D3D11_TEXTURE_ADDRESS_CLAMP,
+        .AddressW = D3D11_TEXTURE_ADDRESS_CLAMP,
+        .ComparisonFunc = D3D11_COMPARISON_ALWAYS,
+        .BorderColor = {1.0f, 0.0f, 0.0f, 1.0f},
+        .MaxLOD = D3D11_FLOAT32_MAX,
+    };
+
+    const HRESULT result = Device().CreateSamplerState(&sampler_desc, &sampler_state_);
+    detail::CheckResult(result, "Failed to create sampler state");
+}
+
+void TriangleComponent::InitializeVertexBuffer(std::span<const Vertex> vertices) {
     const D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = static_cast<std::uint32_t>(vertices.size_bytes()),
         .Usage = D3D11_USAGE_DEFAULT,
@@ -164,9 +181,9 @@ void TriangleComponent::InitializeVertexBuffer(std::span<Vertex> vertices) {
     detail::CheckResult(result, "Failed to create vertex buffer");
 }
 
-void TriangleComponent::InitializeIndexBuffer(std::span<Index> indices) {
+void TriangleComponent::InitializeIndexBuffer(std::span<const Index> indices) {
     const D3D11_BUFFER_DESC buffer_desc{
-        .ByteWidth = static_cast<std::uint32_t>(indices.size_bytes()),
+        .ByteWidth = static_cast<UINT>(indices.size_bytes()),
         .Usage = D3D11_USAGE_DEFAULT,
         .BindFlags = D3D11_BIND_INDEX_BUFFER,
         .CPUAccessFlags = 0,
