@@ -23,8 +23,9 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/check_result.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/check_result.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/d3d_ptr.hpp
-        ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/texture.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/shader.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/texture.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/concepts.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/math.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/collision_primitive.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/collision_primitive.inl
@@ -43,6 +44,7 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/viewport_manager.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/transform.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/scene_component.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/scene_component.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/geometric_primitive_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/box_component.hpp)
@@ -53,8 +55,8 @@ set(SOURCE_LIST
         detail/err_handling_api.cpp
         detail/string_api_set.cpp
         detail/check_result.cpp
-        detail/texture.cpp
         detail/shader.cpp
+        detail/texture.cpp
         math.cpp
         collision_primitive.cpp
         window.cpp
@@ -76,12 +78,13 @@ set(SOURCE_LIST
 
 find_package(directxtk CONFIG REQUIRED)
 find_package(range-v3 CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 
 add_library(borov_engine ${SOURCE_LIST} ${HEADER_LIST})
 target_include_directories(borov_engine PUBLIC ${PROJECT_SOURCE_DIR}/include)
 target_compile_features(borov_engine PUBLIC cxx_std_20)
 target_link_libraries(borov_engine PUBLIC
         d3d11.lib dxgi.lib d3dcompiler.lib dxguid.lib
-        Microsoft::DirectXTK range-v3)
+        Microsoft::DirectXTK range-v3::range-v3 assimp::assimp)
 
 message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")

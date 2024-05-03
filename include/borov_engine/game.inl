@@ -3,8 +3,6 @@
 #ifndef BOROV_ENGINE_GAME_INL_INCLUDED
 #define BOROV_ENGINE_GAME_INL_INCLUDED
 
-#include <ranges>
-
 namespace borov_engine {
 
 template <std::derived_from<class CameraManager> T, typename... Args>
@@ -29,12 +27,12 @@ T &Game::AddComponent(Args &&...args) {
     return dynamic_cast<T &>(*component);
 }
 
-inline ConstComponentView auto Game::Components() const {
+inline ConstComponentRange auto Game::Components() const {
     auto unique_ptr_to_ref = [](const std::unique_ptr<Component> &component) { return std::cref(*component); };
     return components_ | std::ranges::views::transform(unique_ptr_to_ref);
 }
 
-inline ComponentView auto Game::Components() {
+inline ComponentRange auto Game::Components() {
     auto unique_ptr_to_ref = [](const std::unique_ptr<Component> &component) { return std::ref(*component); };
     return components_ | std::ranges::views::transform(unique_ptr_to_ref);
 }

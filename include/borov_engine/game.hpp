@@ -3,11 +3,11 @@
 #ifndef BOROV_ENGINE_GAME_HPP_INCLUDED
 #define BOROV_ENGINE_GAME_HPP_INCLUDED
 
-#include <concepts>
 #include <memory>
 #include <vector>
 
 #include "camera_manager.hpp"
+#include "concepts.hpp"
 #include "detail/d3d_ptr.hpp"
 #include "input.hpp"
 #include "timer.hpp"
@@ -15,14 +15,11 @@
 
 namespace borov_engine {
 
-template <typename View, typename T>
-concept RefView = std::ranges::view<View> && std::same_as<std::ranges::range_value_t<View>, std::reference_wrapper<T>>;
+template <typename Range>
+concept ComponentRange = RefWrapperRange<Range, Component>;
 
-template <typename T>
-concept ComponentView = RefView<T, Component>;
-
-template <typename T>
-concept ConstComponentView = RefView<T, const Component>;
+template <typename Range>
+concept ConstComponentRange = RefWrapperRange<Range, const Component>;
 
 class Game {
   public:
@@ -69,8 +66,8 @@ class Game {
     template <std::derived_from<Component> T, typename... Args>
     T &AddComponent(Args &&...args);
 
-    [[nodiscard]] ConstComponentView auto Components() const;
-    [[nodiscard]] ComponentView auto Components();
+    [[nodiscard]] ConstComponentRange auto Components() const;
+    [[nodiscard]] ComponentRange auto Components();
 
     void Run();
     void Exit();

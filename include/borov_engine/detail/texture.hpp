@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef BOROV_ENGINE_TEXTURE_HPP_INCLUDED
-#define BOROV_ENGINE_TEXTURE_HPP_INCLUDED
+#ifndef BOROV_ENGINE_DETAIL_TEXTURE_HPP_INCLUDED
+#define BOROV_ENGINE_DETAIL_TEXTURE_HPP_INCLUDED
 
 #include <d3d11.h>
 
@@ -11,8 +11,8 @@
 
 namespace borov_engine::detail {
 
-D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device, std::string_view path);
+[[nodiscard]] D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device, std::string_view path);
 
 }  // namespace borov_engine::detail
 
-#endif  // BOROV_ENGINE_TEXTURE_HPP_INCLUDED
+#endif  // BOROV_ENGINE_DETAIL_TEXTURE_HPP_INCLUDED

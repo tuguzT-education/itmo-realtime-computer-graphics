@@ -1,17 +1,89 @@
 #include "borov_engine/triangle_component.hpp"
 
 #include <WICTextureLoader.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 #include <d3dcompiler.h>
 
+#undef min
+#undef max
+
 #include <array>
+#include <assimp/Importer.hpp>
 #include <format>
+#include <range/v3/view/enumerate.hpp>
+#include <range/v3/view/take.hpp>
 
 #include "borov_engine/camera.hpp"
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/detail/shader.hpp"
 #include "borov_engine/detail/texture.hpp"
+#include "borov_engine/game.hpp"
 
 namespace borov_engine {
+
+namespace detail {
+
+Transform TransformFromNode(const aiNode &node) {
+    aiVector3D position, scale;
+    aiQuaternion rotation;
+    node.mTransformation.Decompose(scale, rotation, position);
+
+    return Transform{
+        .position = math::Vector3{position.x, position.y, position.z},
+        .rotation = math::Quaternion{rotation.x, rotation.y, rotation.z, rotation.w},
+        .scale = math::Vector3{scale.x, scale.y, scale.z},
+    };
+}
+
+TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, const aiMesh &mesh) {
+    std::vector<TriangleComponent::Vertex> vertices;
+    for (const std::span ai_vertices{mesh.mVertices, mesh.mNumVertices};
+         const auto &[index, ai_position] : ranges::views::enumerate(ai_vertices)) {
+        const auto [x, y, z] = ai_position;
+        const math::Vector3 position{x, y, z};
+
+        math::Color color{math::colors::linear::White};
+        if (const aiColor4D *colors = mesh.mColors[0]) {
+            const auto [r, g, b, a] = colors[index];
+            color = math::Color{r, g, b, a};
+        }
+
+        math::Vector2 texture_coordinate;
+        if (const aiVector3D *texture_coordinates = mesh.mTextureCoords[0]) {
+            const auto [x, y, z] = texture_coordinates[index];
+            texture_coordinate = math::Vector2{x, y};
+        }
+
+        vertices.emplace_back(position, color, texture_coordinate);
+    }
+
+    std::vector<TriangleComponent::Index> indices;
+    for (const std::span faces{mesh.mFaces, mesh.mNumFaces}; const aiFace &face : faces) {
+        for (const std::span ai_indices{face.mIndices, face.mNumIndices};
+             const std::uint32_t index : ai_indices | ranges::views::take(3)) {
+            indices.emplace_back(index);
+        }
+    }
+
+    return game.AddComponent<TriangleComponent>(vertices, indices, "", false, Transform{}, &parent);
+}
+
+void TraverseNode(Game &game, const SceneComponent &parent, const aiScene &scene, const aiNode &node) {
+    const auto &node_root = game.AddComponent<SceneComponent>(TransformFromNode(node), &parent);
+
+    for (const std::size_t mesh_index : std::span{node.mMeshes, node.mNumMeshes}) {
+        if (const aiMesh *mesh = scene.mMeshes[mesh_index]) {
+            TriangleFromMesh(game, node_root, *mesh);
+        }
+    }
+
+    for (const aiNode *child_node : std::span{node.mChildren, node.mNumChildren}) {
+        TraverseNode(game, node_root, scene, *child_node);
+    }
+}
+
+}  // namespace detail
 
 TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<const Vertex> vertices,
                                      const std::span<const Index> indices, const std::string_view texture_path,
@@ -42,6 +114,26 @@ void TriangleComponent::LoadTexture(const std::string_view texture_path) {
     texture_ = detail::TextureFromFile(Device(), texture_path);
 }
 
+void TriangleComponent::LoadMesh(const std::string_view mesh_path) {
+    if (mesh_path.empty()) {
+        return;
+    }
+    vertex_buffer_ = nullptr;
+    index_buffer_ = nullptr;
+
+    Assimp::Importer importer;
+    const std::string path_str{mesh_path};
+    const aiScene *scene = importer.ReadFile(path_str, aiProcess_Triangulate | aiProcess_FlipUVs);
+    if (scene == nullptr) {
+        const char *message = importer.GetErrorString();
+        throw std::runtime_error{message};
+    }
+
+    if (const aiNode *node = scene->mRootNode) {
+        detail::TraverseNode(Game(), *this, *scene, *node);
+    }
+}
+
 bool TriangleComponent::Wireframe() const {
     return wireframe_;
 }
@@ -52,6 +144,10 @@ void TriangleComponent::Wireframe(const bool wireframe) {
 }
 
 void TriangleComponent::Draw(const Camera *camera) {
+    if (vertex_buffer_ == nullptr || index_buffer_ == nullptr) {
+        return;
+    }
+
     ID3D11DeviceContext &device_context = DeviceContext();
 
     const std::array vertex_buffers = {vertex_buffer_.Get()};
@@ -146,6 +242,11 @@ void TriangleComponent::InitializeSamplerState() {
 }
 
 void TriangleComponent::InitializeVertexBuffer(std::span<const Vertex> vertices) {
+    if (vertices.empty()) {
+        vertex_buffer_ = nullptr;
+        return;
+    }
+
     const D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = static_cast<std::uint32_t>(vertices.size_bytes()),
         .Usage = D3D11_USAGE_DEFAULT,
@@ -165,6 +266,11 @@ void TriangleComponent::InitializeVertexBuffer(std::span<const Vertex> vertices)
 }
 
 void TriangleComponent::InitializeIndexBuffer(std::span<const Index> indices) {
+    if (indices.empty()) {
+        index_buffer_ = nullptr;
+        return;
+    }
+
     const D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = static_cast<UINT>(indices.size_bytes()),
         .Usage = D3D11_USAGE_DEFAULT,
