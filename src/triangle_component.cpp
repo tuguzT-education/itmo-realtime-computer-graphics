@@ -10,7 +10,6 @@
 
 #include <array>
 #include <assimp/Importer.hpp>
-#include <format>
 #include <range/v3/view/enumerate.hpp>
 #include <range/v3/view/take.hpp>
 
@@ -36,7 +35,8 @@ Transform TransformFromNode(const aiNode &node) {
     };
 }
 
-TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, const aiMesh &mesh) {
+TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, const aiScene &scene,
+                                    const aiMesh &mesh) {
     std::vector<TriangleComponent::Vertex> vertices;
     for (const std::span ai_vertices{mesh.mVertices, mesh.mNumVertices};
          const auto &[index, ai_position] : ranges::views::enumerate(ai_vertices)) {
@@ -53,6 +53,14 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
         if (const aiVector3D *texture_coordinates = mesh.mTextureCoords[0]) {
             const auto [x, y, z] = texture_coordinates[index];
             texture_coordinate = math::Vector2{x, y};
+        }
+
+        if (scene.mNumMaterials > 0) {
+            if (const aiMaterial *material = scene.mMaterials[mesh.mMaterialIndex]) {
+                if (aiColor3D diffuse; material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse) == aiReturn_SUCCESS) {
+                    color *= math::Color{diffuse.r, diffuse.g, diffuse.b};
+                }
+            }
         }
 
         vertices.emplace_back(position, color, texture_coordinate);
@@ -74,7 +82,7 @@ void TraverseNode(Game &game, const SceneComponent &parent, const aiScene &scene
 
     for (const std::size_t mesh_index : std::span{node.mMeshes, node.mNumMeshes}) {
         if (const aiMesh *mesh = scene.mMeshes[mesh_index]) {
-            TriangleFromMesh(game, node_root, *mesh);
+            TriangleFromMesh(game, node_root, scene, *mesh);
         }
     }
 
