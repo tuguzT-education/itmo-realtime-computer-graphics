@@ -5,13 +5,13 @@
 
 #include <d3dcommon.h>
 
-#include <string_view>
+#include <filesystem>
 
 #include "d3d_ptr.hpp"
 
 namespace borov_engine::detail {
 
-[[nodiscard]] D3DPtr<ID3DBlob> ShaderFromFile(std::string_view path, const D3D_SHADER_MACRO *defines,
+[[nodiscard]] D3DPtr<ID3DBlob> ShaderFromFile(const std::filesystem::path &path, const D3D_SHADER_MACRO *defines,
                                               ID3DInclude *include, const char *entrypoint, const char *target,
                                               UINT flags_1, UINT flags_2);
 

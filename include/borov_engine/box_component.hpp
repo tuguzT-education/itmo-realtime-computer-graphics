@@ -12,7 +12,7 @@ class BoxComponent : public TriangleComponent, public CollisionPrimitive {
   public:
     explicit BoxComponent(class Game& game, float length, float height, float width,
                           math::Color color = math::Color{math::colors::linear::White},
-                          std::string_view texture_path = {}, const class Transform& transform = {},
+                          const std::filesystem::path& texture_path = {}, const class Transform& transform = {},
                           const SceneComponent* parent = nullptr);
 
     [[nodiscard]] float Length() const;

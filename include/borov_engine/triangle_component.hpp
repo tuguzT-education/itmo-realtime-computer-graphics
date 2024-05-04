@@ -5,8 +5,7 @@
 
 #include <VertexTypes.h>
 
-#include <span>
-#include <string_view>
+#include <filesystem>
 
 #include "detail/d3d_ptr.hpp"
 #include "scene_component.hpp"
@@ -19,13 +18,13 @@ class TriangleComponent : public SceneComponent {
     using Index = std::uint32_t;
 
     explicit TriangleComponent(class Game &game, std::span<const Vertex> vertices = {},
-                               std::span<const Index> indices = {}, std::string_view texture_path = {},
+                               std::span<const Index> indices = {}, const std::filesystem::path &texture_path = {},
                                bool wireframe = false, const class Transform &transform = {},
                                const SceneComponent *parent = nullptr);
 
     void Load(std::span<const Vertex> vertices, std::span<const Index> indices);
-    void LoadTexture(std::string_view texture_path);
-    void LoadMesh(std::string_view mesh_path);
+    void LoadTexture(const std::filesystem::path &texture_path);
+    void LoadMesh(const std::filesystem::path &mesh_path);
 
     [[nodiscard]] bool Wireframe() const;
     void Wireframe(bool wireframe);

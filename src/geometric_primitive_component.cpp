@@ -166,7 +166,8 @@ GeometricPrimitiveArguments PrimitiveArguments(const GeometricPrimitiveType prim
 
 GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &game,
                                                          const GeometricPrimitiveArguments &arguments,
-                                                         const math::Color color, const std::string_view texture_path,
+                                                         const math::Color color,
+                                                         const std::filesystem::path &texture_path,
                                                          const bool wireframe, const borov_engine::Transform &transform,
                                                          const SceneComponent *parent)
     : SceneComponent(game, transform, parent),
@@ -179,7 +180,8 @@ GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &gam
 
 GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &game,
                                                          const GeometricPrimitiveType primitive_type,
-                                                         const math::Color color, const std::string_view texture_path,
+                                                         const math::Color color,
+                                                         const std::filesystem::path &texture_path,
                                                          const bool wireframe, const borov_engine::Transform &transform,
                                                          const SceneComponent *parent)
     : GeometricPrimitiveComponent(game, borov_engine::PrimitiveArguments(primitive_type), color, texture_path,
@@ -204,8 +206,8 @@ GeometricPrimitive &GeometricPrimitiveComponent::Primitive(GeometricPrimitiveTyp
     return Primitive(primitive_arguments);
 }
 
-void GeometricPrimitiveComponent::LoadTexture(const std::string_view texture_path) {
-    if (texture_path.empty()) {
+void GeometricPrimitiveComponent::LoadTexture(const std::filesystem::path &texture_path) {
+    if (!texture_path.has_filename()) {
         return;
     }
 

@@ -35,8 +35,23 @@ Transform TransformFromNode(const aiNode &node) {
     };
 }
 
-TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, const aiScene &scene,
-                                    const aiMesh &mesh) {
+TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, const aiScene &scene, const aiMesh &mesh,
+                                    const std::filesystem::path &mesh_path) {
+    math::Color diffuse{math::colors::linear::White};
+    std::filesystem::path diffuse_texture_path;
+    if (const aiMaterial *material = scene.mNumMaterials > 0 ? scene.mMaterials[mesh.mMaterialIndex] : nullptr) {
+        if (aiColor3D ai_diffuse{1.0f, 1.0f, 1.0f};
+            material->Get(AI_MATKEY_COLOR_DIFFUSE, ai_diffuse) == aiReturn_SUCCESS) {
+            diffuse = math::Color{ai_diffuse.r, ai_diffuse.g, ai_diffuse.b};
+        }
+        if (aiString ai_texture_diffuse;
+            material->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), ai_texture_diffuse) == aiReturn_SUCCESS) {
+            diffuse_texture_path = mesh_path;
+            diffuse_texture_path.remove_filename();
+            diffuse_texture_path += std::string_view{ai_texture_diffuse.data, ai_texture_diffuse.length};
+        }
+    }
+
     std::vector<TriangleComponent::Vertex> vertices;
     for (const std::span ai_vertices{mesh.mVertices, mesh.mNumVertices};
          const auto &[index, ai_position] : ranges::views::enumerate(ai_vertices)) {
@@ -46,22 +61,13 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
         math::Color color{math::colors::linear::White};
         if (const aiColor4D *colors = mesh.mColors[0]) {
             const auto [r, g, b, a] = colors[index];
-            color = math::Color{r, g, b, a};
+            color = math::Color{r, g, b, a} * diffuse;
         }
 
         math::Vector2 texture_coordinate;
         if (const aiVector3D *texture_coordinates = mesh.mTextureCoords[0]) {
             const auto [x, y, z] = texture_coordinates[index];
             texture_coordinate = math::Vector2{x, y};
-        }
-
-        if (scene.mNumMaterials > 0) {
-            if (const aiMaterial *material = scene.mMaterials[mesh.mMaterialIndex]) {
-                if (aiColor3D diffuse{1.0f, 1.0f, 1.0f};
-                    material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse) == aiReturn_SUCCESS) {
-                    color *= math::Color{diffuse.r, diffuse.g, diffuse.b};
-                }
-            }
         }
 
         vertices.emplace_back(position, color, texture_coordinate);
@@ -75,27 +81,28 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
         }
     }
 
-    return game.AddComponent<TriangleComponent>(vertices, indices, "", false, Transform{}, &parent);
+    return game.AddComponent<TriangleComponent>(vertices, indices, diffuse_texture_path, false, Transform{}, &parent);
 }
 
-void TraverseNode(Game &game, const SceneComponent &parent, const aiScene &scene, const aiNode &node) {
+void TraverseNode(Game &game, const SceneComponent &parent, const aiScene &scene, const aiNode &node,
+                  const std::filesystem::path &mesh_path) {
     const auto &node_root = game.AddComponent<SceneComponent>(TransformFromNode(node), &parent);
 
     for (const std::size_t mesh_index : std::span{node.mMeshes, node.mNumMeshes}) {
         if (const aiMesh *mesh = scene.mMeshes[mesh_index]) {
-            TriangleFromMesh(game, node_root, scene, *mesh);
+            TriangleFromMesh(game, node_root, scene, *mesh, mesh_path);
         }
     }
 
     for (const aiNode *child_node : std::span{node.mChildren, node.mNumChildren}) {
-        TraverseNode(game, node_root, scene, *child_node);
+        TraverseNode(game, node_root, scene, *child_node, mesh_path);
     }
 }
 
 }  // namespace detail
 
 TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<const Vertex> vertices,
-                                     const std::span<const Index> indices, const std::string_view texture_path,
+                                     const std::span<const Index> indices, const std::filesystem::path &texture_path,
                                      const bool wireframe, const borov_engine::Transform &transform,
                                      const SceneComponent *parent)
     : SceneComponent{game, transform, parent}, wireframe_{wireframe} {
@@ -115,31 +122,30 @@ void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::
     InitializeIndexBuffer(indices);
 }
 
-void TriangleComponent::LoadTexture(const std::string_view texture_path) {
-    if (texture_path.empty()) {
+void TriangleComponent::LoadTexture(const std::filesystem::path &texture_path) {
+    if (!texture_path.has_filename()) {
         return;
     }
 
     texture_ = detail::TextureFromFile(Device(), texture_path);
 }
 
-void TriangleComponent::LoadMesh(const std::string_view mesh_path) {
-    if (mesh_path.empty()) {
+void TriangleComponent::LoadMesh(const std::filesystem::path &mesh_path) {
+    if (!mesh_path.has_filename()) {
         return;
     }
     vertex_buffer_ = nullptr;
     index_buffer_ = nullptr;
 
     Assimp::Importer importer;
-    const std::string path_str{mesh_path};
-    const aiScene *scene = importer.ReadFile(path_str, aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene *scene = importer.ReadFile(mesh_path.generic_string(), aiProcess_Triangulate | aiProcess_FlipUVs);
     if (scene == nullptr) {
         const char *message = importer.GetErrorString();
         throw std::runtime_error{message};
     }
 
     if (const aiNode *node = scene->mRootNode) {
-        detail::TraverseNode(Game(), *this, *scene, *node);
+        detail::TraverseNode(Game(), *this, *scene, *node, mesh_path);
     }
 }
 

@@ -5,13 +5,13 @@
 
 #include <d3d11.h>
 
-#include <string_view>
+#include <filesystem>
 
 #include "d3d_ptr.hpp"
 
 namespace borov_engine::detail {
 
-[[nodiscard]] D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device, std::string_view path);
+[[nodiscard]] D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device, const std::filesystem::path &path);
 
 }  // namespace borov_engine::detail
 

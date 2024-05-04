@@ -5,7 +5,7 @@
 
 #include <GeometricPrimitive.h>
 
-#include <string_view>
+#include <filesystem>
 #include <variant>
 
 #include "detail/d3d_ptr.hpp"
@@ -165,12 +165,12 @@ class GeometricPrimitiveComponent : public SceneComponent {
   public:
     explicit GeometricPrimitiveComponent(class Game &game, const GeometricPrimitiveArguments &arguments,
                                          math::Color color = math::colors::linear::White.v,
-                                         std::string_view texture_path = {}, bool wireframe = false,
+                                         const std::filesystem::path &texture_path = {}, bool wireframe = false,
                                          const class Transform &transform = {}, const SceneComponent *parent = nullptr);
 
     explicit GeometricPrimitiveComponent(class Game &game, GeometricPrimitiveType primitive_type,
                                          math::Color color = math::colors::linear::White.v,
-                                         std::string_view texture_path = {}, bool wireframe = false,
+                                         const std::filesystem::path &texture_path = {}, bool wireframe = false,
                                          const class Transform &transform = {}, const SceneComponent *parent = nullptr);
 
     [[nodiscard]] const GeometricPrimitive *Primitive() const;
@@ -178,7 +178,7 @@ class GeometricPrimitiveComponent : public SceneComponent {
     GeometricPrimitive &Primitive(const GeometricPrimitiveArguments &arguments);
     GeometricPrimitive &Primitive(GeometricPrimitiveType primitive_type);
 
-    void LoadTexture(std::string_view texture_path);
+    void LoadTexture(const std::filesystem::path &texture_path);
 
     [[nodiscard]] GeometricPrimitiveType PrimitiveType() const;
     [[nodiscard]] const GeometricPrimitiveArguments &PrimitiveArguments() const;
