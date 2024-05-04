@@ -9,8 +9,10 @@
 
 namespace borov_engine {
 
+class SceneComponent;
+
 template <typename Range>
-concept SceneComponentRange = RefWrapperRange<Range, const class SceneComponent>;
+concept SceneComponentRange = RefWrapperRange<Range, const SceneComponent>;
 
 class SceneComponent : public Component {
   public:
