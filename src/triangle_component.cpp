@@ -57,7 +57,8 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
 
         if (scene.mNumMaterials > 0) {
             if (const aiMaterial *material = scene.mMaterials[mesh.mMaterialIndex]) {
-                if (aiColor3D diffuse; material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse) == aiReturn_SUCCESS) {
+                if (aiColor3D diffuse{1.0f, 1.0f, 1.0f};
+                    material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse) == aiReturn_SUCCESS) {
                     color *= math::Color{diffuse.r, diffuse.g, diffuse.b};
                 }
             }
