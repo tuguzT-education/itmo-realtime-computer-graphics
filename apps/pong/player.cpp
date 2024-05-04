@@ -3,7 +3,7 @@
 #include <borov_engine/game.hpp>
 
 Player::Player(borov_engine::Game &game, const ::Direction direction, const ControlKeys controls)
-    : BoxComponent(game, 0.05f, 0.3f, 0.05f, {1.0f, 1.0f, 1.0f}, nullptr, {.position = PositionFrom(direction)}),
+    : BoxComponent(game, 0.05f, 0.3f, 0.05f, {1.0f, 1.0f, 1.0f}, {}, {.position = PositionFrom(direction)}),
       direction_{direction},
       controls_{controls} {}
 

@@ -1,6 +1,7 @@
 #include "venus.hpp"
 
 #include <borov_engine/game.hpp>
+#include <numbers>
 
 namespace detail {
 

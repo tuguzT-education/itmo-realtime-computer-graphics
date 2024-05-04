@@ -25,6 +25,11 @@ class SceneComponent : public Component {
     [[nodiscard]] const SceneComponent *Parent() const;
     bool Parent(const SceneComponent *parent);
 
+    [[nodiscard]] bool IsParentOf(const SceneComponent &scene_component,
+                                  std::size_t max_depth = (std::numeric_limits<decltype(max_depth)>::max)()) const;
+    [[nodiscard]] bool IsChildOf(const SceneComponent &scene_component,
+                                 std::size_t max_depth = (std::numeric_limits<decltype(max_depth)>::max)()) const;
+
     [[nodiscard]] SceneComponentRange auto Parents() const;
     [[nodiscard]] SceneComponentRange auto Children() const;
 

@@ -48,4 +48,20 @@ bool SceneComponent::Parent(const SceneComponent *parent) {
     return true;
 }
 
+bool SceneComponent::IsParentOf(const SceneComponent &scene_component, const std::size_t max_depth) const {
+    return scene_component.IsChildOf(*this, max_depth);
+}
+
+bool SceneComponent::IsChildOf(const SceneComponent &scene_component, std::size_t max_depth) const {
+    const SceneComponent *parent = Parent();
+    while (parent != nullptr && max_depth > 0) {
+        if (&scene_component == parent) {
+            return true;
+        }
+        parent = parent->Parent();
+        max_depth -= 1;
+    }
+    return false;
+}
+
 }  // namespace borov_engine

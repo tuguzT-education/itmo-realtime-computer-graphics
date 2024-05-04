@@ -2,6 +2,7 @@
 
 #include <array>
 
+#include "borov_engine/camera.hpp"
 #include "borov_engine/camera_manager.hpp"
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/viewport_manager.hpp"
@@ -187,9 +188,9 @@ void Game::Exit() {
 
 void Game::InitializeDevice() {
     constexpr std::array feature_level{D3D_FEATURE_LEVEL_11_1};
-    const HRESULT result =
-        D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG, feature_level.data(),
-                          feature_level.size(), D3D11_SDK_VERSION, &device_, nullptr, &device_context_);
+    const HRESULT result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG,
+                                             feature_level.data(), feature_level.size(), D3D11_SDK_VERSION, &device_,
+                                             nullptr, &device_context_);
     detail::CheckResult(result, "Failed to create device");
 }
 

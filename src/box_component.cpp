@@ -83,8 +83,8 @@ T &Unmove(T &&t) {
 }  // namespace detail
 
 BoxComponent::BoxComponent(class Game &game, const float length, const float height, const float width,
-                           const math::Color color, const char *texture_path, const class Transform &transform,
-                           const SceneComponent *parent)
+                           const math::Color color, const std::string_view texture_path,
+                           const class Transform &transform, const SceneComponent *parent)
     : TriangleComponent(game, detail::Unmove(detail::BoxVertices(length, height, width, color)),
                         detail::Unmove(detail::BoxIndices()), texture_path, false, transform, parent),
       length_{length},

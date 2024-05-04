@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include <borov_engine/camera.hpp>
 #include <borov_engine/collision_primitive.hpp>
 #include <borov_engine/orbit_camera_manager.hpp>
 #include <borov_engine/spectator_camera_manager.hpp>

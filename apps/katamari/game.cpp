@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+#include "borov_engine/camera.hpp"
 #include "borov_engine/orbit_camera_manager.hpp"
 
 Game::Game(borov_engine::Window& window, borov_engine::Input& input)

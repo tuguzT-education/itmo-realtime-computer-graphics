@@ -3,13 +3,13 @@
 #ifndef BOROV_ENGINE_VIEWPORT_HPP_INCLUDED
 #define BOROV_ENGINE_VIEWPORT_HPP_INCLUDED
 
-#include "camera.hpp"
+#include "math.hpp"
 
 namespace borov_engine {
 
 class Viewport : public math::Viewport {
   public:
-    Camera *camera;
+    class Camera *camera;
 
     explicit Viewport(Camera *camera = nullptr) noexcept;
 
