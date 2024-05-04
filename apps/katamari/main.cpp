@@ -8,7 +8,7 @@ int main() {
     Game game{window, input};
 
     auto& component = game.AddComponent<borov_engine::TriangleComponent>();
-    component.LoadMesh("resources/meshes/apricot/apricot.fbx");
+    component.LoadMesh("resources/meshes/concrete_barricade/concrete_barricade.fbx");
     component.Transform().scale /= 100;
 
     game.Run();
