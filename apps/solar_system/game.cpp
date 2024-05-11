@@ -197,24 +197,15 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
             break;
         }
         case borov_engine::InputKey::G: {
-            // ReSharper disable once CppTooWideScopeInitStatement
-            auto is_triangle = [](const borov_engine::Component &component) {
-                return dynamic_cast<const borov_engine::TriangleComponent *>(&component) != nullptr;
-            };
-            for (borov_engine::Component &component : Components() | std::views::filter(is_triangle)) {
-                auto &triangle_component = dynamic_cast<borov_engine::TriangleComponent &>(component);
-                const bool wireframe = triangle_component.Wireframe();
-                triangle_component.Wireframe(!wireframe);
-            }
-
-            // ReSharper disable once CppTooWideScopeInitStatement
-            auto is_primitive = [](const borov_engine::Component &component) {
-                return dynamic_cast<const borov_engine::GeometricPrimitiveComponent *>(&component) != nullptr;
-            };
-            for (borov_engine::Component &component : Components() | std::views::filter(is_primitive)) {
-                auto &triangle_component = dynamic_cast<borov_engine::GeometricPrimitiveComponent &>(component);
-                const bool wireframe = triangle_component.Wireframe();
-                triangle_component.Wireframe(!wireframe);
+            for (borov_engine::Component &component : Components()) {
+                if (const auto triangle_component = dynamic_cast<borov_engine::TriangleComponent *>(&component)) {
+                    const bool wireframe = triangle_component->Wireframe();
+                    triangle_component->Wireframe(!wireframe);
+                }
+                if (const auto primitive = dynamic_cast<borov_engine::GeometricPrimitiveComponent *>(&component)) {
+                    const bool wireframe = primitive->Wireframe();
+                    primitive->Wireframe(!wireframe);
+                }
             }
             break;
         }
