@@ -5,6 +5,7 @@
 
 #include <borov_engine/game.hpp>
 
+#include "field.hpp"
 #include "player.hpp"
 
 class Game final : public borov_engine::Game {
@@ -13,6 +14,7 @@ class Game final : public borov_engine::Game {
 
   private:
     std::reference_wrapper<borov_engine::Camera> camera_;
+    std::reference_wrapper<Field> field_;
     std::reference_wrapper<Player> player_;
 };
 

@@ -1,7 +1,9 @@
 set(HEADER_LIST
+        field.hpp
         player.hpp
         game.hpp)
 set(SOURCE_LIST
+        field.cpp
         player.cpp
         game.cpp
         main.cpp)

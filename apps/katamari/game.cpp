@@ -10,6 +10,7 @@ Game::Game(borov_engine::Window& window, borov_engine::Input& input)
               borov_engine::PerspectiveCameraProjectionType{},
               borov_engine::Transform{.position = borov_engine::math::Vector3::Backward}),
       },
+      field_{AddComponent<Field>()},
       player_{AddComponent<Player>()} {
     CameraManager<borov_engine::OrbitCameraManager>(camera_, player_);
 }

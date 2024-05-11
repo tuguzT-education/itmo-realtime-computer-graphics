@@ -243,9 +243,9 @@ void TriangleComponent::InitializeRasterizerState() {
 void TriangleComponent::InitializeSamplerState() {
     constexpr D3D11_SAMPLER_DESC sampler_desc{
         .Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-        .AddressU = D3D11_TEXTURE_ADDRESS_CLAMP,
-        .AddressV = D3D11_TEXTURE_ADDRESS_CLAMP,
-        .AddressW = D3D11_TEXTURE_ADDRESS_CLAMP,
+        .AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
+        .AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
+        .AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
         .ComparisonFunc = D3D11_COMPARISON_ALWAYS,
         .BorderColor = {1.0f, 0.0f, 0.0f, 1.0f},
         .MaxLOD = D3D11_FLOAT32_MAX,

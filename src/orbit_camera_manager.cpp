@@ -92,6 +92,9 @@ void OrbitCameraManager::Update(const float delta_time) {
     mouse_offset_ = math::Vector2::Zero;
 
     distance_ -= static_cast<float>(wheel_delta_) * zoom_speed_ * delta_time;
+    if (distance_ < 1e-3f) {
+        distance_ = 1e-3f;
+    }
     wheel_delta_ = 0;
 }
 
