@@ -74,22 +74,19 @@ std::array<BoxComponent::Index, 36> BoxIndices() {
     // clang-format on
 }
 
-// VERY dangerous if not used properly
-template <class T>
-T &Unmove(T &&t) {
-    return static_cast<T &>(t);
-}
-
 }  // namespace detail
 
 BoxComponent::BoxComponent(class Game &game, const float length, const float height, const float width,
                            const math::Color color, const std::filesystem::path &texture_path,
                            const class Transform &transform, const SceneComponent *parent)
-    : TriangleComponent(game, detail::Unmove(detail::BoxVertices(length, height, width, color)),
-                        detail::Unmove(detail::BoxIndices()), texture_path, false, transform, parent),
+    : TriangleComponent(game, {}, {}, texture_path, false, transform, parent),
       length_{length},
       height_{height},
-      width_{width} {}
+      width_{width} {
+    const std::array vertices = detail::BoxVertices(length, height, width, color);
+    const std::array indices = detail::BoxIndices();
+    Load(vertices, indices);
+}
 
 float BoxComponent::Length() const {
     return length_;

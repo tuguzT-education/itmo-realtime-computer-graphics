@@ -11,7 +11,6 @@
 #include <array>
 #include <assimp/Importer.hpp>
 #include <range/v3/view/enumerate.hpp>
-#include <range/v3/view/take.hpp>
 
 #include "borov_engine/camera.hpp"
 #include "borov_engine/detail/check_result.hpp"
@@ -76,7 +75,7 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
     std::vector<TriangleComponent::Index> indices;
     for (const std::span faces{mesh.mFaces, mesh.mNumFaces}; const aiFace &face : faces) {
         for (const std::span ai_indices{face.mIndices, face.mNumIndices};
-             const std::uint32_t index : ai_indices | ranges::views::take(3)) {
+             const std::uint32_t index : ai_indices | std::views::take(3)) {
             indices.emplace_back(index);
         }
     }
@@ -111,7 +110,7 @@ TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<c
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeSamplerState();
-    InitializeConstantBuffer(ConstantBuffer{});
+    InitializeConstantBuffer();
 
     Load(vertices, indices);
     LoadTexture(texture_path);
@@ -304,22 +303,17 @@ void TriangleComponent::InitializeIndexBuffer(std::span<const Index> indices) {
     detail::CheckResult(result, "Failed to create index buffer");
 }
 
-void TriangleComponent::InitializeConstantBuffer(ConstantBuffer constant_buffer) {
+void TriangleComponent::InitializeConstantBuffer() {
     constexpr D3D11_BUFFER_DESC buffer_desc{
-        .ByteWidth = sizeof(constant_buffer),
+        .ByteWidth = sizeof(ConstantBuffer),
         .Usage = D3D11_USAGE_DYNAMIC,
         .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
         .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
         .MiscFlags = 0,
         .StructureByteStride = 0,
     };
-    const D3D11_SUBRESOURCE_DATA initial_data{
-        .pSysMem = &constant_buffer,
-        .SysMemPitch = 0,
-        .SysMemSlicePitch = 0,
-    };
 
-    const HRESULT result = Device().CreateBuffer(&buffer_desc, &initial_data, &constant_buffer_);
+    const HRESULT result = Device().CreateBuffer(&buffer_desc, nullptr, &constant_buffer_);
     detail::CheckResult(result, "Failed to create constant buffer");
 }
 

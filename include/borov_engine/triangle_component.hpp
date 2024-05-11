@@ -46,7 +46,7 @@ class TriangleComponent : public SceneComponent {
     void InitializeSamplerState();
     void InitializeVertexBuffer(std::span<const Vertex> vertices);
     void InitializeIndexBuffer(std::span<const Index> indices);
-    void InitializeConstantBuffer(ConstantBuffer constant_buffer);
+    void InitializeConstantBuffer();
 
     detail::D3DPtr<ID3D11SamplerState> sampler_state_;
     detail::D3DPtr<ID3D11ShaderResourceView> texture_;
