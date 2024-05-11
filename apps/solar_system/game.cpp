@@ -10,94 +10,86 @@
 Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     : borov_engine::Game(window, input),
       camera_{
-          AddComponent<borov_engine::Camera>(borov_engine::PerspectiveCameraProjectionType{},
-                                             borov_engine::Transform{
-                                                 .position = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f},
-                                                 .rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(
-                                                     0.0f, -std::numbers::pi_v<float> / 4.0f, 0.0f),
-                                             }),
+          AddComponent<borov_engine::Camera>(reinterpret_cast<borov_engine::Camera::Initializer &>(
+              borov_engine::Camera::Initializer{.projection_type = borov_engine::PerspectiveCameraProjectionType{}}
+                  .Transform(borov_engine::Transform{
+                      .position = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f},
+                      .rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(
+                          0.0f, -std::numbers::pi_v<float> / 4.0f, 0.0f),
+                  }))),
       },
       sun_{
           AddComponent<Sun>(),
       },
       mercury_{
-          AddComponent<Mercury>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 1.5f,
-              },
-              &sun_),
+          AddComponent<Mercury>(Mercury::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 1.5f},
+              .parent = &sun_,
+          }),
       },
       venus_{
-          AddComponent<Venus>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 2.0f,
-              },
-              &sun_),
+          AddComponent<Venus>(Venus::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 2.0f},
+              .parent = &sun_,
+          }),
       },
       earth_{
-          AddComponent<Earth>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 3.0f,
-              },
-              &sun_),
+          AddComponent<Earth>(Earth::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 3.0f},
+              .parent = &sun_,
+          }),
       },
       moon_{
-          AddComponent<Moon>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 0.5f,
-              },
-              &earth_),
+          AddComponent<Moon>(Moon::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 0.5f},
+              .parent = &earth_,
+          }),
       },
       mars_{
-          AddComponent<Mars>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 4.5f,
-              },
-              &sun_),
+          AddComponent<Mars>(Mars::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 4.5f},
+              .parent = &sun_,
+          }),
       },
       phobos_{
-          AddComponent<Phobos>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 0.5f,
-              },
-              &mars_),
+          AddComponent<Phobos>(Phobos::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 0.5f},
+              .parent = &mars_,
+          }),
       },
       deimos_{
-          AddComponent<Deimos>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitZ * 0.75f,
-              },
-              &mars_),
+          AddComponent<Deimos>(Deimos::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitZ * 0.75f},
+              .parent = &mars_,
+          }),
       },
       jupyter_{
-          AddComponent<Jupyter>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 6.5f,
-              },
-              &sun_),
+          AddComponent<Jupyter>(Jupyter::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 6.5f},
+              .parent = &sun_,
+          }),
       },
       saturn_{
-          AddComponent<Saturn>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 8.0f,
-              },
-              &sun_),
+          AddComponent<Saturn>(Saturn::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 8.0f},
+              .parent = &sun_,
+          }),
       },
       uranus_{
-          AddComponent<Uranus>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 12.0f,
-              },
-              &sun_),
+          AddComponent<Uranus>(Uranus::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 12.0f},
+              .parent = &sun_,
+          }),
       },
       neptune_{
-          AddComponent<Neptune>(
-              borov_engine::Transform{
-                  .position = borov_engine::math::Vector3::UnitX * 18.0f,
-              },
-              &sun_),
+          AddComponent<Neptune>(Neptune::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::UnitX * 18.0f},
+              .parent = &sun_,
+          }),
       } {
-    CameraManager<borov_engine::SpectatorCameraManager>(camera_);
+    CameraManager<borov_engine::SpectatorCameraManager>(borov_engine::SpectatorCameraManager::Initializer{
+        .camera = &camera_,
+    });
     ViewportManager<::ViewportManager>();
 
     input.OnInputKeyDown().AddRaw(this, &Game::OnInputKeyDown);
@@ -193,7 +185,9 @@ void Game::Update(const float delta_time) {
 void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
     switch (input_key) {
         case borov_engine::InputKey::Escape: {
-            CameraManager<borov_engine::SpectatorCameraManager>(camera_);
+            CameraManager<borov_engine::SpectatorCameraManager>(borov_engine::SpectatorCameraManager::Initializer{
+                .camera = &camera_,
+            });
             break;
         }
         case borov_engine::InputKey::G: {
@@ -244,7 +238,10 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
             }
 
             if (target != nullptr) {
-                CameraManager<borov_engine::OrbitCameraManager>(camera_, *target);
+                CameraManager<borov_engine::OrbitCameraManager>(borov_engine::OrbitCameraManager::Initializer{
+                    .target = *target,
+                    .camera = &camera_,
+                });
             }
             break;
         }

@@ -1,6 +1,6 @@
 #include "borov_engine/geometric_primitive_component.hpp"
 
-#include <../directxtk/Effects.h>
+#include <directxtk/Effects.h>
 
 #include "borov_engine/camera.hpp"
 #include "borov_engine/detail/d3d_ptr.hpp"
@@ -164,28 +164,40 @@ GeometricPrimitiveArguments PrimitiveArguments(const GeometricPrimitiveType prim
     }
 }
 
-GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &game,
-                                                         const GeometricPrimitiveArguments &arguments,
-                                                         const math::Color color,
-                                                         const std::filesystem::path &texture_path,
-                                                         const bool wireframe, const borov_engine::Transform &transform,
-                                                         const SceneComponent *parent)
-    : SceneComponent(game, transform, parent),
-      color_{color},
-      wireframe_{wireframe},
-      primitive_{CreatePrimitive(&DeviceContext(), arguments)},
-      primitive_arguments_{arguments} {
-    LoadTexture(texture_path);
+auto GeometricPrimitiveComponent::Initializer::PrimitiveArguments(const GeometricPrimitiveArguments &arguments)
+    -> Initializer & {
+    this->primitive_arguments = arguments;
+    return *this;
 }
 
-GeometricPrimitiveComponent::GeometricPrimitiveComponent(borov_engine::Game &game,
-                                                         const GeometricPrimitiveType primitive_type,
-                                                         const math::Color color,
-                                                         const std::filesystem::path &texture_path,
-                                                         const bool wireframe, const borov_engine::Transform &transform,
-                                                         const SceneComponent *parent)
-    : GeometricPrimitiveComponent(game, borov_engine::PrimitiveArguments(primitive_type), color, texture_path,
-                                  wireframe, transform, parent) {}
+auto GeometricPrimitiveComponent::Initializer::PrimitiveType(const GeometricPrimitiveType type) -> Initializer & {
+    this->primitive_arguments = borov_engine::PrimitiveArguments(type);
+    return *this;
+}
+
+auto GeometricPrimitiveComponent::Initializer::Color(const math::Color color) -> Initializer & {
+    this->color = color;
+    return *this;
+}
+
+auto GeometricPrimitiveComponent::Initializer::TexturePath(const std::filesystem::path &texture_path) -> Initializer & {
+    this->texture_path = texture_path;
+    return *this;
+}
+
+auto GeometricPrimitiveComponent::Initializer::Wireframe(const bool wireframe) -> Initializer & {
+    this->wireframe = wireframe;
+    return *this;
+}
+
+GeometricPrimitiveComponent::GeometricPrimitiveComponent(class Game &game, const Initializer &initializer)
+    : SceneComponent(game, initializer),
+      color_{initializer.color},
+      wireframe_{initializer.wireframe},
+      primitive_{CreatePrimitive(&DeviceContext(), initializer.primitive_arguments)},
+      primitive_arguments_{initializer.primitive_arguments} {
+    LoadTexture(initializer.texture_path);
+}
 
 const GeometricPrimitive *GeometricPrimitiveComponent::Primitive() const {
     return primitive_.get();

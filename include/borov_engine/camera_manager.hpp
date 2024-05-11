@@ -9,7 +9,9 @@ namespace borov_engine {
 
 class CameraManager : public Component {
   public:
-    explicit CameraManager(class Game &game);
+    struct Initializer : Component::Initializer {};
+
+    explicit CameraManager(class Game &game, const Initializer &initializer = {});
 
     [[nodiscard]] virtual const Camera *MainCamera() const;
     [[nodiscard]] virtual Camera *MainCamera();

@@ -5,7 +5,8 @@
 
 #include "player.hpp"
 
-Ball::Ball(borov_engine::Game &game) : BoxComponent(game, 0.05f, 0.05f, 0.05f), velocity_{RandomVelocity()} {}
+Ball::Ball(borov_engine::Game &game)
+    : BoxComponent(game, Initializer{.length = 0.05f, .height = 0.05f, .width = 0.05f}), velocity_{RandomVelocity()} {}
 
 void Ball::Reset() {
     Transform().position = borov_engine::math::Vector3::Zero;

@@ -17,12 +17,34 @@ class TriangleComponent : public SceneComponent {
     using Vertex = DirectX::VertexPositionColorTexture;
     using Index = std::uint32_t;
 
-    explicit TriangleComponent(class Game &game, std::span<const Vertex> vertices = {},
-                               std::span<const Index> indices = {}, const std::filesystem::path &texture_path = {},
-                               bool wireframe = false, const class Transform &transform = {},
-                               const SceneComponent *parent = nullptr);
+    struct Initializer : SceneComponent::Initializer {
+        bool wireframe = false;
 
-    void Load(std::span<const Vertex> vertices, std::span<const Index> indices);
+        Initializer &Wireframe(bool wireframe);
+    };
+
+    struct CustomInitializer : Initializer {
+        std::span<const Vertex> vertices;
+        std::span<const Index> indices;
+        std::filesystem::path texture_path;
+
+        Initializer &Vertices(std::span<const Vertex> vertices);
+        Initializer &Indices(std::span<const Index> indices);
+        Initializer &TexturePath(const std::filesystem::path &texture_path);
+    };
+
+    struct MeshInitializer : Initializer {
+        std::filesystem::path mesh_path;
+
+        Initializer &MeshPath(const std::filesystem::path &mesh_path);
+    };
+
+    explicit TriangleComponent(class Game &game, const Initializer &initializer = {});
+    explicit TriangleComponent(class Game &game, const CustomInitializer &initializer);
+    explicit TriangleComponent(class Game &game, const MeshInitializer &initializer);
+
+    void Load(std::span<const Vertex> vertices, std::span<const Index> indices,
+              const std::filesystem::path &texture_path = {});
     void LoadTexture(const std::filesystem::path &texture_path);
     void LoadMesh(const std::filesystem::path &mesh_path);
 

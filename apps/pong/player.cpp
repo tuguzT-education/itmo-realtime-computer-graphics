@@ -3,7 +3,9 @@
 #include <borov_engine/game.hpp>
 
 Player::Player(borov_engine::Game &game, const ::Direction direction, const ControlKeys controls)
-    : BoxComponent(game, 0.05f, 0.3f, 0.05f, {1.0f, 1.0f, 1.0f}, {}, {.position = PositionFrom(direction)}),
+    : BoxComponent(
+          game, reinterpret_cast<Initializer &>(Initializer{.length = 0.05f, .height = 0.3f, .width = 0.05f}.Transform(
+                    borov_engine::Transform{.position = PositionFrom(direction)}))),
       direction_{direction},
       controls_{controls} {}
 
@@ -36,7 +38,7 @@ void Player::Update(const float delta_time) {
     }
 }
 
-borov_engine::math::Vector3 Player::PositionFrom(::Direction direction) {
+borov_engine::math::Vector3 Player::PositionFrom(const ::Direction direction) {
     switch (direction) {
         case Direction::Left: {
             return {-0.975f, 0.0f, 0.0f};

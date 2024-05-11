@@ -16,7 +16,15 @@ concept SceneComponentRange = RefWrapperRange<Range, const SceneComponent>;
 
 class SceneComponent : public Component {
   public:
-    explicit SceneComponent(class Game &game, const Transform &transform = {}, const SceneComponent *parent = nullptr);
+    struct Initializer : Component::Initializer {
+        Transform transform;
+        const SceneComponent *parent = nullptr;
+
+        Initializer &Transform(const Transform &transform);
+        Initializer &Parent(const SceneComponent *parent);
+    };
+
+    explicit SceneComponent(class Game &game, const Initializer &initializer = {});
 
     [[nodiscard]] const Transform &Transform() const;
     [[nodiscard]] class Transform &Transform();

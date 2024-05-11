@@ -76,16 +76,39 @@ std::array<BoxComponent::Index, 36> BoxIndices() {
 
 }  // namespace detail
 
-BoxComponent::BoxComponent(class Game &game, const float length, const float height, const float width,
-                           const math::Color color, const std::filesystem::path &texture_path,
-                           const class Transform &transform, const SceneComponent *parent)
-    : TriangleComponent(game, {}, {}, texture_path, false, transform, parent),
-      length_{length},
-      height_{height},
-      width_{width} {
-    const std::array vertices = detail::BoxVertices(length, height, width, color);
+auto BoxComponent::Initializer::Length(const float length) -> Initializer & {
+    this->length = length;
+    return *this;
+}
+
+auto BoxComponent::Initializer::Height(const float height) -> Initializer & {
+    this->height = height;
+    return *this;
+}
+
+auto BoxComponent::Initializer::Width(const float width) -> Initializer & {
+    this->width = width;
+    return *this;
+}
+
+auto BoxComponent::Initializer::Color(const math::Color color) -> Initializer & {
+    this->color = color;
+    return *this;
+}
+
+auto BoxComponent::Initializer::TexturePath(const std::filesystem::path &texture_path) -> Initializer & {
+    this->texture_path = texture_path;
+    return *this;
+}
+
+BoxComponent::BoxComponent(class Game &game, const Initializer &initializer)
+    : TriangleComponent(game, initializer),
+      length_{initializer.length},
+      height_{initializer.height},
+      width_{initializer.width} {
+    const std::array vertices = detail::BoxVertices(length_, height_, width_, initializer.color);
     const std::array indices = detail::BoxIndices();
-    Load(vertices, indices);
+    Load(vertices, indices, initializer.texture_path);
 }
 
 float BoxComponent::Length() const {

@@ -80,45 +80,83 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
         }
     }
 
-    return game.AddComponent<TriangleComponent>(vertices, indices, diffuse_texture_path, false, Transform{}, &parent);
+    TriangleComponent::CustomInitializer initializer{
+        .vertices = vertices,
+        .indices = indices,
+        .texture_path = diffuse_texture_path,
+    };
+    initializer.Parent(&parent);
+    return game.AddComponent<TriangleComponent>(initializer);
 }
 
 void TraverseNode(Game &game, const SceneComponent &parent, const aiScene &scene, const aiNode &node,
                   const std::filesystem::path &mesh_path) {
-    const auto &node_root = game.AddComponent<SceneComponent>(TransformFromNode(node), &parent);
+    const SceneComponent::Initializer root_args{.transform = TransformFromNode(node), .parent = &parent};
+    const auto &root = game.AddComponent<SceneComponent>(root_args);
 
     for (const std::size_t mesh_index : std::span{node.mMeshes, node.mNumMeshes}) {
         if (const aiMesh *mesh = scene.mMeshes[mesh_index]) {
-            TriangleFromMesh(game, node_root, scene, *mesh, mesh_path);
+            TriangleFromMesh(game, root, scene, *mesh, mesh_path);
         }
     }
 
     for (const aiNode *child_node : std::span{node.mChildren, node.mNumChildren}) {
-        TraverseNode(game, node_root, scene, *child_node, mesh_path);
+        TraverseNode(game, root, scene, *child_node, mesh_path);
     }
 }
 
 }  // namespace detail
 
-TriangleComponent::TriangleComponent(borov_engine::Game &game, const std::span<const Vertex> vertices,
-                                     const std::span<const Index> indices, const std::filesystem::path &texture_path,
-                                     const bool wireframe, const borov_engine::Transform &transform,
-                                     const SceneComponent *parent)
-    : SceneComponent{game, transform, parent}, wireframe_{wireframe} {
+auto TriangleComponent::Initializer::Wireframe(const bool wireframe) -> Initializer & {
+    this->wireframe = wireframe;
+    return *this;
+}
+
+auto TriangleComponent::CustomInitializer::Vertices(const std::span<const Vertex> vertices) -> Initializer & {
+    this->vertices = vertices;
+    return *this;
+}
+
+auto TriangleComponent::CustomInitializer::Indices(const std::span<const Index> indices) -> Initializer & {
+    this->indices = indices;
+    return *this;
+}
+
+auto TriangleComponent::CustomInitializer::TexturePath(const std::filesystem::path &texture_path) -> Initializer & {
+    this->texture_path = texture_path;
+    return *this;
+}
+
+auto TriangleComponent::MeshInitializer::MeshPath(const std::filesystem::path &mesh_path) -> Initializer & {
+    this->mesh_path = mesh_path;
+    return *this;
+}
+
+TriangleComponent::TriangleComponent(class Game &game, const Initializer &initializer)
+    : SceneComponent(game, initializer), wireframe_{initializer.wireframe} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeSamplerState();
     InitializeConstantBuffer();
-
-    Load(vertices, indices);
-    LoadTexture(texture_path);
 }
 
-void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::span<const Index> indices) {
+TriangleComponent::TriangleComponent(class Game &game, const CustomInitializer &initializer)
+    : TriangleComponent(game, static_cast<const Initializer &>(initializer)) {
+    Load(initializer.vertices, initializer.indices, initializer.texture_path);
+}
+
+TriangleComponent::TriangleComponent(class Game &game, const MeshInitializer &initializer)
+    : TriangleComponent(game, static_cast<const Initializer &>(initializer)) {
+    LoadMesh(initializer.mesh_path);
+}
+
+void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::span<const Index> indices,
+                             const std::filesystem::path &texture_path) {
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
+    LoadTexture(texture_path);
 }
 
 void TriangleComponent::LoadTexture(const std::filesystem::path &texture_path) {

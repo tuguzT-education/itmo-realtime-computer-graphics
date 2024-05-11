@@ -12,7 +12,9 @@ namespace borov_engine {
 
 class ViewportManager : public Component {
   public:
-    explicit ViewportManager(class Game &game);
+    struct Initializer : Component::Initializer {};
+
+    explicit ViewportManager(class Game &game, const Initializer &initializer = {});
 
     [[nodiscard]] const Viewport &TargetViewport() const;
 

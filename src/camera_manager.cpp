@@ -2,7 +2,7 @@
 
 namespace borov_engine {
 
-CameraManager::CameraManager(borov_engine::Game &game) : Component(game) {}
+CameraManager::CameraManager(class Game &game, const Initializer &initializer) : Component(game, initializer) {}
 
 const Camera *CameraManager::MainCamera() const {
     return nullptr;

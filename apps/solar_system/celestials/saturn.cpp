@@ -6,18 +6,21 @@ namespace detail {
 
 borov_engine::GeometricPrimitiveComponent& CreateSaturnMesh(borov_engine::Game& game,
                                                             const borov_engine::SceneComponent* parent) {
-    borov_engine::DodecahedronGeometricPrimitiveArguments arguments{
-        .size = 0.25f,
+    borov_engine::GeometricPrimitiveComponent::Initializer initializer{
+        .primitive_arguments =
+            borov_engine::DodecahedronGeometricPrimitiveArguments{
+                .size = 0.25f,
+            },
+        .color = borov_engine::math::colors::linear::LightGoldenrodYellow.v,
     };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::LightGoldenrodYellow};
-    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, color, "", false, transform, parent);
+    initializer.Parent(parent);
+    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(initializer);
 }
 
 }  // namespace detail
 
-Saturn::Saturn(borov_engine::Game& game, const borov_engine::Transform& transform, const SceneComponent* parent)
-    : SceneComponent(game, transform, parent), mesh_{detail::CreateSaturnMesh(Game(), this)} {}
+Saturn::Saturn(borov_engine::Game& game, const Initializer& initializer)
+    : SceneComponent(game, initializer), mesh_{detail::CreateSaturnMesh(Game(), this)} {}
 
 const borov_engine::GeometricPrimitiveComponent& Saturn::Mesh() const {
     return mesh_;

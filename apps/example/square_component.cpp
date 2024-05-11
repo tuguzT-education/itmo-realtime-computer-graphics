@@ -32,7 +32,7 @@ constexpr std::array<SquareComponent::Index, 6> indices{0, 1, 2, 1, 0, 3};
 }  // namespace detail
 
 SquareComponent::SquareComponent(borov_engine::Game &game)
-    : TriangleComponent{game, detail::vertices, detail::indices} {}
+    : TriangleComponent(game, CustomInitializer{.vertices = detail::vertices, .indices = detail::indices}) {}
 
 void SquareComponent::Update(const float delta_time) {
     auto &position = Transform().position;

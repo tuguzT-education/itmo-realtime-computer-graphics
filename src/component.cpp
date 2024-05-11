@@ -4,7 +4,7 @@
 
 namespace borov_engine {
 
-Component::Component(borov_engine::Game &game) : game_{game} {}
+Component::Component(class Game &game, [[maybe_unused]] const Initializer &initializer) : game_{game} {}
 
 Component::~Component() = default;
 

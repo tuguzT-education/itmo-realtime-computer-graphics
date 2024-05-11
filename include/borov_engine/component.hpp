@@ -14,7 +14,9 @@ class Camera;
 
 class Component {
   public:
-    explicit Component(Game &game);
+    struct Initializer {};
+
+    explicit Component(Game &game, const Initializer &initializer = {});
     virtual ~Component();
 
     virtual void Update(float delta_time);

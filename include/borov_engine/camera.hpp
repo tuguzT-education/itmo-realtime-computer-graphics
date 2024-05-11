@@ -22,8 +22,21 @@ using CameraProjectionType = std::variant<PerspectiveCameraProjectionType, Ortho
 
 class Camera : public SceneComponent {
   public:
-    explicit Camera(class Game &game, CameraProjectionType projection_type = OrthographicCameraProjectionType{},
-                    const class Transform &transform = {}, const SceneComponent *parent = nullptr);
+    struct Initializer : SceneComponent::Initializer {
+        CameraProjectionType projection_type = OrthographicCameraProjectionType{};
+        float width = 0.0f;
+        float height = 0.0f;
+        float near_plane = 0.1f;
+        float far_plane = 100.0f;
+
+        Initializer &ProjectionType(CameraProjectionType projection_type);
+        Initializer &Width(float width);
+        Initializer &Height(float height);
+        Initializer &NearPlane(float near_plane);
+        Initializer &FarPlane(float far_plane);
+    };
+
+    explicit Camera(class Game &game, const Initializer &initializer = {});
 
     [[nodiscard]] const CameraProjectionType &ProjectionType() const;
     [[nodiscard]] CameraProjectionType &ProjectionType();

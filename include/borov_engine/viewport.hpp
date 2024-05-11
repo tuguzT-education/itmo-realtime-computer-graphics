@@ -7,9 +7,11 @@
 
 namespace borov_engine {
 
+class Camera;
+
 class Viewport : public math::Viewport {
   public:
-    class Camera *camera;
+    Camera *camera;
 
     explicit Viewport(Camera *camera = nullptr) noexcept;
 

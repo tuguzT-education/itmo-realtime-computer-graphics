@@ -10,10 +10,21 @@ namespace borov_engine {
 
 class BoxComponent : public TriangleComponent, public CollisionPrimitive {
   public:
-    explicit BoxComponent(class Game& game, float length, float height, float width,
-                          math::Color color = math::Color{math::colors::linear::White},
-                          const std::filesystem::path& texture_path = {}, const class Transform& transform = {},
-                          const SceneComponent* parent = nullptr);
+    struct Initializer : TriangleComponent::Initializer {
+        float length = 1.0f;
+        float height = 1.0f;
+        float width = 1.0f;
+        math::Color color{math::colors::linear::White};
+        std::filesystem::path texture_path;
+
+        Initializer& Length(float length);
+        Initializer& Height(float height);
+        Initializer& Width(float width);
+        Initializer& Color(math::Color color);
+        Initializer& TexturePath(const std::filesystem::path& texture_path);
+    };
+
+    explicit BoxComponent(class Game& game, const Initializer& initializer = {});
 
     [[nodiscard]] float Length() const;
     [[nodiscard]] float Height() const;

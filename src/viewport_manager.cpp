@@ -5,7 +5,7 @@
 
 namespace borov_engine {
 
-ViewportManager::ViewportManager(borov_engine::Game &game) : Component(game) {}
+ViewportManager::ViewportManager(class Game &game, const Initializer &initializer) : Component(game, initializer) {}
 
 const Viewport &ViewportManager::TargetViewport() const {
     return target_viewport_;

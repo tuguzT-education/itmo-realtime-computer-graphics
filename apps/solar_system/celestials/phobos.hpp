@@ -8,8 +8,7 @@
 
 class Phobos final : public borov_engine::SceneComponent, public borov_engine::CollisionPrimitive {
   public:
-    explicit Phobos(borov_engine::Game &game, const borov_engine::Transform &transform = {},
-                    const SceneComponent *parent = nullptr);
+    explicit Phobos(borov_engine::Game &game, const Initializer &initializer = {});
 
     [[nodiscard]] const borov_engine::GeometricPrimitiveComponent &Mesh() const;
     [[nodiscard]] borov_engine::GeometricPrimitiveComponent &Mesh();

@@ -5,21 +5,49 @@
 
 namespace borov_engine {
 
-SpectatorCameraManager::SpectatorCameraManager(class Game& game, const class MovementInput movement_input,
-                                               const float speed, const float sensitivity, const float zoom_speed)
-    : SpectatorCameraManager(game, game.AddComponent<Camera>(PerspectiveCameraProjectionType{}), movement_input, speed,
-                             sensitivity, zoom_speed) {}
+auto SpectatorCameraManager::Initializer::Camera(class Camera* camera) -> Initializer& {
+    this->camera = camera;
+    return *this;
+}
 
-SpectatorCameraManager::SpectatorCameraManager(class Game& game, Camera& camera,
-                                               const class MovementInput movement_input, const float speed,
-                                               const float sensitivity, const float zoom_speed)
+auto SpectatorCameraManager::Initializer::MovementInput(const class MovementInput movement_input) -> Initializer& {
+    this->movement_input = movement_input;
+    return *this;
+}
+
+auto SpectatorCameraManager::Initializer::Speed(const float speed) -> Initializer& {
+    if (speed >= 0.0f) {
+        this->speed = speed;
+    }
+    return *this;
+}
+
+auto SpectatorCameraManager::Initializer::Sensitivity(const float sensitivity) -> Initializer& {
+    if (sensitivity >= 0.0f) {
+        this->sensitivity = sensitivity;
+    }
+    return *this;
+}
+
+auto SpectatorCameraManager::Initializer::ZoomSpeed(const float zoom_speed) -> Initializer& {
+    if (zoom_speed >= 0.0f) {
+        this->zoom_speed = zoom_speed;
+    }
+    return *this;
+}
+
+SpectatorCameraManager::SpectatorCameraManager(class Game& game, const Initializer& initializer)
     : CameraManager(game),
-      wheel_delta_{},
-      movement_input_{movement_input},
-      speed_{speed >= 0.0f ? speed : 1.0f},
-      sensitivity_{sensitivity >= 0.0f ? sensitivity : 1.0f},
-      zoom_speed_{zoom_speed >= 0.0f ? zoom_speed : 1.0f},
-      camera_{camera} {
+      camera_{
+          initializer.camera
+              ? *initializer.camera
+              : game.AddComponent<Camera>(Camera::Initializer{.projection_type = PerspectiveCameraProjectionType{}}),
+      },
+      movement_input_{initializer.movement_input},
+      speed_{initializer.speed},
+      sensitivity_{initializer.sensitivity},
+      zoom_speed_{initializer.zoom_speed},
+      wheel_delta_{} {
     if (const auto input = Game().Input(); input != nullptr) {
         input->OnMouseMove().AddRaw(this, &SpectatorCameraManager::OnMouseMove);
     }

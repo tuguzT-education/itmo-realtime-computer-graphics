@@ -163,15 +163,20 @@ GeometricPrimitiveArguments PrimitiveArguments(GeometricPrimitiveType primitive_
 
 class GeometricPrimitiveComponent : public SceneComponent {
   public:
-    explicit GeometricPrimitiveComponent(class Game &game, const GeometricPrimitiveArguments &arguments,
-                                         math::Color color = math::colors::linear::White.v,
-                                         const std::filesystem::path &texture_path = {}, bool wireframe = false,
-                                         const class Transform &transform = {}, const SceneComponent *parent = nullptr);
+    struct Initializer : SceneComponent::Initializer {
+        GeometricPrimitiveArguments primitive_arguments;
+        math::Color color{math::colors::linear::White};
+        std::filesystem::path texture_path;
+        bool wireframe = false;
 
-    explicit GeometricPrimitiveComponent(class Game &game, GeometricPrimitiveType primitive_type,
-                                         math::Color color = math::colors::linear::White.v,
-                                         const std::filesystem::path &texture_path = {}, bool wireframe = false,
-                                         const class Transform &transform = {}, const SceneComponent *parent = nullptr);
+        Initializer &PrimitiveArguments(const GeometricPrimitiveArguments &arguments);
+        Initializer &PrimitiveType(GeometricPrimitiveType type);
+        Initializer &Color(math::Color color);
+        Initializer &TexturePath(const std::filesystem::path &texture_path);
+        Initializer &Wireframe(bool wireframe);
+    };
+
+    explicit GeometricPrimitiveComponent(class Game &game, const Initializer &initializer);
 
     [[nodiscard]] const GeometricPrimitive *Primitive() const;
     [[nodiscard]] GeometricPrimitive *Primitive();

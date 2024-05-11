@@ -30,10 +30,21 @@ class SpectatorCameraManager : public CameraManager {
         };
     };
 
-    explicit SpectatorCameraManager(class Game& game, MovementInput movement_input = {}, float speed = 1.0f,
-                                    float sensitivity = 1.0f, float zoom_speed = 1.0f);
-    explicit SpectatorCameraManager(class Game& game, Camera& camera, MovementInput movement_input = {},
-                                    float speed = 1.0f, float sensitivity = 1.0f, float zoom_speed = 1.0f);
+    struct Initializer : CameraManager::Initializer {
+        Camera* camera = nullptr;
+        MovementInput movement_input;
+        float speed = 1.0f;
+        float sensitivity = 1.0f;
+        float zoom_speed = 1.0f;
+
+        Initializer& Camera(Camera* camera);
+        Initializer& MovementInput(MovementInput movement_input);
+        Initializer& Speed(float speed);
+        Initializer& Sensitivity(float sensitivity);
+        Initializer& ZoomSpeed(float zoom_speed);
+    };
+
+    explicit SpectatorCameraManager(class Game& game, const Initializer& initializer = {});
     ~SpectatorCameraManager() override;
 
     [[nodiscard]] MovementInput MovementInput() const;
@@ -56,15 +67,15 @@ class SpectatorCameraManager : public CameraManager {
   private:
     void OnMouseMove(const MouseMoveData& data);
 
-    math::Vector2 mouse_offset_;
-    std::int32_t wheel_delta_;
+    std::reference_wrapper<Camera> camera_;
 
     class MovementInput movement_input_;
     float speed_;
     float sensitivity_;
     float zoom_speed_;
 
-    std::reference_wrapper<Camera> camera_;
+    math::Vector2 mouse_offset_;
+    std::int32_t wheel_delta_;
 };
 
 }  // namespace borov_engine

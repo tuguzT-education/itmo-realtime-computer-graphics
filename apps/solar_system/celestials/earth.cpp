@@ -2,13 +2,23 @@
 
 #include <borov_engine/game.hpp>
 
-Earth::Earth(borov_engine::Game& game, const borov_engine::Transform& transform, const SceneComponent* parent)
-    : SceneComponent(game, transform, parent),
-      mesh_{
-          Game().AddComponent<borov_engine::BoxComponent>(
-              0.5f, 0.5f, 0.5f, borov_engine::math::Color{borov_engine::math::colors::linear::SpringGreen}, "",
-              borov_engine::Transform{}, this),
-      } {}
+namespace detail {
+
+borov_engine::BoxComponent& CreateEarthMesh(borov_engine::Game& game, const borov_engine::SceneComponent* parent) {
+    borov_engine::BoxComponent::Initializer initializer{
+        .length = 0.5f,
+        .height = 0.5f,
+        .width = 0.5f,
+        .color = borov_engine::math::colors::linear::SpringGreen.v,
+    };
+    initializer.Parent(parent);
+    return game.AddComponent<borov_engine::BoxComponent>(initializer);
+}
+
+}  // namespace detail
+
+Earth::Earth(borov_engine::Game& game, const Initializer& initializer)
+    : SceneComponent(game, initializer), mesh_{detail::CreateEarthMesh(Game(), this)} {}
 
 const borov_engine::BoxComponent& Earth::Mesh() const {
     return mesh_;

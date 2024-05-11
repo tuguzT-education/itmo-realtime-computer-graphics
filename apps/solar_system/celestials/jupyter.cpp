@@ -6,18 +6,21 @@ namespace detail {
 
 borov_engine::GeometricPrimitiveComponent& CreateJupyterMesh(borov_engine::Game& game,
                                                              const borov_engine::SceneComponent* parent) {
-    borov_engine::SphereGeometricPrimitiveArguments arguments{
-        .diameter = 1.0f,
+    borov_engine::GeometricPrimitiveComponent::Initializer initializer{
+        .primitive_arguments =
+            borov_engine::SphereGeometricPrimitiveArguments{
+                .diameter = 1.0f,
+            },
+        .color = borov_engine::math::colors::linear::DarkOrange.v,
     };
-    borov_engine::Transform transform;
-    borov_engine::math::Color color{borov_engine::math::colors::linear::DarkOrange};
-    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(arguments, color, "", false, transform, parent);
+    initializer.Parent(parent);
+    return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(initializer);
 }
 
 }  // namespace detail
 
-Jupyter::Jupyter(borov_engine::Game& game, const borov_engine::Transform& transform, const SceneComponent* parent)
-    : SceneComponent(game, transform, parent), mesh_{detail::CreateJupyterMesh(Game(), this)} {}
+Jupyter::Jupyter(borov_engine::Game& game, const Initializer& initializer)
+    : SceneComponent(game, initializer), mesh_{detail::CreateJupyterMesh(Game(), this)} {}
 
 const borov_engine::GeometricPrimitiveComponent& Jupyter::Mesh() const {
     return mesh_;

@@ -8,8 +8,7 @@
 
 class Earth final : public borov_engine::SceneComponent, public borov_engine::CollisionPrimitive {
   public:
-    explicit Earth(borov_engine::Game &game, const borov_engine::Transform &transform = {},
-                   const SceneComponent *parent = nullptr);
+    explicit Earth(borov_engine::Game &game, const Initializer &initializer = {});
 
     [[nodiscard]] const borov_engine::BoxComponent &Mesh() const;
     [[nodiscard]] borov_engine::BoxComponent &Mesh();

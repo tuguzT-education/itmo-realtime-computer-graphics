@@ -1,10 +1,13 @@
 #include "player.hpp"
 
 Player::Player(borov_engine::Game& game, const ControlKeys control_keys)
-    : GeometricPrimitiveComponent(game, borov_engine::SphereGeometricPrimitiveArguments{.tessellation = 32},
-                                  borov_engine::math::colors::linear::White.v,
-                                  "resources/textures/taurus-terazzo-white.jpg", false,
-                                  borov_engine::Transform{.position = borov_engine::math::Vector3::Up / 2.0f}),
+    : GeometricPrimitiveComponent(
+          game,
+          reinterpret_cast<Initializer&>(
+              Initializer{.primitive_arguments = borov_engine::SphereGeometricPrimitiveArguments{.tessellation = 32},
+                          .color = borov_engine::math::colors::linear::White.v,
+                          .texture_path = "resources/textures/taurus-terazzo-white.jpg"}
+                  .Transform(borov_engine::Transform{.position = borov_engine::math::Vector3::Up / 2.0f}))),
       control_keys_{control_keys} {}
 
 auto Player::Controls() const -> ControlKeys {

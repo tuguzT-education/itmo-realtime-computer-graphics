@@ -8,8 +8,7 @@
 
 class Deimos final : public borov_engine::SceneComponent, public borov_engine::CollisionPrimitive {
   public:
-    explicit Deimos(borov_engine::Game &game, const borov_engine::Transform &transform = {},
-                    const SceneComponent *parent = nullptr);
+    explicit Deimos(borov_engine::Game &game, const Initializer &initializer = {});
 
     [[nodiscard]] const borov_engine::GeometricPrimitiveComponent &Mesh() const;
     [[nodiscard]] borov_engine::GeometricPrimitiveComponent &Mesh();

@@ -5,20 +5,53 @@
 
 namespace borov_engine {
 
-OrbitCameraManager::OrbitCameraManager(class Game& game, const SceneComponent& target, const float distance,
-                                       const float sensitivity, const float zoom_speed)
-    : OrbitCameraManager(game, game.AddComponent<Camera>(PerspectiveCameraProjectionType{}), target, distance,
-                         sensitivity, zoom_speed) {}
+constexpr float OrbitCameraManager::min_distance = 1e-4f;
 
-OrbitCameraManager::OrbitCameraManager(class Game& game, Camera& camera, const SceneComponent& target,
-                                       const float distance, const float sensitivity, const float zoom_speed)
+auto OrbitCameraManager::Initializer::Target(const SceneComponent& target) -> Initializer& {
+    this->target = target;
+    return *this;
+}
+
+auto OrbitCameraManager::Initializer::Camera(class Camera* camera) -> Initializer& {
+    this->camera = camera;
+    return *this;
+}
+
+auto OrbitCameraManager::Initializer::Distance(const float distance) -> Initializer& {
+    if (distance >= min_distance) {
+        this->distance = distance;
+    }
+    return *this;
+}
+
+auto OrbitCameraManager::Initializer::Sensitivity(const float sensitivity) -> Initializer& {
+    if (sensitivity >= 0.0f) {
+        this->sensitivity = sensitivity;
+    }
+    return *this;
+}
+
+auto OrbitCameraManager::Initializer::ZoomSpeed(const float zoom_speed) -> Initializer& {
+    if (zoom_speed >= 0.0f) {
+        this->zoom_speed = zoom_speed;
+    }
+    return *this;
+}
+
+OrbitCameraManager::OrbitCameraManager(class Game& game, const Initializer& initializer)
     : CameraManager(game),
-      wheel_delta_{},
-      distance_{distance > 0.0f ? distance : (camera.Transform().position - target.WorldTransform().position).Length()},
-      sensitivity_{sensitivity > 0.0f ? sensitivity : 1.0f},
-      zoom_speed_{zoom_speed > 0.0f ? zoom_speed : 1.0f},
-      camera_{camera},
-      target_{target} {
+      camera_{
+          initializer.camera
+              ? *initializer.camera
+              : game.AddComponent<Camera>(Camera::Initializer{.projection_type = PerspectiveCameraProjectionType{}}),
+      },
+      target_{initializer.target},
+      distance_{initializer.distance > min_distance
+                    ? initializer.distance
+                    : (camera_.get().Transform().position - target_.get().WorldTransform().position).Length()},
+      sensitivity_{initializer.sensitivity},
+      zoom_speed_{initializer.zoom_speed},
+      wheel_delta_{} {
     if (const auto input = Game().Input(); input != nullptr) {
         input->OnMouseMove().AddRaw(this, &OrbitCameraManager::OnMouseMove);
     }
@@ -35,7 +68,7 @@ float OrbitCameraManager::Distance() const {
 }
 
 bool OrbitCameraManager::Distance(const float distance) {
-    if (distance < 0.0f) {
+    if (distance < min_distance) {
         return false;
     }
     distance_ = distance;
@@ -92,8 +125,8 @@ void OrbitCameraManager::Update(const float delta_time) {
     mouse_offset_ = math::Vector2::Zero;
 
     distance_ -= static_cast<float>(wheel_delta_) * zoom_speed_ * delta_time;
-    if (distance_ < 1e-3f) {
-        distance_ = 1e-3f;
+    if (distance_ < min_distance) {
+        distance_ = min_distance;
     }
     wheel_delta_ = 0;
 }
