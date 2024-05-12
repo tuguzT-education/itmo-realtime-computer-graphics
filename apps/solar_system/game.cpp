@@ -10,13 +10,17 @@
 Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     : borov_engine::Game(window, input),
       camera_{
-          AddComponent<borov_engine::Camera>(reinterpret_cast<borov_engine::Camera::Initializer &>(
-              borov_engine::Camera::Initializer{.projection_type = borov_engine::PerspectiveCameraProjectionType{}}
-                  .Transform(borov_engine::Transform{
-                      .position = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f},
-                      .rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(
-                          0.0f, -std::numbers::pi_v<float> / 4.0f, 0.0f),
-                  }))),
+          AddComponent<borov_engine::Camera>([] {
+              borov_engine::Camera::Initializer initializer{
+                  .projection_type = borov_engine::PerspectiveCameraProjectionType{},
+              };
+              initializer.Transform({
+                  .position = borov_engine::math::Vector3{0.0f, 6.0f, 6.0f},
+                  .rotation = borov_engine::math::Quaternion::CreateFromYawPitchRoll(
+                      0.0f, -std::numbers::pi_v<float> / 4.0f, 0.0f),
+              });
+              return initializer;
+          }()),
       },
       sun_{
           AddComponent<Sun>(),

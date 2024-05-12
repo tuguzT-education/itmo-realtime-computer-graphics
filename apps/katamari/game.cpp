@@ -6,9 +6,13 @@
 Game::Game(borov_engine::Window& window, borov_engine::Input& input)
     : borov_engine::Game(window, input),
       camera_{
-          AddComponent<borov_engine::Camera>(reinterpret_cast<borov_engine::Camera::Initializer&>(
-              borov_engine::Camera::Initializer{.projection_type = borov_engine::PerspectiveCameraProjectionType{}}
-                  .Transform(borov_engine::Transform{.position = borov_engine::math::Vector3::Backward}))),
+          AddComponent<borov_engine::Camera>([] {
+              borov_engine::Camera::Initializer initializer{
+                  .projection_type = borov_engine::PerspectiveCameraProjectionType{},
+              };
+              initializer.Transform({.position = borov_engine::math::Vector3::Backward});
+              return initializer;
+          }()),
       },
       field_{AddComponent<Field>()},
       player_{AddComponent<Player>()} {

@@ -2,10 +2,13 @@
 
 #include <borov_engine/game.hpp>
 
-Player::Player(borov_engine::Game &game, const ::Direction direction, const ControlKeys controls)
-    : BoxComponent(
-          game, reinterpret_cast<Initializer &>(Initializer{.length = 0.05f, .height = 0.3f, .width = 0.05f}.Transform(
-                    borov_engine::Transform{.position = PositionFrom(direction)}))),
+Player::Player(borov_engine::Game &game, const enum Direction direction, const ControlKeys controls)
+    : BoxComponent(game,
+                   [&] {
+                       Initializer initializer{.length = 0.05f, .height = 0.3f, .width = 0.05f};
+                       initializer.Transform({.position = PositionFrom(direction)});
+                       return initializer;
+                   }()),
       direction_{direction},
       controls_{controls} {}
 
