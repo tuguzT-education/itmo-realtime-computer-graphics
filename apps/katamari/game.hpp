@@ -6,6 +6,7 @@
 #include <borov_engine/game.hpp>
 
 #include "field.hpp"
+#include "objects/hog.hpp"
 #include "player.hpp"
 
 class Game final : public borov_engine::Game {
@@ -18,6 +19,8 @@ class Game final : public borov_engine::Game {
     std::reference_wrapper<borov_engine::Camera> camera_;
     std::reference_wrapper<Field> field_;
     std::reference_wrapper<Player> player_;
+
+    std::reference_wrapper<Hog> hog_;
 };
 
 #endif  // KATAMARI_GAME_HPP_INCLUDED

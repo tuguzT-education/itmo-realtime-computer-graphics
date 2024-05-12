@@ -15,7 +15,8 @@ Game::Game(borov_engine::Window& window, borov_engine::Input& input)
           }()),
       },
       field_{AddComponent<Field>()},
-      player_{AddComponent<Player>()} {
+      player_{AddComponent<Player>()},
+      hog_{AddComponent<Hog>()} {
     CameraManager<borov_engine::OrbitCameraManager>(borov_engine::OrbitCameraManager::Initializer{
         .target = player_,
         .camera = &camera_.get(),

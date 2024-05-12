@@ -1,8 +1,10 @@
 set(HEADER_LIST
+        objects/hog.hpp
         field.hpp
         player.hpp
         game.hpp)
 set(SOURCE_LIST
+        objects/hog.cpp
         field.cpp
         player.cpp
         game.cpp

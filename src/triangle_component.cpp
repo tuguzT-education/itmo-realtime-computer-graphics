@@ -57,10 +57,10 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
         const auto [x, y, z] = ai_position;
         const math::Vector3 position{x, y, z};
 
-        math::Color color{math::colors::linear::White};
+        math::Color color = diffuse;
         if (const aiColor4D *colors = mesh.mColors[0]) {
             const auto [r, g, b, a] = colors[index];
-            color = math::Color{r, g, b, a} * diffuse;
+            color *= math::Color{r, g, b, a};
         }
 
         math::Vector2 texture_coordinate;
