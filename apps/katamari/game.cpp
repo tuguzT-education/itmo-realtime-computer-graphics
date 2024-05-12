@@ -45,8 +45,8 @@ void Game::Update(const float delta_time) {
     borov_engine::Transform player_transform = player_.get().WorldTransform();
     player_transform.position += direction * delta_time;
     if (direction != math::Vector3::Zero) {
-        const auto additional =
-            math::Quaternion::CreateFromAxisAngle(-direction.Cross(math::Vector3::Up), 1.0f * delta_time);
+        const auto additional = math::Quaternion::CreateFromAxisAngle(-direction.Cross(math::Vector3::Up),
+                                                                      std::numbers::pi_v<float> * 0.5f * delta_time);
         player_transform.rotation = math::Quaternion::Concatenate(additional, player_transform.rotation);
     }
     player_.get().WorldTransform(player_transform);
