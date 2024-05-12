@@ -27,10 +27,12 @@ class TriangleComponent : public SceneComponent {
         std::span<const Vertex> vertices;
         std::span<const Index> indices;
         std::filesystem::path texture_path;
+        math::Vector2 tile_count = math::Vector2::One;
 
         Initializer &Vertices(std::span<const Vertex> vertices);
         Initializer &Indices(std::span<const Index> indices);
         Initializer &TexturePath(const std::filesystem::path &texture_path);
+        Initializer &TileCount(math::Vector2 tile_count);
     };
 
     struct MeshInitializer : Initializer {
@@ -43,9 +45,8 @@ class TriangleComponent : public SceneComponent {
     explicit TriangleComponent(class Game &game, const CustomInitializer &initializer);
     explicit TriangleComponent(class Game &game, const MeshInitializer &initializer);
 
-    void Load(std::span<const Vertex> vertices, std::span<const Index> indices,
-              const std::filesystem::path &texture_path = {});
-    void LoadTexture(const std::filesystem::path &texture_path);
+    void Load(std::span<const Vertex> vertices, std::span<const Index> indices);
+    void LoadTexture(const std::filesystem::path &texture_path, math::Vector2 tile_count = math::Vector2::One);
     void LoadMesh(const std::filesystem::path &mesh_path);
 
     [[nodiscard]] bool Wireframe() const;
@@ -59,6 +60,7 @@ class TriangleComponent : public SceneComponent {
         alignas(16) math::Matrix4x4 view;
         alignas(16) math::Matrix4x4 projection;
         std::uint32_t has_texture = false;
+        math::Vector2 tile_count = math::Vector2::One;
     };
 
     void InitializeVertexShader();
@@ -87,6 +89,7 @@ class TriangleComponent : public SceneComponent {
     detail::D3DPtr<ID3DBlob> vertex_byte_code_;
 
     bool wireframe_;
+    math::Vector2 tile_count_;
 };
 
 }  // namespace borov_engine

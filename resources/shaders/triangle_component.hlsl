@@ -9,6 +9,7 @@ cbuffer ConstantBuffer : register(b0)
 {
     Transform transform;
     bool has_texture;
+    float2 tile_count;
 }
 
 struct VS_Input
@@ -32,7 +33,7 @@ VS_Output VSMain(VS_Input input)
     float4x4 wvp = mul(mul(transform.projection, transform.view), transform.world);
 	output.position = mul(wvp, float4(input.position, 1.0f));
 	output.color = input.color;
-	output.texcoord = input.texcoord;
+	output.texcoord = input.texcoord * tile_count;
 
 	return output;
 }

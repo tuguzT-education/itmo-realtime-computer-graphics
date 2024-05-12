@@ -101,6 +101,11 @@ auto BoxComponent::Initializer::TexturePath(const std::filesystem::path &texture
     return *this;
 }
 
+auto BoxComponent::Initializer::TileCount(const math::Vector2 tile_count) -> Initializer & {
+    this->tile_count = tile_count;
+    return *this;
+}
+
 BoxComponent::BoxComponent(class Game &game, const Initializer &initializer)
     : TriangleComponent(game, initializer),
       length_{initializer.length},
@@ -108,7 +113,8 @@ BoxComponent::BoxComponent(class Game &game, const Initializer &initializer)
       width_{initializer.width} {
     const std::array vertices = detail::BoxVertices(length_, height_, width_, initializer.color);
     const std::array indices = detail::BoxIndices();
-    Load(vertices, indices, initializer.texture_path);
+    Load(vertices, indices);
+    LoadTexture(initializer.texture_path, initializer.tile_count);
 }
 
 float BoxComponent::Length() const {

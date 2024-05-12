@@ -127,13 +127,18 @@ auto TriangleComponent::CustomInitializer::TexturePath(const std::filesystem::pa
     return *this;
 }
 
+auto TriangleComponent::CustomInitializer::TileCount(const math::Vector2 tile_count) -> Initializer & {
+    this->tile_count = tile_count;
+    return *this;
+}
+
 auto TriangleComponent::MeshInitializer::MeshPath(const std::filesystem::path &mesh_path) -> Initializer & {
     this->mesh_path = mesh_path;
     return *this;
 }
 
 TriangleComponent::TriangleComponent(class Game &game, const Initializer &initializer)
-    : SceneComponent(game, initializer), wireframe_{initializer.wireframe} {
+    : SceneComponent(game, initializer), wireframe_{initializer.wireframe}, tile_count_{math::Vector2::One} {
     InitializeVertexShader();
     InitializeIndexShader();
     InitializeInputLayout();
@@ -144,7 +149,8 @@ TriangleComponent::TriangleComponent(class Game &game, const Initializer &initia
 
 TriangleComponent::TriangleComponent(class Game &game, const CustomInitializer &initializer)
     : TriangleComponent(game, static_cast<const Initializer &>(initializer)) {
-    Load(initializer.vertices, initializer.indices, initializer.texture_path);
+    Load(initializer.vertices, initializer.indices);
+    LoadTexture(initializer.texture_path, initializer.tile_count);
 }
 
 TriangleComponent::TriangleComponent(class Game &game, const MeshInitializer &initializer)
@@ -152,19 +158,18 @@ TriangleComponent::TriangleComponent(class Game &game, const MeshInitializer &in
     LoadMesh(initializer.mesh_path);
 }
 
-void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::span<const Index> indices,
-                             const std::filesystem::path &texture_path) {
+void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::span<const Index> indices) {
     InitializeVertexBuffer(vertices);
     InitializeIndexBuffer(indices);
-    LoadTexture(texture_path);
 }
 
-void TriangleComponent::LoadTexture(const std::filesystem::path &texture_path) {
+void TriangleComponent::LoadTexture(const std::filesystem::path &texture_path, const math::Vector2 tile_count) {
     if (!texture_path.has_filename()) {
         return;
     }
 
     texture_ = detail::TextureFromFile(Device(), texture_path);
+    tile_count_ = tile_count;
 }
 
 void TriangleComponent::LoadMesh(const std::filesystem::path &mesh_path) {
@@ -220,6 +225,7 @@ void TriangleComponent::Draw(const Camera *camera) {
         .view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity,
         .projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity,
         .has_texture = texture_ != nullptr,
+        .tile_count = tile_count_,
     };
     const HRESULT result = device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
     detail::CheckResult(result, "Failed to map constant buffer data");
