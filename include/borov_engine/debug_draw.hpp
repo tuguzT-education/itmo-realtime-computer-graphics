@@ -69,7 +69,6 @@ class DebugDraw : public Component {
     void InitializePrimitivePixelShader();
     void InitializePrimitiveInputLayout();
     void InitializePrimitiveRasterizerState();
-    void InitializePrimitiveDepthState();
     void InitializePrimitiveVertexBuffer();
 
     // void InitQuads();
@@ -102,12 +101,11 @@ class DebugDraw : public Component {
 
     detail::D3DPtr<ID3D11InputLayout> primitive_input_layout_;
     detail::D3DPtr<ID3D11Buffer> primitive_vertex_buffer_;
-
-    detail::D3DPtr<ID3D11RasterizerState> primitive_rasterizer_state_;
-    detail::D3DPtr<ID3D11DepthStencilState> depthState;
     bool should_update_primitive_vertex_buffer_;
 
-    static const std::size_t MaxPointsCount;
+    detail::D3DPtr<ID3D11RasterizerState> primitive_rasterizer_state_;
+
+    static const std::size_t max_points_count;
 #pragma endregion Primitives
 
     // #pragma region Quads

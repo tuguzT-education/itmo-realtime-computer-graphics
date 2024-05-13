@@ -13,6 +13,8 @@ class Hog final : public borov_engine::SceneComponent, public borov_engine::Coll
     [[nodiscard]] const borov_engine::TriangleComponent& Mesh() const;
     [[nodiscard]] borov_engine::TriangleComponent& Mesh();
 
+    void Draw(const borov_engine::Camera* camera) override;
+
     [[nodiscard]] bool Intersects(const CollisionPrimitive& other) const override;
     [[nodiscard]] bool Intersects(const borov_engine::math::Ray& ray, float& dist) const override;
 

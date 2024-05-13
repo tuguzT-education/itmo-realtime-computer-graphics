@@ -12,7 +12,7 @@
 
 namespace borov_engine {
 
-constexpr std::size_t DebugDraw::MaxPointsCount = 1024 * 1024;
+constexpr std::size_t DebugDraw::max_points_count = 1024 * 1024;
 
 DebugDraw::Vertex::Vertex(const math::Vector3& position, const math::Color& color, const float duration)
     : VertexPositionColor(position, color), duration{duration} {}
@@ -25,7 +25,6 @@ DebugDraw::DebugDraw(class Game& game, const Initializer& initializer)
     InitializePrimitivePixelShader();
     InitializePrimitiveInputLayout();
     InitializePrimitiveRasterizerState();
-    InitializePrimitiveDepthState();
     InitializePrimitiveVertexBuffer();
 
     // InitQuads();
@@ -84,18 +83,9 @@ void DebugDraw::InitializePrimitiveRasterizerState() {
     detail::CheckResult(result, "Failed to create primitive rasterizer state");
 }
 
-void DebugDraw::InitializePrimitiveDepthState() {
-    constexpr D3D11_DEPTH_STENCIL_DESC depthDesc{
-        .DepthEnable = false,
-    };
-
-    const HRESULT result = Device().CreateDepthStencilState(&depthDesc, &depthState);
-    detail::CheckResult(result, "Failed to create primitive depth state");
-}
-
 void DebugDraw::InitializePrimitiveVertexBuffer() {
     constexpr D3D11_BUFFER_DESC buffer_desc{
-        .ByteWidth = MaxPointsCount * sizeof(Vertex),
+        .ByteWidth = max_points_count * sizeof(Vertex),
         .Usage = D3D11_USAGE_DYNAMIC,
         .BindFlags = D3D11_BIND_VERTEX_BUFFER,
         .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
@@ -224,7 +214,6 @@ void DebugDraw::DrawPrimitives(const Camera* camera) {
     };
     DeviceContext().UpdateSubresource(constant_buffer_.Get(), 0, nullptr, &constant_buffer, 0, 0);
 
-    DeviceContext().OMSetDepthStencilState(depthState.Get(), 0);
     DeviceContext().RSSetState(primitive_rasterizer_state_.Get());
 
     DeviceContext().VSSetShader(primitive_vertex_shader_.Get(), nullptr, 0);

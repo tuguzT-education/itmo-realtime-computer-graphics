@@ -3,7 +3,7 @@
 #include "borov_engine/camera.hpp"
 #include "borov_engine/orbit_camera_manager.hpp"
 
-Game::Game(borov_engine::Window& window, borov_engine::Input& input)
+Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     : borov_engine::Game(window, input),
       camera_{
           AddComponent<borov_engine::Camera>([] {
@@ -28,18 +28,26 @@ void Game::Update(const float delta_time) {
 
     namespace math = borov_engine::math;
 
-    const borov_engine::Input* input = Input();
+    const borov_engine::Input *input = Input();
     if (input == nullptr) {
         return;
     }
 
     const borov_engine::Transform camera_transform = camera_.get().WorldTransform();
 
-    auto [left, right, forward, backward] = player_.get().Controls();
-    const auto x = static_cast<float>(input->IsKeyDown(right) - input->IsKeyDown(left));
-    const auto z = static_cast<float>(input->IsKeyDown(forward) - input->IsKeyDown(backward));
+    auto [left_key, right_key, forward_key, backward_key] = player_.get().Controls();
+    const auto x = static_cast<float>(input->IsKeyDown(right_key) - input->IsKeyDown(left_key));
+    const auto z = static_cast<float>(input->IsKeyDown(forward_key) - input->IsKeyDown(backward_key));
 
-    math::Vector3 direction = camera_transform.Right() * x + camera_transform.Forward() * z;
+    const math::Vector3 right = camera_transform.Right();
+    math::Vector3 forward = camera_transform.Forward();
+    forward.y = 0.0f;
+    forward.Normalize();
+    if (forward.LengthSquared() <= 0.1f) {
+        forward = right.Cross(math::Vector3::Up);
+    }
+
+    math::Vector3 direction = right * x + forward * z;
     direction.y = 0.0f;
     direction.Normalize();
 
