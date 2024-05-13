@@ -22,25 +22,44 @@ class DebugDraw : public Component {
 
     void Clear();
 
-    virtual void DrawLine(const math::Vector3& start, const math::Vector3& end, const math::Color& color);
-    virtual void DrawBox(const math::Box& box, const math::Color& color);
-    virtual void DrawAxisAlignedBox(const math::AxisAlignedBox& box, const math::Color& color);
-    virtual void DrawArrow(const math::Vector3& start, const math::Vector3& end, const math::Color& color,
-                           const math::Vector3& normal);
-    virtual void DrawPivot(const math::Vector3& position, float size, const math::Color& color);
-    virtual void DrawCircle(float radius, const math::Color& color, const math::Matrix4x4& transform,
-                            std::uint8_t density);
-    virtual void DrawSphere(float radius, const math::Color& color, const math::Matrix4x4& transform,
-                            std::uint8_t density);
-    virtual void DrawPlane(const math::Plane& plane, const math::Color& color, float width, float normal_length,
-                           bool drawCenterCross);
-    virtual void DrawFrustrum(const math::Frustum& frustum);
+    struct DrawOpts {
+        math::Color color{math::colors::linear::Red};
+        float duration = 0.0f;
+    };
+    void DrawLine(const math::Vector3& start, const math::Vector3& end, const DrawOpts& opts = {});
+    void DrawBox(const math::Box& box, const DrawOpts& opts = {});
+    void DrawAxisAlignedBox(const math::AxisAlignedBox& box, const DrawOpts& opts = {});
+    void DrawArrow(const math::Vector3& start, const math::Vector3& end, const math::Vector3& normal,
+                   const DrawOpts& opts = {});
+    void DrawPivot(const Transform& transform, const DrawOpts& opts = {});
+
+    struct EllipsisDrawOpts {
+        math::Color color{math::colors::linear::Red};
+        float duration = 0.0f;
+        std::uint32_t density = 16;
+    };
+    void DrawEllipsis(const Transform& transform, const EllipsisDrawOpts& opts = {});
+    void DrawCircle(const math::Vector3& position, float radius, const EllipsisDrawOpts& opts = {});
+    void DrawEllipsoid(const Transform& transform, const EllipsisDrawOpts& opts = {});
+    void DrawSphere(const math::Sphere& sphere, const EllipsisDrawOpts& opts = {});
+
+    struct PlaneDrawOpts {
+        math::Color color{math::colors::linear::Red};
+        float duration = 0.0f;
+        float width = 1.0f;
+        float length_of_normal = 1.0f;
+        bool draw_center_cross = false;
+    };
+    void DrawPlane(const math::Plane& plane, const PlaneDrawOpts& opts = {});
+
+    void DrawFrustrum(const math::Frustum& frustum, const DrawOpts& opts = {});
 
     // virtual void DrawTextureOnScreen(ID3D11ShaderResourceView* tex, int x, int y, int width, int height, int zOrder);
 
     // virtual void DrawStaticMesh(const StaticMesh& mesh, const DirectX::SimpleMath::Matrix& transform,
     //                             const DirectX::SimpleMath::Color& color);
 
+    void Update(float delta_time) override;
     void Draw(const Camera* camera) override;
 
   protected:
@@ -57,6 +76,7 @@ class DebugDraw : public Component {
     // void InitMeshes();
 
     void DrawPrimitives(const Camera* camera);
+    void RemoveOldPrimitives();
     // void DrawQuads();
     // void DrawMeshes();
 

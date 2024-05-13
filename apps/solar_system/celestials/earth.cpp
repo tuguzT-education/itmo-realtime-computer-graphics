@@ -33,7 +33,7 @@ void Earth::Draw(const borov_engine::Camera* camera) {
 
     const auto collision_primitive = CollisionPrimitive();
     const auto& box = collision_primitive.Primitive();
-    Game().DebugDraw().DrawBox(box, borov_engine::math::colors::linear::Red.v);
+    Game().DebugDraw().DrawBox(box);
 }
 
 bool Earth::Intersects(const borov_engine::CollisionPrimitive& other) const {

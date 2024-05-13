@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 
 #include <array>
+#include <execution>
 #include <span>
 
 #include "borov_engine/camera.hpp"
@@ -318,124 +319,167 @@ void DebugDraw::Clear() {
 
 void DebugDraw::Draw(const Camera* camera) {
     DrawPrimitives(camera);
+    RemoveOldPrimitives();
     // DrawQuads();
     // DrawMeshes();
 }
 
-void DebugDraw::DrawLine(const math::Vector3& start, const math::Vector3& end, const math::Color& color) {
-    primitive_vertices_.emplace_back(start, color, 0.0f);
-    primitive_vertices_.emplace_back(end, color, 0.0f);
+void DebugDraw::RemoveOldPrimitives() {
+    std::erase_if(primitive_vertices_, [](const Vertex& vertex) { return vertex.duration <= 0.0f; });
+}
+
+void DebugDraw::DrawLine(const math::Vector3& start, const math::Vector3& end, const DrawOpts& opts) {
+    primitive_vertices_.emplace_back(start, opts.color, opts.duration);
+    primitive_vertices_.emplace_back(end, opts.color, opts.duration);
 
     should_update_primitive_vertex_buffer_ = true;
 }
 
-void DebugDraw::DrawBox(const math::Box& box, const math::Color& color) {
+void DebugDraw::DrawBox(const math::Box& box, const DrawOpts& opts) {
     std::array<math::Vector3, 8> corners;
     box.GetCorners(corners.data());
 
-    DrawLine(corners[0], corners[1], color);
-    DrawLine(corners[1], corners[2], color);
-    DrawLine(corners[2], corners[3], color);
-    DrawLine(corners[3], corners[0], color);
+    DrawLine(corners[0], corners[1], opts);
+    DrawLine(corners[1], corners[2], opts);
+    DrawLine(corners[2], corners[3], opts);
+    DrawLine(corners[3], corners[0], opts);
 
-    DrawLine(corners[4], corners[5], color);
-    DrawLine(corners[5], corners[6], color);
-    DrawLine(corners[6], corners[7], color);
-    DrawLine(corners[7], corners[4], color);
+    DrawLine(corners[4], corners[5], opts);
+    DrawLine(corners[5], corners[6], opts);
+    DrawLine(corners[6], corners[7], opts);
+    DrawLine(corners[7], corners[4], opts);
 
-    DrawLine(corners[0], corners[4], color);
-    DrawLine(corners[1], corners[5], color);
-    DrawLine(corners[2], corners[6], color);
-    DrawLine(corners[3], corners[7], color);
+    DrawLine(corners[0], corners[4], opts);
+    DrawLine(corners[1], corners[5], opts);
+    DrawLine(corners[2], corners[6], opts);
+    DrawLine(corners[3], corners[7], opts);
 }
 
-void DebugDraw::DrawAxisAlignedBox(const math::AxisAlignedBox& box, const math::Color& color) {
+void DebugDraw::DrawAxisAlignedBox(const math::AxisAlignedBox& box, const DrawOpts& opts) {
     std::array<math::Vector3, 8> corners;
     box.GetCorners(corners.data());
 
-    DrawLine(corners[0], corners[1], color);
-    DrawLine(corners[1], corners[2], color);
-    DrawLine(corners[2], corners[3], color);
-    DrawLine(corners[3], corners[0], color);
+    DrawLine(corners[0], corners[1], opts);
+    DrawLine(corners[1], corners[2], opts);
+    DrawLine(corners[2], corners[3], opts);
+    DrawLine(corners[3], corners[0], opts);
 
-    DrawLine(corners[4], corners[5], color);
-    DrawLine(corners[5], corners[6], color);
-    DrawLine(corners[6], corners[7], color);
-    DrawLine(corners[7], corners[4], color);
+    DrawLine(corners[4], corners[5], opts);
+    DrawLine(corners[5], corners[6], opts);
+    DrawLine(corners[6], corners[7], opts);
+    DrawLine(corners[7], corners[4], opts);
 
-    DrawLine(corners[0], corners[4], color);
-    DrawLine(corners[1], corners[5], color);
-    DrawLine(corners[2], corners[6], color);
-    DrawLine(corners[3], corners[7], color);
+    DrawLine(corners[0], corners[4], opts);
+    DrawLine(corners[1], corners[5], opts);
+    DrawLine(corners[2], corners[6], opts);
+    DrawLine(corners[3], corners[7], opts);
 }
 
-void DebugDraw::DrawArrow(const math::Vector3& start, const math::Vector3& end, const math::Color& color,
-                          const math::Vector3& normal) {
-    DrawLine(start, end, color);
+void DebugDraw::DrawArrow(const math::Vector3& start, const math::Vector3& end, const math::Vector3& normal,
+                          const DrawOpts& opts) {
+    DrawLine(start, end, opts);
 
     const math::Vector3 a = math::Vector3::Lerp(start, end, 0.85f);
     const math::Vector3 side = normal.Cross(end - start) * 0.05f;
-    DrawLine(a + side, end, color);
-    DrawLine(a - side, end, color);
+    DrawLine(a + side, end, opts);
+    DrawLine(a - side, end, opts);
 }
 
-void DebugDraw::DrawPivot(const math::Vector3& position, const float size, const math::Color& color) {
+void DebugDraw::DrawPivot(const Transform& transform, const DrawOpts& opts) {
+    const auto& [position, rotation, scale] = transform;
     const auto& [x, y, z] = position;
 
-    const math::Color red{math::colors::linear::Red};
-    DrawArrow({x + size, y, z}, {x - size, y, z}, red * color, math::Vector3::Forward);
+    const math::Vector3 x_start = math::Vector3::Transform({x + scale.x, y, z}, rotation);
+    const math::Vector3 x_end = math::Vector3::Transform({x - scale.x, y, z}, rotation);
+    const math::Vector3 x_normal = math::Vector3::Forward;
+    const math::Color x_color{math::colors::linear::Red};
+    DrawArrow(x_start, x_end, x_normal, {x_color * opts.color, opts.duration});
 
-    const math::Color green{math::colors::linear::Lime};
-    DrawArrow({x, y + size, z}, {x, y - size, z}, green * color, math::Vector3::Right);
+    const math::Vector3 y_start = math::Vector3::Transform({x, y + scale.y, z}, rotation);
+    const math::Vector3 y_end = math::Vector3::Transform({x, y - scale.y, z}, rotation);
+    const math::Vector3 y_normal = math::Vector3::Forward;
+    const math::Color y_color{math::colors::linear::Lime};
+    DrawArrow(y_start, y_end, y_normal, {y_color * opts.color, opts.duration});
 
-    const math::Color blue{math::colors::linear::Blue};
-    DrawArrow({x, y, z + size}, {x, y, z - size}, blue * color, math::Vector3::Up);
+    const math::Vector3 z_start = math::Vector3::Transform({x, y, z + scale.z}, rotation);
+    const math::Vector3 z_end = math::Vector3::Transform({x, y, z - scale.z}, rotation);
+    const math::Vector3 z_normal = math::Vector3::Up;
+    const math::Color z_color{math::colors::linear::Blue};
+    DrawArrow(z_start, z_end, z_normal, {z_color * opts.color, opts.duration});
 }
 
-void DebugDraw::DrawCircle(const float radius, const math::Color& color, const math::Matrix4x4& transform,
-                           const std::uint8_t density) {
-    const float angle_step = std::numbers::pi_v<float> * 2.0f / static_cast<float>(density);
+void DebugDraw::DrawEllipsis(const Transform& transform, const EllipsisDrawOpts& opts) {
+    const float angle_step = std::numbers::pi_v<float> * 2.0f / static_cast<float>(opts.density);
 
-    for (std::uint8_t i = 0; i < density; i++) {
+    const auto& [position, rotation, scale] = transform;
+    for (decltype(opts.density) i = 0; i < opts.density; i++) {
         const auto step = static_cast<float>(i);
         math::Vector3 start{
-            radius * std::cos(angle_step * step),
-            radius * std::sin(angle_step * step),
+            scale.x * std::cos(angle_step * step),
+            scale.y * std::sin(angle_step * step),
             0.0f,
         };
         math::Vector3 end{
-            radius * std::cos(angle_step * (step + 1.0f)),
-            radius * std::sin(angle_step * (step + 1.0f)),
+            scale.x * std::cos(angle_step * (step + 1.0f)),
+            scale.y * std::sin(angle_step * (step + 1.0f)),
             0.0f,
         };
 
-        start = math::Vector3::Transform(start, transform);
-        end = math::Vector3::Transform(end, transform);
-        DrawLine(start, end, color);
+        start = math::Vector3::Transform(start, rotation) + position;
+        end = math::Vector3::Transform(end, rotation) + position;
+        DrawLine(start, end, {opts.color, opts.duration});
     }
 }
 
-void DebugDraw::DrawSphere(const float radius, const math::Color& color, const math::Matrix4x4& transform,
-                           const std::uint8_t density) {
-    constexpr float angle = std::numbers::pi_v<float> / 2.0f;
-
-    DrawCircle(radius, color, transform, density);
-    DrawCircle(radius, color, math::Matrix4x4::CreateRotationX(angle) * transform, density);
-    DrawCircle(radius, color, math::Matrix4x4::CreateRotationY(angle) * transform, density);
+void DebugDraw::DrawCircle(const math::Vector3& position, const float radius, const EllipsisDrawOpts& opts) {
+    const Transform transform{
+        .position = position,
+        .scale = math::Vector3::One * radius,
+    };
+    DrawEllipsis(transform, opts);
 }
 
-void DebugDraw::DrawPlane(const math::Plane& plane, const math::Color& color, const float width,
-                          const float normal_length, const bool drawCenterCross) {
+void DebugDraw::DrawEllipsoid(const Transform& transform, const EllipsisDrawOpts& opts) {
+    constexpr float angle = std::numbers::pi_v<float> / 2.0f;
+
+    DrawEllipsis(transform, opts);
+
+    const math::Quaternion xz_rotation = math::Quaternion::CreateFromYawPitchRoll(angle, 0.0f, 0.0f);
+    const Transform xz_transform{
+        .position = transform.position,
+        .rotation = math::Quaternion::Concatenate(xz_rotation, transform.rotation),
+        .scale = math::Vector3::Transform(transform.scale, xz_rotation),
+    };
+    DrawEllipsis(xz_transform, opts);
+
+    const math::Quaternion yz_rotation = math::Quaternion::CreateFromYawPitchRoll(0.0f, angle, 0.0f);
+    const Transform yz_transform{
+        .position = transform.position,
+        .rotation = math::Quaternion::Concatenate(yz_rotation, transform.rotation),
+        .scale = math::Vector3::Transform(transform.scale, yz_rotation),
+    };
+    DrawEllipsis(yz_transform, opts);
+}
+
+void DebugDraw::DrawSphere(const math::Sphere& sphere, const EllipsisDrawOpts& opts) {
+    const Transform transform{
+        .position = sphere.Center,
+        .scale = math::Vector3::One * sphere.Radius,
+    };
+    DrawEllipsoid(transform, opts);
+}
+
+void DebugDraw::DrawPlane(const math::Plane& plane, const PlaneDrawOpts& opts) {
     math::Vector3 normal = plane.Normal();
-    if (normal.Length() == 0.0f) {
+    if (normal.LengthSquared() == 0.0f) {
         return;
     }
     normal.Normalize();
 
     math::Vector3 up = math::Vector3::Backward;
     math::Vector3 right = normal.Cross(up);
-    if (right.Length() < 0.01f) {
-        up = math::Vector3(0, 1, 0);
+    if (right.LengthSquared() < 0.1f) {
+        up = math::Vector3::Up;
         right = normal.Cross(up);
     }
     right.Normalize();
@@ -444,45 +488,62 @@ void DebugDraw::DrawPlane(const math::Plane& plane, const math::Color& color, co
 
     const math::Vector3 position = -normal * plane.D();
 
-    const math::Vector3 right_point = position + right * width;
-    const math::Vector3 left_point = position - right * width;
-    const math::Vector3 up_point = position + up * width;
-    const math::Vector3 down_point = position - up * width;
+    const math::Vector3 right_point = position + right * opts.width;
+    const math::Vector3 left_point = position - right * opts.width;
+    const math::Vector3 up_point = position + up * opts.width;
+    const math::Vector3 down_point = position - up * opts.width;
 
-    DrawLine(left_point + up * width, right_point + up * width, color);
-    DrawLine(left_point - up * width, right_point - up * width, color);
-    DrawLine(down_point - right * width, up_point - right * width, color);
-    DrawLine(down_point + right * width, up_point + right * width, color);
+    const DrawOpts draw_opts = {opts.color, opts.duration};
+    DrawLine(left_point + up * opts.width, right_point + up * opts.width, draw_opts);
+    DrawLine(left_point - up * opts.width, right_point - up * opts.width, draw_opts);
+    DrawLine(down_point - right * opts.width, up_point - right * opts.width, draw_opts);
+    DrawLine(down_point + right * opts.width, up_point + right * opts.width, draw_opts);
 
-    if (drawCenterCross) {
-        DrawLine(left_point, right_point, color);
-        DrawLine(down_point, up_point, color);
+    if (opts.draw_center_cross) {
+        DrawLine(left_point, right_point, draw_opts);
+        DrawLine(down_point, up_point, draw_opts);
     }
 
-    DrawPivot(position, 0.5f, color);
-    DrawArrow(position, position + normal * normal_length, color, right);
+    DrawPivot({.position = position, .scale = math::Vector3::One * 0.5f}, draw_opts);
+    DrawArrow(position, position + normal * opts.length_of_normal, right, draw_opts);
 }
 
-void DebugDraw::DrawFrustrum(const math::Frustum& frustum) {
+void DebugDraw::DrawFrustrum(const math::Frustum& frustum, const DrawOpts& opts) {
     std::array<math::Vector3, 8> corners;
     frustum.GetCorners(corners.data());
 
-    DrawPivot(frustum.Origin, 1.0f, math::colors::linear::White.v);
+    const Transform pivot_transform{
+        .position = frustum.Origin,
+        .rotation = frustum.Orientation,
+    };
+    DrawPivot(pivot_transform, opts);
 
-    DrawLine(corners[0], corners[1], math::Color(0.0f, 0.0f, 1.0f, 1.0f));
-    DrawLine(corners[2], corners[3], math::Color(0.0f, 0.0f, 1.0f, 1.0f));
-    DrawLine(corners[4], corners[5], math::Color(0.0f, 0.0f, 1.0f, 1.0f));
-    DrawLine(corners[6], corners[7], math::Color(0.0f, 0.0f, 1.0f, 1.0f));
+    const math::Color blue{math::colors::linear::Blue};
+    DrawLine(corners[0], corners[1], {blue * opts.color, opts.duration});
+    DrawLine(corners[2], corners[3], {blue * opts.color, opts.duration});
+    DrawLine(corners[4], corners[5], {blue * opts.color, opts.duration});
+    DrawLine(corners[6], corners[7], {blue * opts.color, opts.duration});
 
-    DrawLine(corners[0], corners[2], math::Color(0.0f, 1.0f, 0.0f, 1.0f));
-    DrawLine(corners[1], corners[3], math::Color(0.0f, 0.5f, 0.0f, 1.0f));
-    DrawLine(corners[4], corners[6], math::Color(0.0f, 1.0f, 0.0f, 1.0f));
-    DrawLine(corners[5], corners[7], math::Color(0.0f, 0.5f, 0.0f, 1.0f));
+    const math::Color green{math::colors::linear::Lime};
+    const math::Color dark_green{math::colors::linear::Green};
+    DrawLine(corners[0], corners[2], {green * opts.color, opts.duration});
+    DrawLine(corners[1], corners[3], {dark_green * opts.color, opts.duration});
+    DrawLine(corners[4], corners[6], {green * opts.color, opts.duration});
+    DrawLine(corners[5], corners[7], {dark_green * opts.color, opts.duration});
 
-    DrawLine(corners[0], corners[4], math::Color(1.0f, 0.0f, 0.0f, 1.0f));
-    DrawLine(corners[1], corners[5], math::Color(0.5f, 0.0f, 0.0f, 1.0f));
-    DrawLine(corners[2], corners[6], math::Color(1.0f, 0.0f, 0.0f, 1.0f));
-    DrawLine(corners[3], corners[7], math::Color(0.5f, 0.0f, 0.0f, 1.0f));
+    const math::Color red{math::colors::linear::Red};
+    const math::Color dark_red{math::colors::linear::DarkRed};
+    DrawLine(corners[0], corners[4], {red * opts.color, opts.duration});
+    DrawLine(corners[1], corners[5], {dark_red * opts.color, opts.duration});
+    DrawLine(corners[2], corners[6], {red * opts.color, opts.duration});
+    DrawLine(corners[3], corners[7], {dark_red * opts.color, opts.duration});
+}
+
+void DebugDraw::Update(const float delta_time) {
+    Component::Update(delta_time);
+
+    auto decrease_duration = [delta_time](Vertex& vertex) { vertex.duration -= delta_time; };
+    std::for_each(std::execution::par, primitive_vertices_.begin(), primitive_vertices_.end(), decrease_duration);
 }
 
 // void DebugDraw::DrawTextureOnScreen(ID3D11ShaderResourceView* tex, int x, int y, int width, int height, int zOrder) {

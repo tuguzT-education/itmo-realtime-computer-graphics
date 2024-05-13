@@ -35,8 +35,7 @@ void Phobos::Draw(const borov_engine::Camera* camera) {
 
     const auto collision_primitive = CollisionPrimitive();
     const auto& sphere = collision_primitive.Primitive();
-    Game().DebugDraw().DrawSphere(sphere.Radius, borov_engine::math::colors::linear::Red.v,
-                                  borov_engine::Transform{.position = sphere.Center}.ToMatrix(), 16);
+    Game().DebugDraw().DrawSphere(sphere);
 }
 
 bool Phobos::Intersects(const borov_engine::CollisionPrimitive& other) const {
