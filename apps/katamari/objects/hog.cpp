@@ -3,11 +3,12 @@
 Hog::Hog(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([] {
+          Game().AddComponent<borov_engine::TriangleComponent>([this] {
               borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
                   .mesh_path = "resources/meshes/hog.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 200.0f});
+              mesh_initializer.Parent(this);
               return mesh_initializer;
           }()),
       } {}
@@ -37,8 +38,8 @@ bool Hog::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
 borov_engine::BoxCollisionPrimitive Hog::CollisionPrimitive() const {
     const auto [position, rotation, scale] = WorldTransform();
     const borov_engine::math::Box box{
-        position + borov_engine::math::Vector3{0.0f, 0.5f, 0.25f},
-        borov_engine::math::Vector3{0.35f, 0.35f, 0.85f} * scale,
+        position + borov_engine::math::Vector3{0.0f, 0.5f, 0.15f},
+        scale * borov_engine::math::Vector3{0.3f, 0.35f, 0.8f},
         rotation,
     };
     return borov_engine::BoxCollisionPrimitive{box};

@@ -16,7 +16,14 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       field_{AddComponent<Field>()},
       player_{AddComponent<Player>()},
-      hog_{AddComponent<Hog>()} {
+      hog_{
+          AddComponent<Hog>(Hog::Initializer{
+              .transform =
+                  borov_engine::Transform{
+                      .position = borov_engine::math::Vector3::Forward * 3.0f,
+                  },
+          }),
+      } {
     CameraManager<borov_engine::OrbitCameraManager>(borov_engine::OrbitCameraManager::Initializer{
         .target = player_,
         .camera = &camera_.get(),
@@ -53,10 +60,28 @@ void Game::Update(const float delta_time) {
 
     borov_engine::Transform player_transform = player_.get().WorldTransform();
     player_transform.position += direction * delta_time;
-    if (direction != math::Vector3::Zero) {
+    if (direction.LengthSquared() > 0.1f) {
         const auto additional = math::Quaternion::CreateFromAxisAngle(-direction.Cross(math::Vector3::Up),
                                                                       std::numbers::pi_v<float> * 0.5f * delta_time);
         player_transform.rotation = math::Quaternion::Concatenate(additional, player_transform.rotation);
     }
     player_.get().WorldTransform(player_transform);
+
+    // ReSharper disable once CppTooWideScopeInitStatement
+    auto is_scene_and_collision = [](const borov_engine::Component &component) {
+        return dynamic_cast<const borov_engine::SceneComponent *>(&component) != nullptr &&
+               dynamic_cast<const borov_engine::CollisionPrimitive *>(&component) != nullptr;
+    };
+    for (borov_engine::Component &component : Components() | std::views::filter(is_scene_and_collision)) {
+        if (&component == &player_.get() || &component == &field_.get()) {
+            continue;
+        }
+
+        auto &scene_component = dynamic_cast<borov_engine::SceneComponent &>(component);
+        auto &collision_primitive = dynamic_cast<const borov_engine::CollisionPrimitive &>(component);
+
+        if (collision_primitive.Intersects(player_)) {
+            scene_component.Parent(&player_.get());
+        }
+    }
 }
