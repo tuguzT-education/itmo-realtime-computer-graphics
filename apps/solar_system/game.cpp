@@ -219,6 +219,9 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
             namespace math = borov_engine::math;
             const math::Point cursor_position = window->CursorPosition();
             const math::Vector3 world_cursor_position = ScreenToWorld(cursor_position);
+            if (std::isnan(world_cursor_position.LengthSquared())) {
+                break;
+            }
             const math::Vector3 ray_position = camera_.WorldTransform().position;
             const math::Vector3 ray_direction = math::Normalize(world_cursor_position - ray_position);
             const math::Ray ray{ray_position, ray_direction};

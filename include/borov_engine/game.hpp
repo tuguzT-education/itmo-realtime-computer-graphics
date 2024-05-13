@@ -8,6 +8,7 @@
 
 #include "camera_manager.hpp"
 #include "concepts.hpp"
+#include "debug_draw.hpp"
 #include "detail/d3d_ptr.hpp"
 #include "input.hpp"
 #include "timer.hpp"
@@ -43,6 +44,12 @@ class Game {
 
     template <std::derived_from<class ViewportManager> T, typename... Args>
     T &ViewportManager(Args &&...args);
+
+    [[nodiscard]] const DebugDraw &DebugDraw() const;
+    [[nodiscard]] class DebugDraw &DebugDraw();
+
+    template <std::derived_from<class DebugDraw> T, typename... Args>
+    T &DebugDraw(Args &&...args);
 
     [[nodiscard]] const Camera *MainCamera() const;
     [[nodiscard]] Camera *MainCamera();
@@ -93,6 +100,7 @@ class Game {
     class Input &input_;
     std::unique_ptr<class ViewportManager> viewport_manager_;
     std::unique_ptr<class CameraManager> camera_manager_;
+    std::unique_ptr<class DebugDraw> debug_draw_;
     std::vector<std::unique_ptr<Component>> components_;
 
     class Timer timer_;

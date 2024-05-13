@@ -140,7 +140,7 @@ auto TriangleComponent::MeshInitializer::MeshPath(const std::filesystem::path &m
 TriangleComponent::TriangleComponent(class Game &game, const Initializer &initializer)
     : SceneComponent(game, initializer), wireframe_{initializer.wireframe}, tile_count_{math::Vector2::One} {
     InitializeVertexShader();
-    InitializeIndexShader();
+    InitializePixelShader();
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeSamplerState();
@@ -209,7 +209,7 @@ void TriangleComponent::Draw(const Camera *camera) {
 
     const std::array vertex_buffers = {vertex_buffer_.Get()};
     constexpr std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
-    constexpr std::array<std::uint32_t, vertex_buffers.size()> offsets{0};
+    constexpr std::array<std::uint32_t, vertex_buffers.size()> offsets{};
 
     device_context.RSSetState(rasterizer_state_.Get());
     device_context.IASetInputLayout(input_layout_.Get());
@@ -217,7 +217,7 @@ void TriangleComponent::Draw(const Camera *camera) {
     device_context.IASetIndexBuffer(index_buffer_.Get(), DXGI_FORMAT_R32_UINT, 0);
     device_context.IASetVertexBuffers(0, vertex_buffers.size(), vertex_buffers.data(), strides.data(), offsets.data());
     device_context.VSSetShader(vertex_shader_.Get(), nullptr, 0);
-    device_context.PSSetShader(index_shader_.Get(), nullptr, 0);
+    device_context.PSSetShader(pixel_shader_.Get(), nullptr, 0);
 
     D3D11_MAPPED_SUBRESOURCE subresource{};
     const ConstantBuffer constant_buffer{
@@ -249,21 +249,23 @@ void TriangleComponent::Draw(const Camera *camera) {
 }
 
 void TriangleComponent::InitializeVertexShader() {
-    vertex_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "VSMain",
-                                               "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+    vertex_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr,
+                                               D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0",
+                                               D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
     const HRESULT result = Device().CreateVertexShader(vertex_byte_code_->GetBufferPointer(),
                                                        vertex_byte_code_->GetBufferSize(), nullptr, &vertex_shader_);
     detail::CheckResult(result, "Failed to create vertex shader from byte code");
 }
 
-void TriangleComponent::InitializeIndexShader() {
-    index_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr, nullptr, "PSMain",
-                                              "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+void TriangleComponent::InitializePixelShader() {
+    pixel_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr,
+                                              D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0",
+                                              D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
-    const HRESULT result = Device().CreatePixelShader(index_byte_code_->GetBufferPointer(),
-                                                      index_byte_code_->GetBufferSize(), nullptr, &index_shader_);
-    detail::CheckResult(result, "Failed to create index shader from byte code");
+    const HRESULT result = Device().CreatePixelShader(pixel_byte_code_->GetBufferPointer(),
+                                                      pixel_byte_code_->GetBufferSize(), nullptr, &pixel_shader_);
+    detail::CheckResult(result, "Failed to create pixel shader from byte code");
 }
 
 void TriangleComponent::InitializeInputLayout() {

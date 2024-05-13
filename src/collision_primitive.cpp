@@ -86,7 +86,11 @@ bool AxisAlignedBoxCollisionPrimitive::Intersects(const math::Ray& ray, float& d
     return ray.Intersects(box_, dist);
 }
 
-BoxCollisionPrimitive::BoxCollisionPrimitive(const PrimitiveType& primitive) : box_{primitive} {}
+BoxCollisionPrimitive::BoxCollisionPrimitive(const PrimitiveType& primitive) : box_{primitive} {
+    math::Quaternion orientation{box_.Orientation};
+    orientation.Normalize();
+    box_.Orientation = orientation;
+}
 
 auto BoxCollisionPrimitive::Primitive() const -> const PrimitiveType& {
     return box_;

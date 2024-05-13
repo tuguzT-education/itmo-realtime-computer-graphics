@@ -64,7 +64,7 @@ class TriangleComponent : public SceneComponent {
     };
 
     void InitializeVertexShader();
-    void InitializeIndexShader();
+    void InitializePixelShader();
     void InitializeInputLayout();
     void InitializeRasterizerState();
     void InitializeSamplerState();
@@ -72,19 +72,19 @@ class TriangleComponent : public SceneComponent {
     void InitializeIndexBuffer(std::span<const Index> indices);
     void InitializeConstantBuffer();
 
+    detail::D3DPtr<ID3D11Buffer> constant_buffer_;
+    detail::D3DPtr<ID3D11Buffer> index_buffer_;
+    detail::D3DPtr<ID3D11Buffer> vertex_buffer_;
+
     detail::D3DPtr<ID3D11SamplerState> sampler_state_;
     detail::D3DPtr<ID3D11ShaderResourceView> texture_;
 
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;
 
-    detail::D3DPtr<ID3D11Buffer> constant_buffer_;
+    detail::D3DPtr<ID3D11PixelShader> pixel_shader_;
+    detail::D3DPtr<ID3DBlob> pixel_byte_code_;
 
-    detail::D3DPtr<ID3D11Buffer> index_buffer_;
-    detail::D3DPtr<ID3D11PixelShader> index_shader_;
-    detail::D3DPtr<ID3DBlob> index_byte_code_;
-
-    detail::D3DPtr<ID3D11Buffer> vertex_buffer_;
     detail::D3DPtr<ID3D11VertexShader> vertex_shader_;
     detail::D3DPtr<ID3DBlob> vertex_byte_code_;
 

@@ -28,6 +28,14 @@ borov_engine::BoxComponent& Earth::Mesh() {
     return mesh_;
 }
 
+void Earth::Draw(const borov_engine::Camera* camera) {
+    SceneComponent::Draw(camera);
+
+    const auto collision_primitive = CollisionPrimitive();
+    const auto& box = collision_primitive.Primitive();
+    Game().DebugDraw().DrawBox(box, borov_engine::math::colors::linear::Red.v);
+}
+
 bool Earth::Intersects(const borov_engine::CollisionPrimitive& other) const {
     return CollisionPrimitive().Intersects(other);
 }

@@ -21,6 +21,12 @@ T &Game::ViewportManager(Args &&...args) {
     return dynamic_cast<T &>(*viewport_manager_);
 }
 
+template <std::derived_from<class DebugDraw> T, typename... Args>
+T &Game::DebugDraw(Args &&...args) {
+    debug_draw_ = std::make_unique<T>(*this, std::forward<Args>(args)...);
+    return dynamic_cast<T &>(*debug_draw_);
+}
+
 template <std::derived_from<Component> T, typename... Args>
 T &Game::AddComponent(Args &&...args) {
     auto &component = components_.emplace_back(std::make_unique<T>(*this, std::forward<Args>(args)...));

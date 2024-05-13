@@ -13,6 +13,8 @@ class Phobos final : public borov_engine::SceneComponent, public borov_engine::C
     [[nodiscard]] const borov_engine::GeometricPrimitiveComponent &Mesh() const;
     [[nodiscard]] borov_engine::GeometricPrimitiveComponent &Mesh();
 
+    void Draw(const borov_engine::Camera* camera) override;
+
     [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
     [[nodiscard]] bool Intersects(const borov_engine::math::Ray &ray, float &dist) const override;
 

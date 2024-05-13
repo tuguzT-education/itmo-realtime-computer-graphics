@@ -11,7 +11,7 @@ namespace borov_engine {
 
 constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{6500};
 
-Game::Game(borov_engine::Window &window, borov_engine::Input &input)
+Game::Game(class Window &window, class Input &input)
     : window_{window},
       input_{input},
       time_per_update_{default_time_per_update},
@@ -24,7 +24,8 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     InitializeRenderTargetView();
     InitializeDepthStencilView();
 
-    ViewportManager<borov_engine::ViewportManager>();
+    ViewportManager<class ViewportManager>();
+    DebugDraw<class DebugDraw>();
 
     window_.OnResize().AddRaw(this, &Game::OnWindowResize);
 }
@@ -63,6 +64,14 @@ const ViewportManager &Game::ViewportManager() const {
 
 ViewportManager &Game::ViewportManager() {
     return *viewport_manager_;
+}
+
+const DebugDraw &Game::DebugDraw() const {
+    return *debug_draw_;
+}
+
+DebugDraw &Game::DebugDraw() {
+    return *debug_draw_;
 }
 
 const Camera *Game::MainCamera() const {
@@ -107,7 +116,7 @@ math::Vector3 Game::ScreenToWorld(const math::Point screen_point) const {
         return viewport.Unproject(point, projection, view, world);
     }
 
-    return math::Vector3::Zero;
+    return math::Vector3{std::numeric_limits<float>::quiet_NaN()};
 }
 
 math::Point Game::WorldToScreen(const math::Vector3 position, const Viewport *viewport) const {
@@ -287,6 +296,7 @@ void Game::UpdateInternal(const float delta_time) {
         camera_manager_->Update(delta_time);
     }
     viewport_manager_->Update(delta_time);
+    debug_draw_->Update(delta_time);
 }
 
 void Game::Update(const float delta_time) {
@@ -326,6 +336,7 @@ void Game::Draw() {
         for (const auto &component : components_) {
             component->Draw(camera);
         }
+        debug_draw_->Draw(camera);
     }
 }
 
