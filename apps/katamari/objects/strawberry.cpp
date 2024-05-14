@@ -36,10 +36,11 @@ bool Strawberry::Intersects(const borov_engine::math::Ray& ray, float& dist) con
 }
 
 borov_engine::SphereCollisionPrimitive Strawberry::CollisionPrimitive() const {
-    const auto [position, rotation, scale] = WorldTransform();
-    const borov_engine::math::Sphere sphere{
-        position + borov_engine::math::Vector3{0.0f, 0.175f, 0.0f},
+    borov_engine::math::Sphere sphere{
+        borov_engine::math::Vector3{0.0f, 0.175f, 0.0f},
         0.125f,
     };
+    sphere.Transform(sphere, WorldTransform().ToMatrix());
+
     return borov_engine::SphereCollisionPrimitive{sphere};
 }

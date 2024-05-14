@@ -36,11 +36,12 @@ bool Hog::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
 }
 
 borov_engine::BoxCollisionPrimitive Hog::CollisionPrimitive() const {
-    const auto [position, rotation, scale] = WorldTransform();
-    const borov_engine::math::Box box{
-        position + borov_engine::math::Vector3{0.0f, 0.5f, 0.15f},
-        scale * borov_engine::math::Vector3{0.3f, 0.35f, 0.8f},
-        rotation,
+    borov_engine::math::Box box{
+        borov_engine::math::Vector3{0.0f, 0.5f, 0.15f},
+        borov_engine::math::Vector3{0.3f, 0.35f, 0.8f},
+        borov_engine::math::Quaternion::Identity,
     };
+    box.Transform(box, WorldTransform().ToMatrix());
+
     return borov_engine::BoxCollisionPrimitive{box};
 }

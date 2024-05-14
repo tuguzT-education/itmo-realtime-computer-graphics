@@ -36,11 +36,12 @@ bool ConcreteBarricade::Intersects(const borov_engine::math::Ray& ray, float& di
 }
 
 borov_engine::BoxCollisionPrimitive ConcreteBarricade::CollisionPrimitive() const {
-    const auto [position, rotation, scale] = WorldTransform();
-    const borov_engine::math::Box box{
-        position + borov_engine::math::Vector3{0.0f, 0.5f, -0.34f},
-        scale * borov_engine::math::Vector3{0.1f, 0.5f, 0.85f},
-        rotation,
+    borov_engine::math::Box box{
+        borov_engine::math::Vector3{0.0f, 0.5f, -0.34f},
+        borov_engine::math::Vector3{0.1f, 0.5f, 0.85f},
+        borov_engine::math::Quaternion::Identity,
     };
+    box.Transform(box, WorldTransform().ToMatrix());
+
     return borov_engine::BoxCollisionPrimitive{box};
 }
