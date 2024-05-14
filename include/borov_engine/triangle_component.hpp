@@ -14,7 +14,7 @@ namespace borov_engine {
 
 class TriangleComponent : public SceneComponent {
   public:
-    using Vertex = DirectX::VertexPositionColorTexture;
+    using Vertex = DirectX::VertexPositionNormalColorTexture;
     using Index = std::uint32_t;
 
     struct Initializer : SceneComponent::Initializer {

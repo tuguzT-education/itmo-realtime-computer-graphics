@@ -57,6 +57,12 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
         const auto [x, y, z] = ai_position;
         const math::Vector3 position{x, y, z};
 
+        math::Vector3 normal = math::Vector3::Right;
+        if (const aiVector3D *ai_normals = mesh.mNormals) {
+            const auto [x, y, z] = ai_normals[index];
+            normal = math::Vector3{x, y, z};
+        }
+
         math::Color color = diffuse;
         if (const aiColor4D *colors = mesh.mColors[0]) {
             const auto [r, g, b, a] = colors[index];
@@ -69,7 +75,7 @@ TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, co
             texture_coordinate = math::Vector2{x, y};
         }
 
-        vertices.emplace_back(position, color, texture_coordinate);
+        vertices.emplace_back(position, normal, color, texture_coordinate);
     }
 
     std::vector<TriangleComponent::Index> indices;
@@ -183,7 +189,8 @@ void TriangleComponent::LoadMesh(const std::filesystem::path &mesh_path) {
     index_buffer_ = nullptr;
 
     Assimp::Importer importer;
-    const aiScene *scene = importer.ReadFile(mesh_path.generic_string(), aiProcess_Triangulate | aiProcess_FlipUVs);
+    constexpr std::uint32_t flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals;
+    const aiScene *scene = importer.ReadFile(mesh_path.generic_string(), flags);
     if (scene == nullptr) {
         const char *message = importer.GetErrorString();
         throw std::runtime_error{message};

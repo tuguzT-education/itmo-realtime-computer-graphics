@@ -17,35 +17,160 @@ std::array<BoxComponent::Vertex, 24> BoxVertices(const float length, const float
 
     return {
         // Front face
-        BoxComponent::Vertex{math::Vector3{left, bottom, forward}, color, math::Vector2{0.0f, 1.0f}},
-        BoxComponent::Vertex{math::Vector3{left, top, forward}, color, math::Vector2{0.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{right, top, forward}, color, math::Vector2{1.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{right, bottom, forward}, color, math::Vector2{1.0f, 1.0f}},
+        BoxComponent::Vertex{
+            math::Vector3{left, bottom, forward},
+            math::Vector3::Forward,
+            color,
+            math::Vector2{0.0f, 1.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{left, top, forward},
+            math::Vector3::Forward,
+            color,
+            math::Vector2{0.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, top, forward},
+            math::Vector3::Forward,
+            color,
+            math::Vector2{1.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, bottom, forward},
+            math::Vector3::Forward,
+            color,
+            math::Vector2{1.0f, 1.0f},
+        },
+
         // Back face
-        BoxComponent::Vertex{math::Vector3{left, bottom, backward}, color, math::Vector2{1.0f, 1.0f}},
-        BoxComponent::Vertex{math::Vector3{right, bottom, backward}, color, math::Vector2{0.0f, 1.0f}},
-        BoxComponent::Vertex{math::Vector3{right, top, backward}, color, math::Vector2{0.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{left, top, backward}, color, math::Vector2{1.0f, 0.0f}},
+        BoxComponent::Vertex{
+            math::Vector3{left, bottom, backward},
+            math::Vector3::Backward,
+            color,
+            math::Vector2{1.0f, 1.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, bottom, backward},
+            math::Vector3::Backward,
+            color,
+            math::Vector2{0.0f, 1.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, top, backward},
+            math::Vector3::Backward,
+            color,
+            math::Vector2{0.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{left, top, backward},
+            math::Vector3::Backward,
+            color,
+            math::Vector2{1.0f, 0.0f},
+        },
+
         // Top Face
-        BoxComponent::Vertex{math::Vector3{left, top, forward}, color, math::Vector2{0.0f, 1.0f}},
-        BoxComponent::Vertex{math::Vector3{left, top, backward}, color, math::Vector2{0.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{right, top, backward}, color, math::Vector2{1.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{right, top, forward}, color, math::Vector2{1.0f, 1.0f}},
+        BoxComponent::Vertex{
+            math::Vector3{left, top, forward},
+            math::Vector3::Up,
+            color,
+            math::Vector2{0.0f, 1.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{left, top, backward},
+            math::Vector3::Up,
+            color,
+            math::Vector2{0.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, top, backward},
+            math::Vector3::Up,
+            color,
+            math::Vector2{1.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, top, forward},
+            math::Vector3::Up,
+            color,
+            math::Vector2{1.0f, 1.0f},
+        },
+
         // Bottom Face
-        BoxComponent::Vertex{math::Vector3{left, bottom, forward}, color, math::Vector2{1.0f, 1.0f}},
-        BoxComponent::Vertex{math::Vector3{right, bottom, forward}, color, math::Vector2{0.0f, 1.0f}},
-        BoxComponent::Vertex{math::Vector3{right, bottom, backward}, color, math::Vector2{0.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{left, bottom, backward}, color, math::Vector2{1.0f, 0.0f}},
+        BoxComponent::Vertex{
+            math::Vector3{left, bottom, forward},
+            math::Vector3::Down,
+            color,
+            math::Vector2{1.0f, 1.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, bottom, forward},
+            math::Vector3::Down,
+            color,
+            math::Vector2{0.0f, 1.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, bottom, backward},
+            math::Vector3::Down,
+            color,
+            math::Vector2{0.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{left, bottom, backward},
+            math::Vector3::Down,
+            color,
+            math::Vector2{1.0f, 0.0f},
+        },
+
         // Left Face
-        BoxComponent::Vertex{math::Vector3{left, bottom, backward}, color, math::Vector2{0.0f, 1.0f}},
-        BoxComponent::Vertex{math::Vector3{left, top, backward}, color, math::Vector2{0.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{left, top, forward}, color, math::Vector2{1.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{left, bottom, forward}, color, math::Vector2{1.0f, 1.0f}},
+        BoxComponent::Vertex{
+            math::Vector3{left, bottom, backward},
+            math::Vector3::Left,
+            color,
+            math::Vector2{0.0f, 1.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{left, top, backward},
+            math::Vector3::Left,
+            color,
+            math::Vector2{0.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{left, top, forward},
+            math::Vector3::Left,
+            color,
+            math::Vector2{1.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{left, bottom, forward},
+            math::Vector3::Left,
+            color,
+            math::Vector2{1.0f, 1.0f},
+        },
+
         // Right Face
-        BoxComponent::Vertex{math::Vector3{right, bottom, forward}, color, math::Vector2{0.0f, 1.0f}},
-        BoxComponent::Vertex{math::Vector3{right, top, forward}, color, math::Vector2{0.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{right, top, backward}, color, math::Vector2{1.0f, 0.0f}},
-        BoxComponent::Vertex{math::Vector3{right, bottom, backward}, color, math::Vector2{1.0f, 1.0f}},
+        BoxComponent::Vertex{
+            math::Vector3{right, bottom, forward},
+            math::Vector3::Right,
+            color,
+            math::Vector2{0.0f, 1.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, top, forward},
+            math::Vector3::Right,
+            color,
+            math::Vector2{0.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, top, backward},
+            math::Vector3::Right,
+            color,
+            math::Vector2{1.0f, 0.0f},
+        },
+        BoxComponent::Vertex{
+            math::Vector3{right, bottom, backward},
+            math::Vector3::Right,
+            color,
+            math::Vector2{1.0f, 1.0f},
+        },
     };
 }
 
