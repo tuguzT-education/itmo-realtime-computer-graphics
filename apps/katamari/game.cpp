@@ -28,7 +28,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       boat_{
           AddComponent<Boat>(Boat::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 6.0f},
           }),
       },
       bulb_{
@@ -46,9 +46,14 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 6.0f},
           }),
       },
+      cheese_{
+          AddComponent<Cheese>(Cheese::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
+          }),
+      },
       hog_{
           AddComponent<Hog>(Hog::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 6.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 6.0f},
           }),
       } {
     CameraManager<borov_engine::OrbitCameraManager>(borov_engine::OrbitCameraManager::Initializer{

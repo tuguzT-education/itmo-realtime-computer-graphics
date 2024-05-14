@@ -7,7 +7,7 @@ Apricot::Apricot(borov_engine::Game& game, const Initializer& initializer)
               borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
                   .mesh_path = "resources/meshes/apricot/apricot.fbx",
               };
-              mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 10.0f});
+              mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 20.0f});
               mesh_initializer.Parent(this);
               return mesh_initializer;
           }()),
@@ -38,8 +38,8 @@ bool Apricot::Intersects(const borov_engine::math::Ray& ray, float& dist) const 
 borov_engine::SphereCollisionPrimitive Apricot::CollisionPrimitive() const {
     const auto [position, rotation, scale] = WorldTransform();
     const borov_engine::math::Sphere sphere{
-        position + borov_engine::math::Vector3{0.0f, 0.275f, 0.0f},
-        0.2f,
+        position + borov_engine::math::Vector3{0.0f, 0.1375f, 0.0f},
+        0.1f,
     };
     return borov_engine::SphereCollisionPrimitive{sphere};
 }
