@@ -31,9 +31,14 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 3.0f},
           }),
       },
+      cake_{
+          AddComponent<Cake>(Cake::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
+          }),
+      },
       hog_{
           AddComponent<Hog>(Hog::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 6.0f},
           }),
       } {
     CameraManager<borov_engine::OrbitCameraManager>(borov_engine::OrbitCameraManager::Initializer{
