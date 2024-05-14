@@ -1,7 +1,7 @@
 #include "transform.hlsl"
 #include "vertex.hlsl"
 
-cbuffer ConstantBuffer : register(b0)
+cbuffer VSConstantBuffer : register(b0)
 {
     Transform transform;
 }

@@ -1,10 +1,9 @@
 #include "transform.hlsl"
 #include "vertex.hlsl"
 
-cbuffer ConstantBuffer : register(b0)
+cbuffer VSConstantBuffer : register(b0)
 {
     Transform transform;
-    bool has_texture;
     float2 tile_count;
 }
 
@@ -21,6 +20,11 @@ VertexPositionColorTexture VSMain(VertexPositionColorTexture input)
 
 Texture2D DiffuseMap : register(t0);
 SamplerState Sampler : register(s0);
+
+cbuffer PSConstantBuffer : register(b0)
+{
+    bool has_texture;
+}
 
 float4 PSMain(VertexPositionColorTexture input) : SV_Target
 {

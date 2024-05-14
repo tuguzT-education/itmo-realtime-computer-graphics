@@ -140,11 +140,14 @@ auto TriangleComponent::MeshInitializer::MeshPath(const std::filesystem::path &m
 TriangleComponent::TriangleComponent(class Game &game, const Initializer &initializer)
     : SceneComponent(game, initializer), wireframe_{initializer.wireframe}, tile_count_{math::Vector2::One} {
     InitializeVertexShader();
+    InitializeVertexShaderConstantBuffer();
+
     InitializePixelShader();
+    InitializePixelShaderConstantBuffer();
+
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeSamplerState();
-    InitializeConstantBuffer();
 }
 
 TriangleComponent::TriangleComponent(class Game &game, const CustomInitializer &initializer)
@@ -207,34 +210,37 @@ void TriangleComponent::Draw(const Camera *camera) {
 
     ID3D11DeviceContext &device_context = DeviceContext();
 
-    const std::array vertex_buffers = {vertex_buffer_.Get()};
-    constexpr std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
-    constexpr std::array<std::uint32_t, vertex_buffers.size()> offsets{};
-
     device_context.RSSetState(rasterizer_state_.Get());
     device_context.IASetInputLayout(input_layout_.Get());
     device_context.IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    device_context.IASetIndexBuffer(index_buffer_.Get(), DXGI_FORMAT_R32_UINT, 0);
+
+    const std::array vertex_buffers = {vertex_buffer_.Get()};
+    constexpr std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
+    constexpr std::array<std::uint32_t, vertex_buffers.size()> offsets{};
     device_context.IASetVertexBuffers(0, vertex_buffers.size(), vertex_buffers.data(), strides.data(), offsets.data());
+    device_context.IASetIndexBuffer(index_buffer_.Get(), DXGI_FORMAT_R32_UINT, 0);
+
     device_context.VSSetShader(vertex_shader_.Get(), nullptr, 0);
     device_context.PSSetShader(pixel_shader_.Get(), nullptr, 0);
 
-    D3D11_MAPPED_SUBRESOURCE subresource{};
-    const ConstantBuffer constant_buffer{
+    const VertexShaderConstantBuffer vs_constant_buffer{
         .world = WorldTransform().ToMatrix(),
         .view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity,
         .projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity,
-        .has_texture = texture_ != nullptr,
         .tile_count = tile_count_,
     };
-    const HRESULT result = device_context.Map(constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-    detail::CheckResult(result, "Failed to map constant buffer data");
-    std::memcpy(subresource.pData, &constant_buffer, sizeof(constant_buffer));
-    device_context.Unmap(constant_buffer_.Get(), 0);
+    UpdateVertexShaderConstantBuffer(vs_constant_buffer);
 
-    const std::array constant_buffers{constant_buffer_.Get()};
-    device_context.VSSetConstantBuffers(0, constant_buffers.size(), constant_buffers.data());
-    device_context.PSSetConstantBuffers(0, constant_buffers.size(), constant_buffers.data());
+    const std::array vs_constant_buffers{vertex_shader_constant_buffer_.Get()};
+    device_context.VSSetConstantBuffers(0, vs_constant_buffers.size(), vs_constant_buffers.data());
+
+    const PixelShaderConstantBuffer ps_constant_buffer{
+        .has_texture = texture_ != nullptr,
+    };
+    UpdatePixelShaderConstantBuffer(ps_constant_buffer);
+
+    const std::array ps_constant_buffers{pixel_shader_constant_buffer_.Get()};
+    device_context.PSSetConstantBuffers(0, ps_constant_buffers.size(), ps_constant_buffers.data());
 
     const std::array shader_resources{texture_.Get()};
     device_context.PSSetShaderResources(0, shader_resources.size(), shader_resources.data());
@@ -244,7 +250,7 @@ void TriangleComponent::Draw(const Camera *camera) {
 
     D3D11_BUFFER_DESC index_buffer_desc;
     index_buffer_->GetDesc(&index_buffer_desc);
-    const UINT index_count = index_buffer_desc.ByteWidth / sizeof(Index);
+    const std::uint32_t index_count = index_buffer_desc.ByteWidth / sizeof(Index);
     device_context.DrawIndexed(index_count, 0, 0);
 }
 
@@ -258,6 +264,20 @@ void TriangleComponent::InitializeVertexShader() {
     detail::CheckResult(result, "Failed to create vertex shader from byte code");
 }
 
+void TriangleComponent::InitializeVertexShaderConstantBuffer() {
+    constexpr D3D11_BUFFER_DESC buffer_desc{
+        .ByteWidth = sizeof(VertexShaderConstantBuffer),
+        .Usage = D3D11_USAGE_DYNAMIC,
+        .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+        .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+        .MiscFlags = 0,
+        .StructureByteStride = 0,
+    };
+
+    const HRESULT result = Device().CreateBuffer(&buffer_desc, nullptr, &vertex_shader_constant_buffer_);
+    detail::CheckResult(result, "Failed to create vertex shader constant buffer");
+}
+
 void TriangleComponent::InitializePixelShader() {
     pixel_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr,
                                               D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0",
@@ -266,6 +286,20 @@ void TriangleComponent::InitializePixelShader() {
     const HRESULT result = Device().CreatePixelShader(pixel_byte_code_->GetBufferPointer(),
                                                       pixel_byte_code_->GetBufferSize(), nullptr, &pixel_shader_);
     detail::CheckResult(result, "Failed to create pixel shader from byte code");
+}
+
+void TriangleComponent::InitializePixelShaderConstantBuffer() {
+    constexpr D3D11_BUFFER_DESC buffer_desc{
+        .ByteWidth = sizeof(PixelShaderConstantBuffer),
+        .Usage = D3D11_USAGE_DYNAMIC,
+        .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+        .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+        .MiscFlags = 0,
+        .StructureByteStride = 0,
+    };
+
+    const HRESULT result = Device().CreateBuffer(&buffer_desc, nullptr, &pixel_shader_constant_buffer_);
+    detail::CheckResult(result, "Failed to create pixel shader constant buffer");
 }
 
 void TriangleComponent::InitializeInputLayout() {
@@ -301,7 +335,7 @@ void TriangleComponent::InitializeSamplerState() {
     detail::CheckResult(result, "Failed to create sampler state");
 }
 
-void TriangleComponent::InitializeVertexBuffer(std::span<const Vertex> vertices) {
+void TriangleComponent::InitializeVertexBuffer(const std::span<const Vertex> vertices) {
     if (vertices.empty()) {
         vertex_buffer_ = nullptr;
         return;
@@ -325,7 +359,7 @@ void TriangleComponent::InitializeVertexBuffer(std::span<const Vertex> vertices)
     detail::CheckResult(result, "Failed to create vertex buffer");
 }
 
-void TriangleComponent::InitializeIndexBuffer(std::span<const Index> indices) {
+void TriangleComponent::InitializeIndexBuffer(const std::span<const Index> indices) {
     if (indices.empty()) {
         index_buffer_ = nullptr;
         return;
@@ -349,18 +383,24 @@ void TriangleComponent::InitializeIndexBuffer(std::span<const Index> indices) {
     detail::CheckResult(result, "Failed to create index buffer");
 }
 
-void TriangleComponent::InitializeConstantBuffer() {
-    constexpr D3D11_BUFFER_DESC buffer_desc{
-        .ByteWidth = sizeof(ConstantBuffer),
-        .Usage = D3D11_USAGE_DYNAMIC,
-        .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-        .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
-        .MiscFlags = 0,
-        .StructureByteStride = 0,
-    };
+void TriangleComponent::UpdateVertexShaderConstantBuffer(const VertexShaderConstantBuffer &data) {
+    D3D11_MAPPED_SUBRESOURCE mapped_subresource{};
+    const HRESULT result =
+        DeviceContext().Map(vertex_shader_constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
+    detail::CheckResult(result, "Failed to map constant buffer data");
 
-    const HRESULT result = Device().CreateBuffer(&buffer_desc, nullptr, &constant_buffer_);
-    detail::CheckResult(result, "Failed to create constant buffer");
+    std::memcpy(mapped_subresource.pData, &data, sizeof(data));
+    DeviceContext().Unmap(vertex_shader_constant_buffer_.Get(), 0);
+}
+
+void TriangleComponent::UpdatePixelShaderConstantBuffer(const PixelShaderConstantBuffer &data) {
+    D3D11_MAPPED_SUBRESOURCE mapped_subresource{};
+    const HRESULT result =
+        DeviceContext().Map(pixel_shader_constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
+    detail::CheckResult(result, "Failed to map constant buffer data");
+
+    std::memcpy(mapped_subresource.pData, &data, sizeof(data));
+    DeviceContext().Unmap(pixel_shader_constant_buffer_.Get(), 0);
 }
 
 }  // namespace borov_engine
