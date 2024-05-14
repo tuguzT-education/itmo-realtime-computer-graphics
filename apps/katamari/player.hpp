@@ -3,11 +3,11 @@
 #ifndef KATAMARI_PLAYER_HPP_INCLUDED
 #define KATAMARI_PLAYER_HPP_INCLUDED
 
-#include <borov_engine/collision_primitive.hpp>
+#include <borov_engine/collision.hpp>
 #include <borov_engine/geometric_primitive_component.hpp>
 #include <borov_engine/input.hpp>
 
-class Player final : public borov_engine::GeometricPrimitiveComponent, public borov_engine::CollisionPrimitive {
+class Player final : public borov_engine::GeometricPrimitiveComponent, public borov_engine::Collision {
   public:
     struct ControlKeys {
         using enum borov_engine::InputKey;
@@ -23,11 +23,11 @@ class Player final : public borov_engine::GeometricPrimitiveComponent, public bo
     [[nodiscard]] ControlKeys Controls() const;
     [[nodiscard]] ControlKeys& Controls();
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive& other) const override;
+    [[nodiscard]] bool Intersects(const Collision& other) const override;
     [[nodiscard]] bool Intersects(const borov_engine::math::Ray& ray, float& dist) const override;
 
   private:
-    [[nodiscard]] borov_engine::SphereCollisionPrimitive CollisionPrimitive() const;
+    [[nodiscard]] borov_engine::SphereCollision CollisionPrimitive() const;
 
     ControlKeys control_keys_;
 };

@@ -122,7 +122,7 @@ void Game::Update(const float delta_time) {
     // ReSharper disable once CppTooWideScopeInitStatement
     auto is_scene_and_collision = [](const borov_engine::Component &component) {
         return dynamic_cast<const borov_engine::SceneComponent *>(&component) != nullptr &&
-               dynamic_cast<const borov_engine::CollisionPrimitive *>(&component) != nullptr;
+               dynamic_cast<const borov_engine::Collision *>(&component) != nullptr;
     };
     for (borov_engine::Component &component : Components() | std::views::filter(is_scene_and_collision)) {
         if (&component == &player_.get() || &component == &field_.get()) {
@@ -130,7 +130,7 @@ void Game::Update(const float delta_time) {
         }
 
         auto &scene_component = dynamic_cast<borov_engine::SceneComponent &>(component);
-        auto &collision_primitive = dynamic_cast<const borov_engine::CollisionPrimitive &>(component);
+        auto &collision_primitive = dynamic_cast<const borov_engine::Collision &>(component);
 
         if (collision_primitive.Intersects(player_)) {
             scene_component.Parent(&player_.get());

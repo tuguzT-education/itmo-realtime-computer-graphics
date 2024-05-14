@@ -3,12 +3,12 @@
 #ifndef BOROV_ENGINE_BOX_COMPONENT_HPP_INCLUDED
 #define BOROV_ENGINE_BOX_COMPONENT_HPP_INCLUDED
 
-#include "collision_primitive.hpp"
+#include "collision.hpp"
 #include "triangle_component.hpp"
 
 namespace borov_engine {
 
-class BoxComponent : public TriangleComponent, public CollisionPrimitive {
+class BoxComponent : public TriangleComponent, public Collision {
   public:
     struct Initializer : TriangleComponent::Initializer {
         float length = 1.0f;
@@ -32,11 +32,11 @@ class BoxComponent : public TriangleComponent, public CollisionPrimitive {
     [[nodiscard]] float Height() const;
     [[nodiscard]] float Width() const;
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive& other) const override;
+    [[nodiscard]] bool Intersects(const Collision& other) const override;
     [[nodiscard]] bool Intersects(const math::Ray& ray, float& dist) const override;
 
   private:
-    [[nodiscard]] BoxCollisionPrimitive CollisionPrimitive() const;
+    [[nodiscard]] BoxCollision CollisionPrimitive() const;
 
     float length_;
     float height_;

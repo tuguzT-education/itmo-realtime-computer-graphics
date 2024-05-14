@@ -18,7 +18,7 @@
 
 namespace borov_engine {
 
-inline TrianglesRange auto CustomCollisionPrimitive::Triangles() const {
+inline TrianglesRange auto MeshCollision::Triangles() const {
     using namespace ranges;
 
     auto chunks = indices_ | views::chunk(3) | views::filter([](auto chunk) { return size(chunk) == 3; });

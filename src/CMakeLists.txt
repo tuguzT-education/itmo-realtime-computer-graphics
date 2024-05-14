@@ -27,8 +27,8 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/detail/texture.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/concepts.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/math.hpp
-        ${PROJECT_SOURCE_DIR}/include/borov_engine/collision_primitive.hpp
-        ${PROJECT_SOURCE_DIR}/include/borov_engine/collision_primitive.inl
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/collision.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/collision.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/window.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/input_key.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/input.hpp
@@ -59,7 +59,7 @@ set(SOURCE_LIST
         detail/shader.cpp
         detail/texture.cpp
         math.cpp
-        collision_primitive.cpp
+        collision.cpp
         window.cpp
         input.cpp
         game.cpp

@@ -4,9 +4,9 @@
 #define SOLAR_SYSTEM_CELESTIALS_EARTH_HPP_INCLUDED
 
 #include <borov_engine/box_component.hpp>
-#include <borov_engine/collision_primitive.hpp>
+#include <borov_engine/collision.hpp>
 
-class Earth final : public borov_engine::SceneComponent, public borov_engine::CollisionPrimitive {
+class Earth final : public borov_engine::SceneComponent, public borov_engine::Collision {
   public:
     explicit Earth(borov_engine::Game &game, const Initializer &initializer = {});
 
@@ -15,11 +15,11 @@ class Earth final : public borov_engine::SceneComponent, public borov_engine::Co
 
     void Draw(const borov_engine::Camera* camera) override;
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const Collision &other) const override;
     [[nodiscard]] bool Intersects(const borov_engine::math::Ray &ray, float &dist) const override;
 
   private:
-    [[nodiscard]] borov_engine::BoxCollisionPrimitive CollisionPrimitive() const;
+    [[nodiscard]] borov_engine::BoxCollision CollisionPrimitive() const;
 
     std::reference_wrapper<borov_engine::BoxComponent> mesh_;
 };

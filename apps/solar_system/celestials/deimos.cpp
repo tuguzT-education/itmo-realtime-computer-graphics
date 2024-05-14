@@ -30,7 +30,7 @@ borov_engine::GeometricPrimitiveComponent& Deimos::Mesh() {
     return mesh_;
 }
 
-bool Deimos::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Deimos::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -38,7 +38,7 @@ bool Deimos::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::BoxCollisionPrimitive Deimos::CollisionPrimitive() const {
+borov_engine::BoxCollision Deimos::CollisionPrimitive() const {
     auto [position, rotation, scale] = mesh_.get().WorldTransform();
     rotation.Normalize();
 
@@ -47,5 +47,5 @@ borov_engine::BoxCollisionPrimitive Deimos::CollisionPrimitive() const {
         borov_engine::math::Vector3::One * 0.05f * scale,
         rotation,
     };
-    return borov_engine::BoxCollisionPrimitive{box};
+    return borov_engine::BoxCollision{box};
 }

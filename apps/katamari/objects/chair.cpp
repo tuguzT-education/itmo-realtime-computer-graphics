@@ -27,7 +27,7 @@ void Chair::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Chair::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Chair::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -35,7 +35,7 @@ bool Chair::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::BoxCollisionPrimitive Chair::CollisionPrimitive() const {
+borov_engine::BoxCollision Chair::CollisionPrimitive() const {
     borov_engine::math::Box box{
         borov_engine::math::Vector3{0.0f, 0.35f, 0.0f},
         borov_engine::math::Vector3{0.4f, 0.35f, 0.4f},
@@ -43,5 +43,5 @@ borov_engine::BoxCollisionPrimitive Chair::CollisionPrimitive() const {
     };
     box.Transform(box, WorldTransform().ToMatrix());
 
-    return borov_engine::BoxCollisionPrimitive{box};
+    return borov_engine::BoxCollision{box};
 }

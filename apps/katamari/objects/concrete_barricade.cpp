@@ -27,7 +27,7 @@ void ConcreteBarricade::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool ConcreteBarricade::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool ConcreteBarricade::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -35,7 +35,7 @@ bool ConcreteBarricade::Intersects(const borov_engine::math::Ray& ray, float& di
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::BoxCollisionPrimitive ConcreteBarricade::CollisionPrimitive() const {
+borov_engine::BoxCollision ConcreteBarricade::CollisionPrimitive() const {
     borov_engine::math::Box box{
         borov_engine::math::Vector3{0.0f, 0.5f, -0.34f},
         borov_engine::math::Vector3{0.1f, 0.5f, 0.85f},
@@ -43,5 +43,5 @@ borov_engine::BoxCollisionPrimitive ConcreteBarricade::CollisionPrimitive() cons
     };
     box.Transform(box, WorldTransform().ToMatrix());
 
-    return borov_engine::BoxCollisionPrimitive{box};
+    return borov_engine::BoxCollision{box};
 }

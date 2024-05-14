@@ -27,7 +27,7 @@ void Axe::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Axe::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Axe::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -35,7 +35,7 @@ bool Axe::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::BoxCollisionPrimitive Axe::CollisionPrimitive() const {
+borov_engine::BoxCollision Axe::CollisionPrimitive() const {
     borov_engine::math::Box box{
         borov_engine::math::Vector3{0.01f, 0.03f, -0.08f},
         borov_engine::math::Vector3{0.55f, 0.02f, 0.04f},
@@ -43,5 +43,5 @@ borov_engine::BoxCollisionPrimitive Axe::CollisionPrimitive() const {
     };
     box.Transform(box, WorldTransform().ToMatrix());
 
-    return borov_engine::BoxCollisionPrimitive{box};
+    return borov_engine::BoxCollision{box};
 }

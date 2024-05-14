@@ -31,7 +31,7 @@ borov_engine::GeometricPrimitiveComponent& Mercury::Mesh() {
     return mesh_;
 }
 
-bool Mercury::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Mercury::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -39,9 +39,9 @@ bool Mercury::Intersects(const borov_engine::math::Ray& ray, float& dist) const 
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::SphereCollisionPrimitive Mercury::CollisionPrimitive() const {
+borov_engine::SphereCollision Mercury::CollisionPrimitive() const {
     auto [position, rotation, scale] = mesh_.get().WorldTransform();
 
     const borov_engine::math::Sphere sphere{position, 0.125f};
-    return borov_engine::SphereCollisionPrimitive{sphere};
+    return borov_engine::SphereCollision{sphere};
 }

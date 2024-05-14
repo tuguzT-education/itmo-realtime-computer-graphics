@@ -7,104 +7,104 @@
 
 namespace borov_engine {
 
-class CollisionPrimitive {
+class Collision {
   public:
-    virtual ~CollisionPrimitive();
+    virtual ~Collision();
 
-    [[nodiscard]] virtual bool Intersects(const CollisionPrimitive &other) const = 0;
+    [[nodiscard]] virtual bool Intersects(const Collision &other) const = 0;
     [[nodiscard]] virtual bool Intersects(const math::Ray &ray, float &dist) const = 0;
 };
 
-class SphereCollisionPrimitive : public CollisionPrimitive {
+class SphereCollision : public Collision {
   public:
     using PrimitiveType = math::Sphere;
 
-    explicit SphereCollisionPrimitive(const PrimitiveType &primitive);
+    explicit SphereCollision(const PrimitiveType &primitive);
 
     [[nodiscard]] const PrimitiveType &Primitive() const;
     [[nodiscard]] PrimitiveType &Primitive();
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const Collision &other) const override;
     [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType sphere_;
 };
 
-class AxisAlignedBoxCollisionPrimitive : public CollisionPrimitive {
+class AxisAlignedBoxCollision : public Collision {
   public:
     using PrimitiveType = math::AxisAlignedBox;
 
-    explicit AxisAlignedBoxCollisionPrimitive(const PrimitiveType &primitive);
+    explicit AxisAlignedBoxCollision(const PrimitiveType &primitive);
 
     [[nodiscard]] const PrimitiveType &Primitive() const;
     [[nodiscard]] PrimitiveType &Primitive();
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const Collision &other) const override;
     [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType box_;
 };
 
-class BoxCollisionPrimitive : public CollisionPrimitive {
+class BoxCollision : public Collision {
   public:
     using PrimitiveType = math::Box;
 
-    explicit BoxCollisionPrimitive(const PrimitiveType &primitive);
+    explicit BoxCollision(const PrimitiveType &primitive);
 
     [[nodiscard]] const PrimitiveType &Primitive() const;
     [[nodiscard]] PrimitiveType &Primitive();
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const Collision &other) const override;
     [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType box_;
 };
 
-class FrustumCollisionPrimitive : public CollisionPrimitive {
+class FrustumCollision : public Collision {
   public:
     using PrimitiveType = math::Frustum;
 
-    explicit FrustumCollisionPrimitive(const PrimitiveType &primitive);
+    explicit FrustumCollision(const PrimitiveType &primitive);
 
     [[nodiscard]] const PrimitiveType &Primitive() const;
     [[nodiscard]] PrimitiveType &Primitive();
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const Collision &other) const override;
     [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType frustum_;
 };
 
-class PlaneCollisionPrimitive : public CollisionPrimitive {
+class PlaneCollision : public Collision {
   public:
     using PrimitiveType = math::Plane;
 
-    explicit PlaneCollisionPrimitive(const PrimitiveType &primitive);
+    explicit PlaneCollision(const PrimitiveType &primitive);
 
     [[nodiscard]] const PrimitiveType &Primitive() const;
     [[nodiscard]] PrimitiveType &Primitive();
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const Collision &other) const override;
     [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
     PrimitiveType plane_;
 };
 
-class TriangleCollisionPrimitive : public CollisionPrimitive {
+class TriangleCollision : public Collision {
   public:
     using PrimitiveType = math::Triangle;
 
-    explicit TriangleCollisionPrimitive(const PrimitiveType &primitive);
+    explicit TriangleCollision(const PrimitiveType &primitive);
 
     [[nodiscard]] const PrimitiveType &Primitive() const;
     [[nodiscard]] PrimitiveType &Primitive();
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const Collision &other) const override;
     [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
@@ -114,7 +114,7 @@ class TriangleCollisionPrimitive : public CollisionPrimitive {
 template <typename View>
 concept TrianglesRange = std::ranges::range<View> && std::same_as<std::ranges::range_value_t<View>, math::Triangle>;
 
-class CustomCollisionPrimitive : public CollisionPrimitive {
+class MeshCollision : public Collision {
   public:
     using Vertex = math::Vector3;
     using VertexCollection = std::vector<Vertex>;
@@ -122,8 +122,8 @@ class CustomCollisionPrimitive : public CollisionPrimitive {
     using Index = std::uint32_t;
     using IndexCollection = std::vector<Index>;
 
-    explicit CustomCollisionPrimitive(const VertexCollection &vertices, const IndexCollection &indices);
-    explicit CustomCollisionPrimitive(VertexCollection &&vertices, IndexCollection &&indices);
+    explicit MeshCollision(const VertexCollection &vertices, const IndexCollection &indices);
+    explicit MeshCollision(VertexCollection &&vertices, IndexCollection &&indices);
 
     [[nodiscard]] const VertexCollection &Vertices() const;
     [[nodiscard]] VertexCollection &Vertices();
@@ -133,7 +133,7 @@ class CustomCollisionPrimitive : public CollisionPrimitive {
 
     [[nodiscard]] TrianglesRange auto Triangles() const;
 
-    [[nodiscard]] bool Intersects(const CollisionPrimitive &other) const override;
+    [[nodiscard]] bool Intersects(const Collision &other) const override;
     [[nodiscard]] bool Intersects(const math::Ray &ray, float &dist) const override;
 
   private:
@@ -143,6 +143,6 @@ class CustomCollisionPrimitive : public CollisionPrimitive {
 
 }  // namespace borov_engine
 
-#include "collision_primitive.inl"
+#include "collision.inl"
 
 #endif  // BOROV_ENGINE_COLLISION_PRIMITIVE_HPP_INCLUDED

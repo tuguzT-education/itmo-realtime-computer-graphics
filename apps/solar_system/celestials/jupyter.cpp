@@ -30,7 +30,7 @@ borov_engine::GeometricPrimitiveComponent& Jupyter::Mesh() {
     return mesh_;
 }
 
-bool Jupyter::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Jupyter::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -38,9 +38,9 @@ bool Jupyter::Intersects(const borov_engine::math::Ray& ray, float& dist) const 
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::SphereCollisionPrimitive Jupyter::CollisionPrimitive() const {
+borov_engine::SphereCollision Jupyter::CollisionPrimitive() const {
     auto [position, rotation, scale] = mesh_.get().WorldTransform();
 
     const borov_engine::math::Sphere sphere{position, 0.5f};
-    return borov_engine::SphereCollisionPrimitive{sphere};
+    return borov_engine::SphereCollision{sphere};
 }

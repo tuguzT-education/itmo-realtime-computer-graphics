@@ -36,7 +36,7 @@ void Earth::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(box);
 }
 
-bool Earth::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Earth::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -44,7 +44,7 @@ bool Earth::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::BoxCollisionPrimitive Earth::CollisionPrimitive() const {
+borov_engine::BoxCollision Earth::CollisionPrimitive() const {
     auto [position, rotation, scale] = mesh_.get().WorldTransform();
     rotation.Normalize();
 
@@ -53,5 +53,5 @@ borov_engine::BoxCollisionPrimitive Earth::CollisionPrimitive() const {
         borov_engine::math::Vector3::One * 0.25f * scale,
         rotation,
     };
-    return borov_engine::BoxCollisionPrimitive{box};
+    return borov_engine::BoxCollision{box};
 }

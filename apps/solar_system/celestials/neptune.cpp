@@ -30,7 +30,7 @@ borov_engine::GeometricPrimitiveComponent& Neptune::Mesh() {
     return mesh_;
 }
 
-bool Neptune::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Neptune::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -38,9 +38,9 @@ bool Neptune::Intersects(const borov_engine::math::Ray& ray, float& dist) const 
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::SphereCollisionPrimitive Neptune::CollisionPrimitive() const {
+borov_engine::SphereCollision Neptune::CollisionPrimitive() const {
     auto [position, rotation, scale] = mesh_.get().WorldTransform();
 
     const borov_engine::math::Sphere sphere{position, 0.375f};
-    return borov_engine::SphereCollisionPrimitive{sphere};
+    return borov_engine::SphereCollision{sphere};
 }

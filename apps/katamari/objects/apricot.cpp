@@ -27,7 +27,7 @@ void Apricot::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawSphere(CollisionPrimitive().Primitive());
 }
 
-bool Apricot::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Apricot::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -35,12 +35,12 @@ bool Apricot::Intersects(const borov_engine::math::Ray& ray, float& dist) const 
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::SphereCollisionPrimitive Apricot::CollisionPrimitive() const {
+borov_engine::SphereCollision Apricot::CollisionPrimitive() const {
     borov_engine::math::Sphere sphere{
         borov_engine::math::Vector3{0.0f, 0.1375f, 0.0f},
         0.1f,
     };
     sphere.Transform(sphere, WorldTransform().ToMatrix());
 
-    return borov_engine::SphereCollisionPrimitive{sphere};
+    return borov_engine::SphereCollision{sphere};
 }

@@ -38,7 +38,7 @@ void Phobos::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawSphere(sphere);
 }
 
-bool Phobos::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Phobos::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -46,9 +46,9 @@ bool Phobos::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::SphereCollisionPrimitive Phobos::CollisionPrimitive() const {
+borov_engine::SphereCollision Phobos::CollisionPrimitive() const {
     auto [position, rotation, scale] = mesh_.get().WorldTransform();
 
     const borov_engine::math::Sphere sphere{position, 0.1f};
-    return borov_engine::SphereCollisionPrimitive{sphere};
+    return borov_engine::SphereCollision{sphere};
 }

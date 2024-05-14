@@ -22,7 +22,7 @@ auto Player::Controls() -> ControlKeys& {
     return control_keys_;
 }
 
-bool Player::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Player::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -30,7 +30,7 @@ bool Player::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::SphereCollisionPrimitive Player::CollisionPrimitive() const {
+borov_engine::SphereCollision Player::CollisionPrimitive() const {
     const borov_engine::math::Sphere sphere{WorldTransform().position, 0.5f};
-    return borov_engine::SphereCollisionPrimitive{sphere};
+    return borov_engine::SphereCollision{sphere};
 }

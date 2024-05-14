@@ -28,7 +28,7 @@ borov_engine::BoxComponent& Sun::Mesh() {
     return mesh_;
 }
 
-bool Sun::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Sun::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -36,7 +36,7 @@ bool Sun::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::BoxCollisionPrimitive Sun::CollisionPrimitive() const {
+borov_engine::BoxCollision Sun::CollisionPrimitive() const {
     auto [position, rotation, scale] = mesh_.get().WorldTransform();
     rotation.Normalize();
 
@@ -45,5 +45,5 @@ borov_engine::BoxCollisionPrimitive Sun::CollisionPrimitive() const {
         borov_engine::math::Vector3::One * 0.75f * scale,
         rotation,
     };
-    return borov_engine::BoxCollisionPrimitive{box};
+    return borov_engine::BoxCollision{box};
 }

@@ -27,7 +27,7 @@ void Strawberry::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawSphere(CollisionPrimitive().Primitive());
 }
 
-bool Strawberry::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Strawberry::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -35,12 +35,12 @@ bool Strawberry::Intersects(const borov_engine::math::Ray& ray, float& dist) con
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::SphereCollisionPrimitive Strawberry::CollisionPrimitive() const {
+borov_engine::SphereCollision Strawberry::CollisionPrimitive() const {
     borov_engine::math::Sphere sphere{
         borov_engine::math::Vector3{0.0f, 0.175f, 0.0f},
         0.125f,
     };
     sphere.Transform(sphere, WorldTransform().ToMatrix());
 
-    return borov_engine::SphereCollisionPrimitive{sphere};
+    return borov_engine::SphereCollision{sphere};
 }

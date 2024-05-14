@@ -37,7 +37,7 @@ borov_engine::GeometricPrimitiveComponent& Venus::Mesh() {
     return mesh_;
 }
 
-bool Venus::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Venus::Intersects(const borov_engine::Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
@@ -45,7 +45,7 @@ bool Venus::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::BoxCollisionPrimitive Venus::CollisionPrimitive() const {
+borov_engine::BoxCollision Venus::CollisionPrimitive() const {
     auto [position, rotation, scale] = mesh_.get().WorldTransform();
     rotation.Normalize();
 
@@ -54,5 +54,5 @@ borov_engine::BoxCollisionPrimitive Venus::CollisionPrimitive() const {
         borov_engine::math::Vector3::One * 0.125f * scale,
         rotation,
     };
-    return borov_engine::BoxCollisionPrimitive{box};
+    return borov_engine::BoxCollision{box};
 }
