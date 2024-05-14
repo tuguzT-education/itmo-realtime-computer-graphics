@@ -16,6 +16,7 @@
 #include "objects/concrete_barricade.hpp"
 #include "objects/hog.hpp"
 #include "objects/strawberry.hpp"
+#include "objects/tanto.hpp"
 #include "player.hpp"
 
 class Game final : public borov_engine::Game {
@@ -39,6 +40,7 @@ class Game final : public borov_engine::Game {
     std::reference_wrapper<ConcreteBarricade> concrete_barricade_;
     std::reference_wrapper<Hog> hog_;
     std::reference_wrapper<Strawberry> strawberry_;
+    std::reference_wrapper<Tanto> tanto_;
 };
 
 #endif  // KATAMARI_GAME_HPP_INCLUDED

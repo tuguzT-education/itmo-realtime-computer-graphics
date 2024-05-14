@@ -9,6 +9,7 @@ set(HEADER_LIST
         objects/concrete_barricade.hpp
         objects/hog.hpp
         objects/strawberry.hpp
+        objects/tanto.hpp
         field.hpp
         player.hpp
         game.hpp)
@@ -23,6 +24,7 @@ set(SOURCE_LIST
         objects/concrete_barricade.cpp
         objects/hog.cpp
         objects/strawberry.cpp
+        objects/tanto.cpp
         field.cpp
         player.cpp
         game.cpp

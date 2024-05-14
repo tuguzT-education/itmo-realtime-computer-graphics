@@ -53,7 +53,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       concrete_barricade_{
           AddComponent<ConcreteBarricade>(ConcreteBarricade::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 3.0f},
           }),
       },
       hog_{
@@ -63,6 +63,11 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       strawberry_{
           AddComponent<Strawberry>(Strawberry::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Right * 3.0f},
+          }),
+      },
+      tanto_{
+          AddComponent<Tanto>(Tanto::Initializer{
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
           }),
       } {

@@ -1,14 +1,14 @@
 #pragma once
 
-#ifndef KATAMARI_OBJECTS_STRAWBERRY_HPP_INCLUDED
-#define KATAMARI_OBJECTS_STRAWBERRY_HPP_INCLUDED
+#ifndef KATAMARI_OBJECTS_TANTO_HPP_INCLUDED
+#define KATAMARI_OBJECTS_TANTO_HPP_INCLUDED
 
 #include <borov_engine/collision_primitive.hpp>
 #include <borov_engine/triangle_component.hpp>
 
-class Strawberry final : public borov_engine::SceneComponent, public borov_engine::CollisionPrimitive {
+class Tanto final : public borov_engine::SceneComponent, public borov_engine::CollisionPrimitive {
   public:
-    explicit Strawberry(borov_engine::Game& game, const Initializer& initializer = {});
+    explicit Tanto(borov_engine::Game& game, const Initializer& initializer = {});
 
     [[nodiscard]] const borov_engine::TriangleComponent& Mesh() const;
     [[nodiscard]] borov_engine::TriangleComponent& Mesh();
@@ -19,9 +19,9 @@ class Strawberry final : public borov_engine::SceneComponent, public borov_engin
     [[nodiscard]] bool Intersects(const borov_engine::math::Ray& ray, float& dist) const override;
 
   private:
-    [[nodiscard]] borov_engine::SphereCollisionPrimitive CollisionPrimitive() const;
+    [[nodiscard]] borov_engine::BoxCollisionPrimitive CollisionPrimitive() const;
 
     std::reference_wrapper<borov_engine::TriangleComponent> mesh_;
 };
 
-#endif  // KATAMARI_OBJECTS_STRAWBERRY_HPP_INCLUDED
+#endif  // KATAMARI_OBJECTS_TANTO_HPP_INCLUDED
