@@ -28,7 +28,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       boat_{
           AddComponent<Boat>(Boat::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 9.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 9.0f},
           }),
       },
       bulb_{
@@ -63,7 +63,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       hog_{
           AddComponent<Hog>(Hog::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 6.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 9.0f},
           }),
       },
       strawberry_{
