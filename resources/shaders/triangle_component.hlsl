@@ -7,14 +7,22 @@ cbuffer VSConstantBuffer : register(b0)
     float2 tile_count;
 }
 
-VertexPositionNormalColorTexture VSMain(VertexPositionNormalColorTexture input)
+typedef VertexPositionNormalColorTexture VS_Input;
+
+struct VS_Output : VertexPositionNormalColorTexture
 {
-	VertexPositionNormalColorTexture output = (VertexPositionNormalColorTexture)0;
+    float3 world_position : TEXCOORD1;
+};
+
+VS_Output VSMain(VS_Input input)
+{
+	VS_Output output;
 
 	output.position = mul(WorldViewProjection(transform), float4(input.position.xyz, 1.0f));
-	output.normal = mul(transform.world, input.normal);
+	output.normal = mul(transform.world, float4(input.normal.xyz, 1.0f)).xyz;
 	output.color = input.color;
 	output.texture_coordinate = input.texture_coordinate * tile_count;
+	output.world_position = mul(transform.world, float4(input.position.xyz, 1.0f)).xyz;
 
 	return output;
 }
@@ -28,7 +36,9 @@ cbuffer PSConstantBuffer : register(b0)
     float3 view_position;
 }
 
-float4 PSMain(VertexPositionNormalColorTexture input) : SV_Target
+typedef VS_Output PS_Input;
+
+float4 PSMain(PS_Input input) : SV_Target
 {
 	float4 color = has_texture ? DiffuseMap.Sample(Sampler, input.texture_coordinate) : float4(1.0f, 1.0f, 1.0f, 1.0f);
 	color *= input.color;
