@@ -13,6 +13,7 @@
 #include "objects/cake.hpp"
 #include "objects/chair.hpp"
 #include "objects/cheese.hpp"
+#include "objects/concrete_barricade.hpp"
 #include "objects/hog.hpp"
 #include "player.hpp"
 
@@ -34,6 +35,7 @@ class Game final : public borov_engine::Game {
     std::reference_wrapper<Cake> cake_;
     std::reference_wrapper<Chair> chair_;
     std::reference_wrapper<Cheese> cheese_;
+    std::reference_wrapper<ConcreteBarricade> concrete_barricade_;
     std::reference_wrapper<Hog> hog_;
 };
 

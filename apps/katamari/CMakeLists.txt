@@ -6,6 +6,7 @@ set(HEADER_LIST
         objects/cake.hpp
         objects/chair.hpp
         objects/cheese.hpp
+        objects/concrete_barricade.hpp
         objects/hog.hpp
         field.hpp
         player.hpp
@@ -18,6 +19,7 @@ set(SOURCE_LIST
         objects/cake.cpp
         objects/chair.cpp
         objects/cheese.cpp
+        objects/concrete_barricade.cpp
         objects/hog.cpp
         field.cpp
         player.cpp

@@ -18,36 +18,41 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       player_{AddComponent<Player>()},
       apricot_{
           AddComponent<Apricot>(Apricot::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Right * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Right * 6.0f},
           }),
       },
       axe_{
           AddComponent<Axe>(Axe::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 6.0f},
           }),
       },
       boat_{
           AddComponent<Boat>(Boat::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 6.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 9.0f},
           }),
       },
       bulb_{
           AddComponent<Bulb>(Bulb::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 6.0f},
           }),
       },
       cake_{
           AddComponent<Cake>(Cake::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Right * 6.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Right * 9.0f},
           }),
       },
       chair_{
           AddComponent<Chair>(Chair::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 6.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 9.0f},
           }),
       },
       cheese_{
           AddComponent<Cheese>(Cheese::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 6.0f},
+          }),
+      },
+      concrete_barricade_{
+          AddComponent<ConcreteBarricade>(ConcreteBarricade::Initializer{
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
           }),
       },
