@@ -53,12 +53,17 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       concrete_barricade_{
           AddComponent<ConcreteBarricade>(ConcreteBarricade::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 3.0f},
           }),
       },
       hog_{
           AddComponent<Hog>(Hog::Initializer{
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 6.0f},
+          }),
+      },
+      strawberry_{
+          AddComponent<Strawberry>(Strawberry::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
           }),
       } {
     CameraManager<borov_engine::OrbitCameraManager>(borov_engine::OrbitCameraManager::Initializer{
