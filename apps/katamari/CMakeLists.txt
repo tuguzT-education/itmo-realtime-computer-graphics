@@ -1,9 +1,11 @@
 set(HEADER_LIST
+        objects/apricot.hpp
         objects/hog.hpp
         field.hpp
         player.hpp
         game.hpp)
 set(SOURCE_LIST
+        objects/apricot.cpp
         objects/hog.cpp
         field.cpp
         player.cpp
