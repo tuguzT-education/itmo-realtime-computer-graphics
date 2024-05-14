@@ -8,6 +8,7 @@
 #include "field.hpp"
 #include "objects/apricot.hpp"
 #include "objects/axe.hpp"
+#include "objects/bulb.hpp"
 #include "objects/hog.hpp"
 #include "player.hpp"
 
@@ -24,6 +25,7 @@ class Game final : public borov_engine::Game {
 
     std::reference_wrapper<Apricot> apricot_;
     std::reference_wrapper<Axe> axe_;
+    std::reference_wrapper<Bulb> bulb_;
     std::reference_wrapper<Hog> hog_;
 };
 

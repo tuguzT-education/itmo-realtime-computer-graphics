@@ -1,11 +1,11 @@
-#include "axe.hpp"
+#include "bulb.hpp"
 
-Axe::Axe(borov_engine::Game& game, const Initializer& initializer)
+Bulb::Bulb(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
           Game().AddComponent<borov_engine::TriangleComponent>([this] {
               borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
-                  .mesh_path = "resources/meshes/axe/axe.fbx",
+                  .mesh_path = "resources/meshes/bulb/bulb.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 50.0f});
               mesh_initializer.Parent(this);
@@ -13,33 +13,33 @@ Axe::Axe(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Axe::Mesh() const {
+const borov_engine::TriangleComponent& Bulb::Mesh() const {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Axe::Mesh() {
+borov_engine::TriangleComponent& Bulb::Mesh() {
     return mesh_;
 }
 
-void Axe::Draw(const borov_engine::Camera* camera) {
+void Bulb::Draw(const borov_engine::Camera* camera) {
     SceneComponent::Draw(camera);
 
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Axe::Intersects(const borov_engine::CollisionPrimitive& other) const {
+bool Bulb::Intersects(const borov_engine::CollisionPrimitive& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
-bool Axe::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
+bool Bulb::Intersects(const borov_engine::math::Ray& ray, float& dist) const {
     return CollisionPrimitive().Intersects(ray, dist);
 }
 
-borov_engine::BoxCollisionPrimitive Axe::CollisionPrimitive() const {
+borov_engine::BoxCollisionPrimitive Bulb::CollisionPrimitive() const {
     const auto [position, rotation, scale] = WorldTransform();
     const borov_engine::math::Box box{
-        position + borov_engine::math::Vector3{0.01f, 0.03f, -0.08f},
-        scale * borov_engine::math::Vector3{0.55f, 0.02f, 0.04f},
+        position + borov_engine::math::Vector3{0.0f, 0.125f, 0.0f},
+        scale * borov_engine::math::Vector3{0.025f, 0.125f, 0.025f},
         rotation,
     };
     return borov_engine::BoxCollisionPrimitive{box};
