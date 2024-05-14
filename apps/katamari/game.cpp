@@ -33,6 +33,11 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       cake_{
           AddComponent<Cake>(Cake::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Right * 6.0f},
+          }),
+      },
+      chair_{
+          AddComponent<Chair>(Chair::Initializer{
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
           }),
       },

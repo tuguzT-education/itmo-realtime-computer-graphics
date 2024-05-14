@@ -3,6 +3,7 @@ set(HEADER_LIST
         objects/axe.hpp
         objects/bulb.hpp
         objects/cake.hpp
+        objects/chair.hpp
         objects/hog.hpp
         field.hpp
         player.hpp
@@ -12,6 +13,7 @@ set(SOURCE_LIST
         objects/axe.cpp
         objects/bulb.cpp
         objects/cake.cpp
+        objects/chair.cpp
         objects/hog.cpp
         field.cpp
         player.cpp
