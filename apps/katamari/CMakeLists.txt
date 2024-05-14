@@ -1,6 +1,7 @@
 set(HEADER_LIST
         objects/apricot.hpp
         objects/axe.hpp
+        objects/boat.hpp
         objects/bulb.hpp
         objects/cake.hpp
         objects/chair.hpp
@@ -11,6 +12,7 @@ set(HEADER_LIST
 set(SOURCE_LIST
         objects/apricot.cpp
         objects/axe.cpp
+        objects/boat.cpp
         objects/bulb.cpp
         objects/cake.cpp
         objects/chair.cpp

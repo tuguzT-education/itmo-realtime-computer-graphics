@@ -26,6 +26,11 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 3.0f},
           }),
       },
+      boat_{
+          AddComponent<Boat>(Boat::Initializer{
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
+          }),
+      },
       bulb_{
           AddComponent<Bulb>(Bulb::Initializer{
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 3.0f},
@@ -38,7 +43,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       chair_{
           AddComponent<Chair>(Chair::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Forward * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 6.0f},
           }),
       },
       hog_{
