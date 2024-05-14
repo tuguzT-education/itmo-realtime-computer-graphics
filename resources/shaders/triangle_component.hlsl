@@ -12,6 +12,7 @@ VertexPositionNormalColorTexture VSMain(VertexPositionNormalColorTexture input)
 	VertexPositionNormalColorTexture output = (VertexPositionNormalColorTexture)0;
 
 	output.position = mul(WorldViewProjection(transform), float4(input.position.xyz, 1.0f));
+	output.normal = mul(transform.world, input.normal);
 	output.color = input.color;
 	output.texture_coordinate = input.texture_coordinate * tile_count;
 
@@ -24,6 +25,7 @@ SamplerState Sampler : register(s0);
 cbuffer PSConstantBuffer : register(b0)
 {
     bool has_texture;
+    float3 view_position;
 }
 
 float4 PSMain(VertexPositionNormalColorTexture input) : SV_Target

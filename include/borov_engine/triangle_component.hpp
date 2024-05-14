@@ -56,14 +56,15 @@ class TriangleComponent : public SceneComponent {
 
   private:
     struct alignas(16) VertexShaderConstantBuffer {
-        alignas(16) math::Matrix4x4 world;
-        alignas(16) math::Matrix4x4 view;
-        alignas(16) math::Matrix4x4 projection;
+        math::Matrix4x4 world;
+        math::Matrix4x4 view;
+        math::Matrix4x4 projection;
         math::Vector2 tile_count = math::Vector2::One;
     };
 
     struct alignas(16) PixelShaderConstantBuffer {
         std::uint32_t has_texture = false;
+        math::Vector3 view_position;
     };
 
     void InitializeVertexShader();
