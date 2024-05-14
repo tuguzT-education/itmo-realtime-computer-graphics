@@ -7,6 +7,7 @@ set(HEADER_LIST
         objects/chair.hpp
         objects/cheese.hpp
         objects/concrete_barricade.hpp
+        objects/die.hpp
         objects/hog.hpp
         objects/strawberry.hpp
         objects/tanto.hpp
@@ -22,6 +23,7 @@ set(SOURCE_LIST
         objects/chair.cpp
         objects/cheese.cpp
         objects/concrete_barricade.cpp
+        objects/die.cpp
         objects/hog.cpp
         objects/strawberry.cpp
         objects/tanto.cpp

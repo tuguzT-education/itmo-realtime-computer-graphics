@@ -14,6 +14,7 @@
 #include "objects/chair.hpp"
 #include "objects/cheese.hpp"
 #include "objects/concrete_barricade.hpp"
+#include "objects/die.hpp"
 #include "objects/hog.hpp"
 #include "objects/strawberry.hpp"
 #include "objects/tanto.hpp"
@@ -38,6 +39,7 @@ class Game final : public borov_engine::Game {
     std::reference_wrapper<Chair> chair_;
     std::reference_wrapper<Cheese> cheese_;
     std::reference_wrapper<ConcreteBarricade> concrete_barricade_;
+    std::reference_wrapper<Die> die_;
     std::reference_wrapper<Hog> hog_;
     std::reference_wrapper<Strawberry> strawberry_;
     std::reference_wrapper<Tanto> tanto_;
