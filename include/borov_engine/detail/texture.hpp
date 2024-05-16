@@ -11,7 +11,9 @@
 
 namespace borov_engine::detail {
 
-[[nodiscard]] D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device, const std::filesystem::path &path);
+[[nodiscard]] D3DPtr<ID3D11ShaderResourceView> TextureFromFile(ID3D11Device &device,
+                                                               ID3D11DeviceContext &device_context,
+                                                               const std::filesystem::path &path);
 
 }  // namespace borov_engine::detail
 

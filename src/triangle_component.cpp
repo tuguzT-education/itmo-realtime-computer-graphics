@@ -177,7 +177,7 @@ void TriangleComponent::LoadTexture(const std::filesystem::path &texture_path, c
         return;
     }
 
-    texture_ = detail::TextureFromFile(Device(), texture_path);
+    texture_ = detail::TextureFromFile(Device(), DeviceContext(), texture_path);
     tile_count_ = tile_count;
 }
 

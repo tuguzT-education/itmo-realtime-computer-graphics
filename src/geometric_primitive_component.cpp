@@ -223,7 +223,7 @@ void GeometricPrimitiveComponent::LoadTexture(const std::filesystem::path &textu
         return;
     }
 
-    texture_ = detail::TextureFromFile(Device(), texture_path);
+    texture_ = detail::TextureFromFile(Device(), DeviceContext(), texture_path);
 }
 
 GeometricPrimitiveType GeometricPrimitiveComponent::PrimitiveType() const {
