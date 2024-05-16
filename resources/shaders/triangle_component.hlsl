@@ -1,5 +1,4 @@
 #include "transform.hlsl"
-#include "vertex.hlsl"
 
 cbuffer VSConstantBuffer : register(b0)
 {
@@ -7,10 +6,20 @@ cbuffer VSConstantBuffer : register(b0)
     float2 tile_count;
 }
 
-typedef VertexPositionNormalColorTexture VS_Input;
-
-struct VS_Output : VertexPositionNormalColorTexture
+struct VS_Input
 {
+    float3 position : SV_Position;
+    float3 normal : NORMAL;
+    float4 color : COLOR;
+    float2 texture_coordinate : TEXCOORD0;
+};
+
+struct VS_Output
+{
+    float4 position : SV_Position;
+    float3 normal : NORMAL;
+    float4 color : COLOR;
+    float2 texture_coordinate : TEXCOORD0;
     float3 world_position : TEXCOORD1;
 };
 
@@ -18,11 +27,11 @@ VS_Output VSMain(VS_Input input)
 {
 	VS_Output output;
 
-	output.position = mul(WorldViewProjection(transform), float4(input.position.xyz, 1.0f));
-	output.normal = mul(transform.world, float4(input.normal.xyz, 1.0f)).xyz;
+	output.position = mul(WorldViewProjection(transform), float4(input.position, 1.0f));
+	output.normal = mul(transform.world, float4(input.normal, 1.0f)).xyz;
 	output.color = input.color;
 	output.texture_coordinate = input.texture_coordinate * tile_count;
-	output.world_position = mul(transform.world, float4(input.position.xyz, 1.0f)).xyz;
+	output.world_position = mul(transform.world, float4(input.position, 1.0f)).xyz;
 
 	return output;
 }
