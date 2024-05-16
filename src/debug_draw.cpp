@@ -14,6 +14,9 @@ namespace borov_engine {
 
 constexpr std::size_t DebugDraw::max_points_count = 1024 * 1024;
 
+DebugDraw::Vertex::Vertex(const math::Vector3& position, const math::Color& color, const float duration)
+    : VertexPositionColor(position, color), duration{duration} {}
+
 DebugDraw::DebugDraw(class Game& game, const Initializer& initializer)
     : Component(game, initializer), should_update_primitive_vertex_buffer_{} {
     InitializeConstantBuffer();
@@ -63,27 +66,7 @@ void DebugDraw::InitializePrimitivePixelShader() {
 }
 
 void DebugDraw::InitializePrimitiveInputLayout() {
-    constexpr std::array input_elements{
-        D3D11_INPUT_ELEMENT_DESC{
-            .SemanticName = "POSITION",
-            .SemanticIndex = 0,
-            .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
-            .InputSlot = 0,
-            .AlignedByteOffset = 0,
-            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-            .InstanceDataStepRate = 0,
-        },
-        D3D11_INPUT_ELEMENT_DESC{
-            .SemanticName = "COLOR",
-            .SemanticIndex = 0,
-            .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
-            .InputSlot = 0,
-            .AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
-            .InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA,
-            .InstanceDataStepRate = 0,
-        },
-    };
-
+    const std::array input_elements = std::to_array(Vertex::InputElements);
     const HRESULT result = Device().CreateInputLayout(
         input_elements.data(), input_elements.size(), primitive_vertex_byte_code_->GetBufferPointer(),
         primitive_vertex_byte_code_->GetBufferSize(), &primitive_input_layout_);
@@ -335,8 +318,8 @@ void DebugDraw::RemoveOldPrimitives() {
 }
 
 void DebugDraw::DrawLine(const math::Vector3& start, const math::Vector3& end, const DrawOpts& opts) {
-    primitive_vertices_.emplace_back(start, opts.duration, opts.color);
-    primitive_vertices_.emplace_back(end, opts.duration, opts.color);
+    primitive_vertices_.emplace_back(start, opts.color, opts.duration);
+    primitive_vertices_.emplace_back(end, opts.color, opts.duration);
 
     should_update_primitive_vertex_buffer_ = true;
 }
