@@ -10,10 +10,10 @@ namespace borov_engine {
 
 class DebugDraw : public Component {
   public:
-    struct Vertex : DirectX::VertexPositionColor {
+    struct Vertex {
+        math::Vector3 position;
         float duration = 0.0f;
-
-        explicit Vertex(const math::Vector3& position, const math::Color& color, float duration = 0.0f);
+        math::Color color;
     };
 
     struct Initializer : Component::Initializer {};
