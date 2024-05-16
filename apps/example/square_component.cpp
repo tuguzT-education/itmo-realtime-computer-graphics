@@ -7,21 +7,25 @@ namespace detail {
 const std::array vertices{
     borov_engine::TriangleComponent::Vertex{
         borov_engine::math::Vector3{0.5f, 0.5f, 0.0f},
+        borov_engine::math::Vector3{0.0f, 0.0f, 1.0f},
         borov_engine::math::colors::linear::Red,
         borov_engine::math::Vector2{1.0f, 0.0f},
     },
     borov_engine::TriangleComponent::Vertex{
         borov_engine::math::Vector3{-0.5f, -0.5f, 0.0f},
+        borov_engine::math::Vector3{0.0f, 0.0f, 1.0f},
         borov_engine::math::colors::linear::Blue,
         borov_engine::math::Vector2{0.0f, 1.0f},
     },
     borov_engine::TriangleComponent::Vertex{
         borov_engine::math::Vector3{0.5f, -0.5f, 0.0f},
+        borov_engine::math::Vector3{0.0f, 0.0f, 1.0f},
         borov_engine::math::colors::linear::Lime,
         borov_engine::math::Vector2{1.0f, 1.0f},
     },
     borov_engine::TriangleComponent::Vertex{
         borov_engine::math::Vector3{-0.5f, 0.5f, 0.0f},
+        borov_engine::math::Vector3{0.0f, 0.0f, 1.0f},
         borov_engine::math::colors::linear::White,
         borov_engine::math::Vector2{0.0f, 0.0f},
     },
