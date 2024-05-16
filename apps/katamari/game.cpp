@@ -23,7 +23,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       axe_{
           AddComponent<Axe>(Axe::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 6.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 3.0f},
           }),
       },
       boat_{
@@ -43,7 +43,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       chair_{
           AddComponent<Chair>(Chair::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 9.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 6.0f},
           }),
       },
       cheese_{
@@ -53,7 +53,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       },
       concrete_barricade_{
           AddComponent<ConcreteBarricade>(ConcreteBarricade::Initializer{
-              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 3.0f},
+              .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Left * 9.0f},
           }),
       },
       die_{

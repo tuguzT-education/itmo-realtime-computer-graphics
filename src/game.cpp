@@ -285,6 +285,31 @@ void Game::InitializeDepthStencilView() {
     HRESULT result = device_->CreateTexture2D(&depth_buffer_desc, nullptr, &depth_buffer_);
     detail::CheckResult(result, "Failed to create depth buffer");
 
+    constexpr D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{
+        .DepthEnable = true,
+        .DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
+        .DepthFunc = D3D11_COMPARISON_LESS,
+        .StencilEnable = false,
+        .StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK,
+        .StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK,
+        .FrontFace =
+            D3D11_DEPTH_STENCILOP_DESC{
+                .StencilFailOp = D3D11_STENCIL_OP_KEEP,
+                .StencilDepthFailOp = D3D11_STENCIL_OP_KEEP,
+                .StencilPassOp = D3D11_STENCIL_OP_KEEP,
+                .StencilFunc = D3D11_COMPARISON_ALWAYS,
+            },
+        .BackFace =
+            D3D11_DEPTH_STENCILOP_DESC{
+                .StencilFailOp = D3D11_STENCIL_OP_KEEP,
+                .StencilDepthFailOp = D3D11_STENCIL_OP_KEEP,
+                .StencilPassOp = D3D11_STENCIL_OP_KEEP,
+                .StencilFunc = D3D11_COMPARISON_ALWAYS,
+            },
+    };
+    result = device_->CreateDepthStencilState(&depth_stencil_desc, &depth_stencil_state_);
+    detail::CheckResult(result, "Failed to create depth stencil state");
+
     result = device_->CreateDepthStencilView(depth_buffer_.Get(), nullptr, &depth_stencil_view_);
     detail::CheckResult(result, "Failed to create depth stencil view");
 }
@@ -310,8 +335,10 @@ void Game::DrawInternal() {
 
     const std::array render_targets{render_target_view_.Get()};
     device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), depth_stencil_view_.Get());
+    device_context_->OMSetDepthStencilState(depth_stencil_state_.Get(), 1);
 
     device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
+    device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     Draw();
 
@@ -322,7 +349,7 @@ void Game::DrawInternal() {
 
     constexpr std::array<ID3D11RenderTargetView *, 0> no_render_targets{};
     device_context_->OMSetRenderTargets(no_render_targets.size(), no_render_targets.data(), nullptr);
-    device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    device_context_->OMSetDepthStencilState(nullptr, 1);
 
     const HRESULT result = swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
     detail::CheckResult(result, "Failed to present into swapchain");

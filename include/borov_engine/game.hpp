@@ -112,6 +112,7 @@ class Game {
     bool is_running_;
 
     detail::D3DPtr<ID3D11DepthStencilView> depth_stencil_view_;
+    detail::D3DPtr<ID3D11DepthStencilState> depth_stencil_state_;
     detail::D3DPtr<ID3D11Texture2D> depth_buffer_;
 
     detail::D3DPtr<ID3D11RenderTargetView> render_target_view_;
