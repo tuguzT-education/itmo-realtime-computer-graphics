@@ -3,8 +3,8 @@
 Hog::Hog(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/hog.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 200.0f});
@@ -13,11 +13,11 @@ Hog::Hog(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Hog::Mesh() const {
+auto Hog::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Hog::Mesh() {
+auto Hog::Mesh() -> MeshType& {
     return mesh_;
 }
 
@@ -27,7 +27,7 @@ void Hog::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Hog::Intersects(const borov_engine::Collision& other) const {
+bool Hog::Intersects(const Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 

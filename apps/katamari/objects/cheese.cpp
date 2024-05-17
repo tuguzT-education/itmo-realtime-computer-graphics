@@ -3,8 +3,8 @@
 Cheese::Cheese(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/cheese/cheese.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 30.0f});
@@ -13,11 +13,11 @@ Cheese::Cheese(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Cheese::Mesh() const {
+auto Cheese::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Cheese::Mesh() {
+auto Cheese::Mesh() -> MeshType& {
     return mesh_;
 }
 
@@ -27,7 +27,7 @@ void Cheese::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Cheese::Intersects(const borov_engine::Collision& other) const {
+bool Cheese::Intersects(const Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 

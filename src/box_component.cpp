@@ -221,16 +221,6 @@ auto BoxComponent::Initializer::Color(const math::Color color) -> Initializer & 
     return *this;
 }
 
-auto BoxComponent::Initializer::TexturePath(const std::filesystem::path &texture_path) -> Initializer & {
-    this->texture_path = texture_path;
-    return *this;
-}
-
-auto BoxComponent::Initializer::TileCount(const math::Vector2 tile_count) -> Initializer & {
-    this->tile_count = tile_count;
-    return *this;
-}
-
 BoxComponent::BoxComponent(class Game &game, const Initializer &initializer)
     : TriangleComponent(game, initializer),
       length_{initializer.length},
@@ -254,7 +244,7 @@ float BoxComponent::Width() const {
     return width_;
 }
 
-bool BoxComponent::Intersects(const class Collision &other) const {
+bool BoxComponent::Intersects(const Collision &other) const {
     return CollisionPrimitive().Intersects(other);
 }
 

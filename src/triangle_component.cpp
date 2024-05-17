@@ -1,15 +1,11 @@
 #include "borov_engine/triangle_component.hpp"
 
-#include <WICTextureLoader.h>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
 #include <d3dcompiler.h>
 
 #undef min
 #undef max
 
 #include <array>
-#include <assimp/Importer.hpp>
 #include <range/v3/view/enumerate.hpp>
 
 #include "borov_engine/camera.hpp"
@@ -20,126 +16,28 @@
 
 namespace borov_engine {
 
-namespace detail {
-
-Transform TransformFromNode(const aiNode &node) {
-    aiVector3D position, scale;
-    aiQuaternion rotation;
-    node.mTransformation.Decompose(scale, rotation, position);
-
-    return Transform{
-        .position = math::Vector3{position.x, position.y, position.z},
-        .rotation = math::Quaternion{rotation.x, rotation.y, rotation.z, rotation.w},
-        .scale = math::Vector3{scale.x, scale.y, scale.z},
-    };
-}
-
-TriangleComponent &TriangleFromMesh(Game &game, const SceneComponent &parent, const aiScene &scene, const aiMesh &mesh,
-                                    const std::filesystem::path &mesh_path) {
-    math::Color diffuse{math::colors::linear::White};
-    std::filesystem::path diffuse_texture_path;
-    if (const aiMaterial *material = scene.mNumMaterials > 0 ? scene.mMaterials[mesh.mMaterialIndex] : nullptr) {
-        if (aiColor3D ai_diffuse{1.0f, 1.0f, 1.0f};
-            material->Get(AI_MATKEY_COLOR_DIFFUSE, ai_diffuse) == aiReturn_SUCCESS) {
-            diffuse = math::Color{ai_diffuse.r, ai_diffuse.g, ai_diffuse.b};
-        }
-        if (aiString ai_texture_diffuse;
-            material->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), ai_texture_diffuse) == aiReturn_SUCCESS) {
-            diffuse_texture_path = mesh_path;
-            diffuse_texture_path.remove_filename();
-            diffuse_texture_path += std::string_view{ai_texture_diffuse.data, ai_texture_diffuse.length};
-        }
-    }
-
-    std::vector<TriangleComponent::Vertex> vertices;
-    for (const std::span ai_vertices{mesh.mVertices, mesh.mNumVertices};
-         const auto &[index, ai_position] : ranges::views::enumerate(ai_vertices)) {
-        const auto [x, y, z] = ai_position;
-        const math::Vector3 position{x, y, z};
-
-        math::Vector3 normal = math::Vector3::Right;
-        if (const aiVector3D *ai_normals = mesh.mNormals) {
-            const auto [x, y, z] = ai_normals[index];
-            normal = math::Vector3{x, y, z};
-        }
-
-        math::Color color = diffuse;
-        if (const aiColor4D *colors = mesh.mColors[0]) {
-            const auto [r, g, b, a] = colors[index];
-            color *= math::Color{r, g, b, a};
-        }
-
-        math::Vector2 texture_coordinate;
-        if (const aiVector3D *texture_coordinates = mesh.mTextureCoords[0]) {
-            const auto [x, y, z] = texture_coordinates[index];
-            texture_coordinate = math::Vector2{x, y};
-        }
-
-        vertices.emplace_back(position, normal, color, texture_coordinate);
-    }
-
-    std::vector<TriangleComponent::Index> indices;
-    for (const std::span faces{mesh.mFaces, mesh.mNumFaces}; const aiFace &face : faces) {
-        for (const std::span ai_indices{face.mIndices, face.mNumIndices};
-             const std::uint32_t index : ai_indices | std::views::take(3)) {
-            indices.emplace_back(index);
-        }
-    }
-
-    TriangleComponent::CustomInitializer initializer{
-        .vertices = vertices,
-        .indices = indices,
-        .texture_path = diffuse_texture_path,
-    };
-    initializer.Parent(&parent);
-    return game.AddComponent<TriangleComponent>(initializer);
-}
-
-void TraverseNode(Game &game, const SceneComponent &parent, const aiScene &scene, const aiNode &node,
-                  const std::filesystem::path &mesh_path) {
-    const SceneComponent::Initializer root_args{.transform = TransformFromNode(node), .parent = &parent};
-    const auto &root = game.AddComponent<SceneComponent>(root_args);
-
-    for (const std::size_t mesh_index : std::span{node.mMeshes, node.mNumMeshes}) {
-        if (const aiMesh *mesh = scene.mMeshes[mesh_index]) {
-            TriangleFromMesh(game, root, scene, *mesh, mesh_path);
-        }
-    }
-
-    for (const aiNode *child_node : std::span{node.mChildren, node.mNumChildren}) {
-        TraverseNode(game, root, scene, *child_node, mesh_path);
-    }
-}
-
-}  // namespace detail
-
 auto TriangleComponent::Initializer::Wireframe(const bool wireframe) -> Initializer & {
     this->wireframe = wireframe;
     return *this;
 }
 
-auto TriangleComponent::CustomInitializer::Vertices(const std::span<const Vertex> vertices) -> Initializer & {
+auto TriangleComponent::Initializer::Vertices(const std::span<const Vertex> vertices) -> Initializer & {
     this->vertices = vertices;
     return *this;
 }
 
-auto TriangleComponent::CustomInitializer::Indices(const std::span<const Index> indices) -> Initializer & {
+auto TriangleComponent::Initializer::Indices(const std::span<const Index> indices) -> Initializer & {
     this->indices = indices;
     return *this;
 }
 
-auto TriangleComponent::CustomInitializer::TexturePath(const std::filesystem::path &texture_path) -> Initializer & {
+auto TriangleComponent::Initializer::TexturePath(const std::filesystem::path &texture_path) -> Initializer & {
     this->texture_path = texture_path;
     return *this;
 }
 
-auto TriangleComponent::CustomInitializer::TileCount(const math::Vector2 tile_count) -> Initializer & {
+auto TriangleComponent::Initializer::TileCount(const math::Vector2 tile_count) -> Initializer & {
     this->tile_count = tile_count;
-    return *this;
-}
-
-auto TriangleComponent::MeshInitializer::MeshPath(const std::filesystem::path &mesh_path) -> Initializer & {
-    this->mesh_path = mesh_path;
     return *this;
 }
 
@@ -154,17 +52,9 @@ TriangleComponent::TriangleComponent(class Game &game, const Initializer &initia
     InitializeInputLayout();
     InitializeRasterizerState();
     InitializeSamplerState();
-}
 
-TriangleComponent::TriangleComponent(class Game &game, const CustomInitializer &initializer)
-    : TriangleComponent(game, static_cast<const Initializer &>(initializer)) {
     Load(initializer.vertices, initializer.indices);
     LoadTexture(initializer.texture_path, initializer.tile_count);
-}
-
-TriangleComponent::TriangleComponent(class Game &game, const MeshInitializer &initializer)
-    : TriangleComponent(game, static_cast<const Initializer &>(initializer)) {
-    LoadMesh(initializer.mesh_path);
 }
 
 void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::span<const Index> indices) {
@@ -179,26 +69,6 @@ void TriangleComponent::LoadTexture(const std::filesystem::path &texture_path, c
 
     texture_ = detail::TextureFromFile(Device(), DeviceContext(), texture_path);
     tile_count_ = tile_count;
-}
-
-void TriangleComponent::LoadMesh(const std::filesystem::path &mesh_path) {
-    if (!mesh_path.has_filename()) {
-        return;
-    }
-    vertex_buffer_ = nullptr;
-    index_buffer_ = nullptr;
-
-    Assimp::Importer importer;
-    constexpr std::uint32_t flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals;
-    const aiScene *scene = importer.ReadFile(mesh_path.generic_string(), flags);
-    if (scene == nullptr) {
-        const char *message = importer.GetErrorString();
-        throw std::runtime_error{message};
-    }
-
-    if (const aiNode *node = scene->mRootNode) {
-        detail::TraverseNode(Game(), *this, *scene, *node, mesh_path);
-    }
 }
 
 bool TriangleComponent::Wireframe() const {

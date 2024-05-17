@@ -19,35 +19,22 @@ class TriangleComponent : public SceneComponent {
 
     struct Initializer : SceneComponent::Initializer {
         bool wireframe = false;
-
-        Initializer &Wireframe(bool wireframe);
-    };
-
-    struct CustomInitializer : Initializer {
         std::span<const Vertex> vertices;
         std::span<const Index> indices;
         std::filesystem::path texture_path;
         math::Vector2 tile_count = math::Vector2::One;
 
+        Initializer &Wireframe(bool wireframe);
         Initializer &Vertices(std::span<const Vertex> vertices);
         Initializer &Indices(std::span<const Index> indices);
         Initializer &TexturePath(const std::filesystem::path &texture_path);
         Initializer &TileCount(math::Vector2 tile_count);
     };
 
-    struct MeshInitializer : Initializer {
-        std::filesystem::path mesh_path;
-
-        Initializer &MeshPath(const std::filesystem::path &mesh_path);
-    };
-
-    explicit TriangleComponent(class Game &game, const Initializer &initializer = {});
-    explicit TriangleComponent(class Game &game, const CustomInitializer &initializer);
-    explicit TriangleComponent(class Game &game, const MeshInitializer &initializer);
+    explicit TriangleComponent(class Game &game, const Initializer &initializer);
 
     void Load(std::span<const Vertex> vertices, std::span<const Index> indices);
     void LoadTexture(const std::filesystem::path &texture_path, math::Vector2 tile_count = math::Vector2::One);
-    void LoadMesh(const std::filesystem::path &mesh_path);
 
     [[nodiscard]] bool Wireframe() const;
     void Wireframe(bool wireframe);

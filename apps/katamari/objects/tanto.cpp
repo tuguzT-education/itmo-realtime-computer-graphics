@@ -3,8 +3,8 @@
 Tanto::Tanto(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/tanto/tanto.fbx",
               };
               mesh_initializer.Transform({
@@ -16,11 +16,11 @@ Tanto::Tanto(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Tanto::Mesh() const {
+auto Tanto::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Tanto::Mesh() {
+auto Tanto::Mesh() -> MeshType& {
     return mesh_;
 }
 

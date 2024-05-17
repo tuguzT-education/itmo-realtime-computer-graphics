@@ -4,14 +4,16 @@
 #define KATAMARI_OBJECTS_TANTO_HPP_INCLUDED
 
 #include <borov_engine/collision.hpp>
-#include <borov_engine/triangle_component.hpp>
+#include <borov_engine/mesh_component.hpp>
 
 class Tanto final : public borov_engine::SceneComponent, public borov_engine::Collision {
   public:
+    using MeshType = borov_engine::MeshComponent<>;
+
     explicit Tanto(borov_engine::Game& game, const Initializer& initializer = {});
 
-    [[nodiscard]] const borov_engine::TriangleComponent& Mesh() const;
-    [[nodiscard]] borov_engine::TriangleComponent& Mesh();
+    [[nodiscard]] const MeshType& Mesh() const;
+    [[nodiscard]] MeshType& Mesh();
 
     void Draw(const borov_engine::Camera* camera) override;
 
@@ -21,7 +23,7 @@ class Tanto final : public borov_engine::SceneComponent, public borov_engine::Co
   private:
     [[nodiscard]] borov_engine::BoxCollision CollisionPrimitive() const;
 
-    std::reference_wrapper<borov_engine::TriangleComponent> mesh_;
+    std::reference_wrapper<MeshType> mesh_;
 };
 
 #endif  // KATAMARI_OBJECTS_TANTO_HPP_INCLUDED

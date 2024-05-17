@@ -3,8 +3,8 @@
 Bulb::Bulb(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/bulb/bulb.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 50.0f});
@@ -13,11 +13,11 @@ Bulb::Bulb(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Bulb::Mesh() const {
+auto Bulb::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Bulb::Mesh() {
+auto Bulb::Mesh() -> MeshType& {
     return mesh_;
 }
 
@@ -27,7 +27,7 @@ void Bulb::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Bulb::Intersects(const borov_engine::Collision& other) const {
+bool Bulb::Intersects(const Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 

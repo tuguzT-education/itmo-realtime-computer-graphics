@@ -3,8 +3,8 @@
 Cake::Cake(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/cake/cake.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 200.0f});
@@ -13,11 +13,11 @@ Cake::Cake(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Cake::Mesh() const {
+auto Cake::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Cake::Mesh() {
+auto Cake::Mesh() -> MeshType& {
     return mesh_;
 }
 
@@ -27,7 +27,7 @@ void Cake::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Cake::Intersects(const borov_engine::Collision& other) const {
+bool Cake::Intersects(const Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 

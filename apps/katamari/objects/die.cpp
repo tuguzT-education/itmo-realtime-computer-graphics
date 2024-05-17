@@ -3,8 +3,8 @@
 Die::Die(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/die/red/die.fbx",
               };
               mesh_initializer.Transform({
@@ -16,11 +16,11 @@ Die::Die(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Die::Mesh() const {
+auto Die::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Die::Mesh() {
+auto Die::Mesh() -> MeshType& {
     return mesh_;
 }
 
@@ -30,7 +30,7 @@ void Die::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Die::Intersects(const borov_engine::Collision& other) const {
+bool Die::Intersects(const Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 

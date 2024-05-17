@@ -3,8 +3,8 @@
 Axe::Axe(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/axe/axe.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 50.0f});
@@ -13,11 +13,11 @@ Axe::Axe(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Axe::Mesh() const {
+auto Axe::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Axe::Mesh() {
+auto Axe::Mesh() -> MeshType& {
     return mesh_;
 }
 
@@ -27,7 +27,7 @@ void Axe::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool Axe::Intersects(const borov_engine::Collision& other) const {
+bool Axe::Intersects(const Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 

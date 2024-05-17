@@ -48,6 +48,8 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/scene_component.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/geometric_primitive_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/mesh_component.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/mesh_component.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/box_component.hpp)
 set(SOURCE_LIST
         delegate/delegate_kind.cpp

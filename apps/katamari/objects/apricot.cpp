@@ -3,8 +3,8 @@
 Apricot::Apricot(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/apricot/apricot.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 20.0f});
@@ -13,11 +13,11 @@ Apricot::Apricot(borov_engine::Game& game, const Initializer& initializer)
           }()),
       } {}
 
-const borov_engine::TriangleComponent& Apricot::Mesh() const {
+auto Apricot::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& Apricot::Mesh() {
+auto Apricot::Mesh() -> MeshType& {
     return mesh_;
 }
 
@@ -27,7 +27,7 @@ void Apricot::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawSphere(CollisionPrimitive().Primitive());
 }
 
-bool Apricot::Intersects(const borov_engine::Collision& other) const {
+bool Apricot::Intersects(const Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 

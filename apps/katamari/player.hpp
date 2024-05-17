@@ -5,9 +5,9 @@
 
 #include <borov_engine/collision.hpp>
 #include <borov_engine/input.hpp>
-#include <borov_engine/triangle_component.hpp>
+#include <borov_engine/mesh_component.hpp>
 
-class Player final : public borov_engine::TriangleComponent, public borov_engine::Collision {
+class Player final : public borov_engine::MeshComponent<>, public borov_engine::Collision {
   public:
     struct ControlKeys {
         using enum borov_engine::InputKey;

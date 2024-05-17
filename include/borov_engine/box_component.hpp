@@ -15,15 +15,11 @@ class BoxComponent : public TriangleComponent, public Collision {
         float height = 1.0f;
         float width = 1.0f;
         math::Color color{math::colors::linear::White};
-        std::filesystem::path texture_path;
-        math::Vector2 tile_count = math::Vector2::One;
 
         Initializer& Length(float length);
         Initializer& Height(float height);
         Initializer& Width(float width);
         Initializer& Color(math::Color color);
-        Initializer& TexturePath(const std::filesystem::path& texture_path);
-        Initializer& TileCount(math::Vector2 tile_count);
     };
 
     explicit BoxComponent(class Game& game, const Initializer& initializer = {});

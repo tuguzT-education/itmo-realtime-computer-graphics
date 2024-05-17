@@ -3,8 +3,8 @@
 ConcreteBarricade::ConcreteBarricade(borov_engine::Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       mesh_{
-          Game().AddComponent<borov_engine::TriangleComponent>([this] {
-              borov_engine::TriangleComponent::MeshInitializer mesh_initializer{
+          Game().AddComponent<MeshType>([this] {
+              MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/concrete_barricade/concrete_barricade.fbx",
               };
               mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 100.0f});
@@ -13,11 +13,11 @@ ConcreteBarricade::ConcreteBarricade(borov_engine::Game& game, const Initializer
           }()),
       } {}
 
-const borov_engine::TriangleComponent& ConcreteBarricade::Mesh() const {
+auto ConcreteBarricade::Mesh() const -> const MeshType& {
     return mesh_;
 }
 
-borov_engine::TriangleComponent& ConcreteBarricade::Mesh() {
+auto ConcreteBarricade::Mesh() -> MeshType& {
     return mesh_;
 }
 
@@ -27,7 +27,7 @@ void ConcreteBarricade::Draw(const borov_engine::Camera* camera) {
     Game().DebugDraw().DrawBox(CollisionPrimitive().Primitive());
 }
 
-bool ConcreteBarricade::Intersects(const borov_engine::Collision& other) const {
+bool ConcreteBarricade::Intersects(const Collision& other) const {
     return CollisionPrimitive().Intersects(other);
 }
 
