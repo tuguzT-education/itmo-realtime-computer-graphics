@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef BOROV_ENGINE_INPUT_KEYS_HPP_INCLUDED
-#define BOROV_ENGINE_INPUT_KEYS_HPP_INCLUDED
+#ifndef BOROV_ENGINE_INPUT_KEY_HPP_INCLUDED
+#define BOROV_ENGINE_INPUT_KEY_HPP_INCLUDED
 
 #include <cstdint>
 
@@ -182,4 +182,4 @@ enum class InputKey : std::uint16_t {
 
 }  // namespace borov_engine
 
-#endif  // BOROV_ENGINE_INPUT_KEYS_HPP_INCLUDED
+#endif  // BOROV_ENGINE_INPUT_KEY_HPP_INCLUDED

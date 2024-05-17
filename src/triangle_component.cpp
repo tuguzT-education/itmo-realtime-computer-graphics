@@ -114,6 +114,10 @@ void TriangleComponent::Draw(const Camera *camera) {
     const PixelShaderConstantBuffer ps_constant_buffer{
         .has_texture = texture_ != nullptr,
         .view_position = (camera != nullptr) ? camera->WorldTransform().position : math::Vector3::Backward,
+        .directional_light =
+            Game().DirectionalLight() != nullptr
+                ? Game().DirectionalLight()->Primitive()
+                : DirectionalLight{.direction = math::Vector3::Zero, .color = math::colors::linear::White.v},
     };
     UpdatePixelShaderConstantBuffer(ps_constant_buffer);
 

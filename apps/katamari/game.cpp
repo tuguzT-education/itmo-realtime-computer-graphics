@@ -80,6 +80,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
         .target = player_,
         .camera = &camera_.get(),
     });
+    DirectionalLight(borov_engine::DirectionalLight{});
 }
 
 void Game::Update(const float delta_time) {

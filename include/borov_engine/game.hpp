@@ -11,6 +11,7 @@
 #include "debug_draw.hpp"
 #include "detail/d3d_ptr.hpp"
 #include "input.hpp"
+#include "light.hpp"
 #include "timer.hpp"
 #include "viewport_manager.hpp"
 
@@ -38,6 +39,7 @@ class Game {
 
     template <std::derived_from<class CameraManager> T, typename... Args>
     T &CameraManager(Args &&...args);
+    void RemoveCameraManager();
 
     [[nodiscard]] const ViewportManager &ViewportManager() const;
     [[nodiscard]] class ViewportManager &ViewportManager();
@@ -50,6 +52,12 @@ class Game {
 
     template <std::derived_from<class DebugDraw> T, typename... Args>
     T &DebugDraw(Args &&...args);
+
+    [[nodiscard]] const DirectionalLightComponent *DirectionalLight() const;
+    [[nodiscard]] DirectionalLightComponent *DirectionalLight();
+
+    DirectionalLightComponent &DirectionalLight(const class DirectionalLight &directional_light);
+    void RemoveDirectionalLight();
 
     [[nodiscard]] const Camera *MainCamera() const;
     [[nodiscard]] Camera *MainCamera();
@@ -102,6 +110,7 @@ class Game {
     std::unique_ptr<class ViewportManager> viewport_manager_;
     std::unique_ptr<class CameraManager> camera_manager_;
     std::unique_ptr<class DebugDraw> debug_draw_;
+    std::unique_ptr<DirectionalLightComponent> directional_light_;
     std::vector<std::unique_ptr<Component>> components_;
 
     class Timer timer_;

@@ -1,4 +1,5 @@
 #include "transform.hlsl"
+#include "light.hlsl"
 
 cbuffer VSConstantBuffer : register(b0)
 {
@@ -43,6 +44,7 @@ cbuffer PSConstantBuffer : register(b0)
 {
     bool has_texture;
     float3 view_position;
+    DirectionalLight light;
 }
 
 typedef VS_Output PS_Input;
@@ -51,5 +53,8 @@ float4 PSMain(PS_Input input) : SV_Target
 {
 	float4 color = has_texture ? DiffuseMap.Sample(Sampler, input.texture_coordinate) : float4(1.0f, 1.0f, 1.0f, 1.0f);
 	color *= input.color;
-	return color;
+
+	float4 ambient = color * 0.2f;
+	float4 diffuse = dot(-light.direction, input.normal) * light.color * color;
+	return saturate(ambient + diffuse);
 }

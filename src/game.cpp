@@ -58,6 +58,10 @@ CameraManager *Game::CameraManager() {
     return camera_manager_.get();
 }
 
+void Game::RemoveCameraManager() {
+    camera_manager_ = nullptr;
+}
+
 const ViewportManager &Game::ViewportManager() const {
     return *viewport_manager_;
 }
@@ -72,6 +76,24 @@ const DebugDraw &Game::DebugDraw() const {
 
 DebugDraw &Game::DebugDraw() {
     return *debug_draw_;
+}
+
+const DirectionalLightComponent *Game::DirectionalLight() const {
+    return directional_light_.get();
+}
+
+DirectionalLightComponent *Game::DirectionalLight() {
+    return directional_light_.get();
+}
+
+DirectionalLightComponent &Game::DirectionalLight(const class DirectionalLight &directional_light) {
+    DirectionalLightComponent::Initializer initializer{.light = directional_light};
+    directional_light_ = std::make_unique<DirectionalLightComponent>(*this, initializer);
+    return *directional_light_;
+}
+
+void Game::RemoveDirectionalLight() {
+    directional_light_ = nullptr;
 }
 
 const Camera *Game::MainCamera() const {

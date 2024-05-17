@@ -46,6 +46,7 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/debug_draw.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/scene_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/scene_component.inl
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/light.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/geometric_primitive_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/triangle_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/mesh_component.hpp
@@ -76,6 +77,7 @@ set(SOURCE_LIST
         transform.cpp
         debug_draw.cpp
         scene_component.cpp
+        light.cpp
         geometric_primitive_component.cpp
         triangle_component.cpp
         box_component.cpp)

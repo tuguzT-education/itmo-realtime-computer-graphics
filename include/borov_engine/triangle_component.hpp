@@ -8,6 +8,7 @@
 #include <filesystem>
 
 #include "detail/d3d_ptr.hpp"
+#include "light.hpp"
 #include "scene_component.hpp"
 
 namespace borov_engine {
@@ -52,6 +53,7 @@ class TriangleComponent : public SceneComponent {
     struct alignas(16) PixelShaderConstantBuffer {
         std::uint32_t has_texture = false;
         math::Vector3 view_position;
+        DirectionalLight directional_light;
     };
 
     virtual void UpdateVertexShaderConstantBuffer(const VertexShaderConstantBuffer &data);
