@@ -363,9 +363,12 @@ void Game::Draw() {
         for (const auto &component : components_) {
             component->Draw(camera);
         }
+        Draw(camera);
         debug_draw_->Draw(camera);
     }
 }
+
+void Game::Draw(const Camera *camera) {}
 
 void Game::OnTargetResize() {
     render_target_view_.Reset();

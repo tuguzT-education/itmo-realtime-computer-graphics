@@ -82,10 +82,11 @@ class Game {
   protected:
     virtual void Update(float delta_time);
     virtual void Draw();
+    virtual void Draw(const Camera *camera);
     virtual void OnTargetResize();
 
   private:
-    friend class Component;
+    friend Component;
 
     void InitializeDevice();
     void InitializeSwapChain(const class Window &window);
