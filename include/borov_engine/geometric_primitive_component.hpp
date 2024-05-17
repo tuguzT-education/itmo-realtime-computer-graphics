@@ -192,7 +192,7 @@ class GeometricPrimitiveComponent : public SceneComponent {
     [[nodiscard]] math::Color &Color();
 
     [[nodiscard]] bool Wireframe() const;
-    void Wireframe(bool wireframe);
+    [[nodiscard]] bool &Wireframe();
 
     void Draw(const Camera *camera) override;
 

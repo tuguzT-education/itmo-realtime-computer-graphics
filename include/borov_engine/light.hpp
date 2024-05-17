@@ -9,7 +9,7 @@
 namespace borov_engine {
 
 struct alignas(16) AmbientLight {
-    math::Color color;
+    math::Color color{math::colors::linear::White};
 };
 
 class AmbientLightComponent final : public Component {

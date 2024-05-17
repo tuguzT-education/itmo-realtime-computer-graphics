@@ -1,4 +1,5 @@
 #include "transform.hlsl"
+#include "material.hlsl"
 #include "light.hlsl"
 
 cbuffer VSConstantBuffer : register(b0)
@@ -44,6 +45,7 @@ cbuffer PSConstantBuffer : register(b0)
 {
     bool has_texture;
     float3 view_position;
+    Material material;
     AmbientLight ambient_light;
     DirectionalLight directional_light;
 }
@@ -59,8 +61,9 @@ float4 PSMain(PS_Input input) : SV_Target
     const float3 light_direction = normalize(-directional_light.direction);
     const float3 reflect_direction = reflect(light_direction, input.normal);
 
-    float4 ambient = color * ambient_light.color;
-    float4 diffuse = saturate(dot(light_direction, input.normal) * directional_light.color * color);
-    float4 specular = pow(max(0.0f, dot(-view_direction, reflect_direction)), 32.0f) * 0.3f;
-    return ambient + diffuse + specular;
+    float4 ambient = color * ambient_light.color * material.ambient;
+    float4 diffuse = saturate(dot(light_direction, input.normal) * directional_light.color * material.diffuse * color);
+    float4 specular = pow(max(0.0f, dot(-view_direction, reflect_direction)), material.exponent) * material.specular;
+    float4 emissive = material.emissive;
+    return ambient + diffuse + specular + emissive;
 }

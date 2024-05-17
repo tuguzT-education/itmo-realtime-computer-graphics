@@ -28,15 +28,30 @@ inline Transform TransformFromNode(const aiNode &node) {
 template <std::derived_from<TriangleComponent> ChildMesh>
 ChildMesh &ChildFromMesh(Game &game, const SceneComponent &parent, const aiScene &scene, const aiMesh &mesh,
                          const std::filesystem::path &mesh_path) {
-    math::Color diffuse{math::colors::linear::White};
+    Material material;
     std::filesystem::path diffuse_texture_path;
-    if (const aiMaterial *material = scene.mNumMaterials > 0 ? scene.mMaterials[mesh.mMaterialIndex] : nullptr) {
+    if (const aiMaterial *ai_material = scene.mNumMaterials > 0 ? scene.mMaterials[mesh.mMaterialIndex] : nullptr) {
+        if (aiColor3D ai_ambient{1.0f, 1.0f, 1.0f};
+            ai_material->Get(AI_MATKEY_COLOR_AMBIENT, ai_ambient) == aiReturn_SUCCESS) {
+            material.ambient = math::Color{ai_ambient.r, ai_ambient.g, ai_ambient.b};
+        }
         if (aiColor3D ai_diffuse{1.0f, 1.0f, 1.0f};
-            material->Get(AI_MATKEY_COLOR_DIFFUSE, ai_diffuse) == aiReturn_SUCCESS) {
-            diffuse = math::Color{ai_diffuse.r, ai_diffuse.g, ai_diffuse.b};
+            ai_material->Get(AI_MATKEY_COLOR_DIFFUSE, ai_diffuse) == aiReturn_SUCCESS) {
+            material.diffuse = math::Color{ai_diffuse.r, ai_diffuse.g, ai_diffuse.b};
+        }
+        if (aiColor3D ai_specular{1.0f, 1.0f, 1.0f};
+            ai_material->Get(AI_MATKEY_COLOR_SPECULAR, ai_specular) == aiReturn_SUCCESS) {
+            material.specular = math::Color{ai_specular.r, ai_specular.g, ai_specular.b};
+        }
+        if (aiColor3D ai_emissive{1.0f, 1.0f, 1.0f};
+            ai_material->Get(AI_MATKEY_COLOR_EMISSIVE, ai_emissive) == aiReturn_SUCCESS) {
+            material.emissive = math::Color{ai_emissive.r, ai_emissive.g, ai_emissive.b};
+        }
+        if (float exponent = 8.0f; ai_material->Get(AI_MATKEY_SHININESS, exponent) == aiReturn_SUCCESS) {
+            material.exponent = exponent;
         }
         if (aiString ai_texture_diffuse;
-            material->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), ai_texture_diffuse) == aiReturn_SUCCESS) {
+            ai_material->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), ai_texture_diffuse) == aiReturn_SUCCESS) {
             diffuse_texture_path = mesh_path;
             diffuse_texture_path.remove_filename();
             diffuse_texture_path += std::string_view{ai_texture_diffuse.data, ai_texture_diffuse.length};
@@ -55,7 +70,7 @@ ChildMesh &ChildFromMesh(Game &game, const SceneComponent &parent, const aiScene
             normal = math::Vector3{x, y, z};
         }
 
-        math::Color color = diffuse;
+        math::Color color{math::colors::linear::White};
         if (const aiColor4D *colors = mesh.mColors[0]) {
             const auto [r, g, b, a] = colors[index];
             color *= math::Color{r, g, b, a};
@@ -82,6 +97,7 @@ ChildMesh &ChildFromMesh(Game &game, const SceneComponent &parent, const aiScene
     initializer.vertices = vertices;
     initializer.indices = indices;
     initializer.texture_path = diffuse_texture_path;
+    initializer.material = material;
     initializer.parent = &parent;
     return game.AddComponent<ChildMesh>(initializer);
 }

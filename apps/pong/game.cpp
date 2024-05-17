@@ -4,7 +4,6 @@
 
 Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     : borov_engine::Game(window, input), ball_{AddComponent<Ball>()}, left_score_{}, right_score_{} {
-    AmbientLight().Primitive().color = borov_engine::math::colors::linear::White;
 }
 
 void Game::Update(const float delta_time) {

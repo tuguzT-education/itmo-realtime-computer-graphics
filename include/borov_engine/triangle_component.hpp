@@ -9,6 +9,7 @@
 
 #include "detail/d3d_ptr.hpp"
 #include "light.hpp"
+#include "material.hpp"
 #include "scene_component.hpp"
 
 namespace borov_engine {
@@ -19,17 +20,19 @@ class TriangleComponent : public SceneComponent {
     using Index = std::uint32_t;
 
     struct Initializer : SceneComponent::Initializer {
-        bool wireframe = false;
         std::span<const Vertex> vertices;
         std::span<const Index> indices;
         std::filesystem::path texture_path;
         math::Vector2 tile_count = math::Vector2::One;
+        bool wireframe = false;
+        Material material;
 
-        Initializer &Wireframe(bool wireframe);
         Initializer &Vertices(std::span<const Vertex> vertices);
         Initializer &Indices(std::span<const Index> indices);
         Initializer &TexturePath(const std::filesystem::path &texture_path);
         Initializer &TileCount(math::Vector2 tile_count);
+        Initializer &Wireframe(bool wireframe);
+        Initializer &Material(const Material &material);
     };
 
     explicit TriangleComponent(class Game &game, const Initializer &initializer = {});
@@ -38,7 +41,10 @@ class TriangleComponent : public SceneComponent {
     void LoadTexture(const std::filesystem::path &texture_path, math::Vector2 tile_count = math::Vector2::One);
 
     [[nodiscard]] bool Wireframe() const;
-    void Wireframe(bool wireframe);
+    [[nodiscard]] bool &Wireframe();
+
+    [[nodiscard]] const Material &Material() const;
+    [[nodiscard]] class Material &Material();
 
     void Draw(const Camera *camera) override;
 
@@ -53,6 +59,7 @@ class TriangleComponent : public SceneComponent {
     struct alignas(16) PixelShaderConstantBuffer {
         std::uint32_t has_texture = false;
         math::Vector3 view_position;
+        class Material material;
         AmbientLight ambient_light;
         DirectionalLight directional_light;
     };
@@ -77,8 +84,10 @@ class TriangleComponent : public SceneComponent {
     detail::D3DPtr<ID3D11VertexShader> vertex_shader_;
     detail::D3DPtr<ID3DBlob> vertex_byte_code_;
 
-    bool wireframe_;
     math::Vector2 tile_count_;
+    bool wireframe_;
+    bool prev_wireframe_;
+    class Material material_;
 
   private:
     void InitializeVertexShader();

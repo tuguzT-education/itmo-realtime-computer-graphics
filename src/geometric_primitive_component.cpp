@@ -246,8 +246,8 @@ bool GeometricPrimitiveComponent::Wireframe() const {
     return wireframe_;
 }
 
-void GeometricPrimitiveComponent::Wireframe(const bool wireframe) {
-    wireframe_ = wireframe;
+bool &GeometricPrimitiveComponent::Wireframe() {
+    return wireframe_;
 }
 
 void GeometricPrimitiveComponent::Draw(const Camera *camera) {

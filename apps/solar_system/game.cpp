@@ -95,7 +95,6 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
         .camera = &camera_,
     });
     ViewportManager<::ViewportManager>();
-    AmbientLight().Primitive().color = borov_engine::math::colors::linear::White;
 
     input.OnInputKeyDown().AddRaw(this, &Game::OnInputKeyDown);
 }
@@ -198,12 +197,10 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
         case borov_engine::InputKey::G: {
             for (borov_engine::Component &component : Components()) {
                 if (const auto triangle_component = dynamic_cast<borov_engine::TriangleComponent *>(&component)) {
-                    const bool wireframe = triangle_component->Wireframe();
-                    triangle_component->Wireframe(!wireframe);
+                    triangle_component->Wireframe() = !triangle_component->Wireframe();
                 }
                 if (const auto primitive = dynamic_cast<borov_engine::GeometricPrimitiveComponent *>(&component)) {
-                    const bool wireframe = primitive->Wireframe();
-                    primitive->Wireframe(!wireframe);
+                    primitive->Wireframe() = !primitive->Wireframe();
                 }
             }
             break;

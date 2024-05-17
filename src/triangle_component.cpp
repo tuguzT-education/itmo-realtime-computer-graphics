@@ -16,11 +16,6 @@
 
 namespace borov_engine {
 
-auto TriangleComponent::Initializer::Wireframe(const bool wireframe) -> Initializer & {
-    this->wireframe = wireframe;
-    return *this;
-}
-
 auto TriangleComponent::Initializer::Vertices(const std::span<const Vertex> vertices) -> Initializer & {
     this->vertices = vertices;
     return *this;
@@ -41,8 +36,21 @@ auto TriangleComponent::Initializer::TileCount(const math::Vector2 tile_count) -
     return *this;
 }
 
+auto TriangleComponent::Initializer::Wireframe(const bool wireframe) -> Initializer & {
+    this->wireframe = wireframe;
+    return *this;
+}
+
+auto TriangleComponent::Initializer::Material(const borov_engine::Material &material) -> Initializer & {
+    this->material = material;
+    return *this;
+}
+
 TriangleComponent::TriangleComponent(class Game &game, const Initializer &initializer)
-    : SceneComponent(game, initializer), wireframe_{initializer.wireframe}, tile_count_{math::Vector2::One} {
+    : SceneComponent(game, initializer),
+      tile_count_{math::Vector2::One},
+      wireframe_{initializer.wireframe},
+      prev_wireframe_{initializer.wireframe} {
     InitializeVertexShader();
     InitializeVertexShaderConstantBuffer();
 
@@ -55,6 +63,7 @@ TriangleComponent::TriangleComponent(class Game &game, const Initializer &initia
 
     Load(initializer.vertices, initializer.indices);
     LoadTexture(initializer.texture_path, initializer.tile_count);
+    material_ = initializer.material;
 }
 
 void TriangleComponent::Load(const std::span<const Vertex> vertices, const std::span<const Index> indices) {
@@ -75,14 +84,26 @@ bool TriangleComponent::Wireframe() const {
     return wireframe_;
 }
 
-void TriangleComponent::Wireframe(const bool wireframe) {
-    wireframe_ = wireframe;
-    InitializeRasterizerState();
+bool &TriangleComponent::Wireframe() {
+    return wireframe_;
+}
+
+const Material &TriangleComponent::Material() const {
+    return material_;
+}
+
+Material &TriangleComponent::Material() {
+    return material_;
 }
 
 void TriangleComponent::Draw(const Camera *camera) {
     if (vertex_buffer_ == nullptr || index_buffer_ == nullptr) {
         return;
+    }
+
+    if (wireframe_ != prev_wireframe_) {
+        InitializeRasterizerState();
+        prev_wireframe_ = wireframe_;
     }
 
     ID3D11DeviceContext &device_context = DeviceContext();
@@ -114,6 +135,7 @@ void TriangleComponent::Draw(const Camera *camera) {
     const PixelShaderConstantBuffer ps_constant_buffer{
         .has_texture = texture_ != nullptr,
         .view_position = (camera != nullptr) ? camera->WorldTransform().position : math::Vector3::Backward,
+        .material = material_,
         .ambient_light = Game().AmbientLight().Primitive(),
         .directional_light = Game().DirectionalLight().Primitive(),
     };
