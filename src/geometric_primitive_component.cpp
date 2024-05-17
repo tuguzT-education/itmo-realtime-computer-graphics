@@ -262,6 +262,12 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
     const auto effect = std::make_unique<DirectX::BasicEffect>(&Device());
     effect->SetColorAndAlpha(color_);
     effect->SetMatrices(world, view, projection);
+    effect->SetLightingEnabled(true);
+    effect->SetPerPixelLighting(true);
+    effect->SetLightEnabled(0, false);
+    effect->SetLightEnabled(1, false);
+    effect->SetLightEnabled(2, false);
+    effect->SetAmbientLightColor(Game().AmbientLight().Primitive().color);
     if (texture_ != nullptr) {
         effect->SetTexture(texture_.Get());
         effect->SetTextureEnabled(true);

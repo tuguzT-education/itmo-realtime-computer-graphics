@@ -80,7 +80,12 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
         .target = player_,
         .camera = &camera_.get(),
     });
-    DirectionalLight(borov_engine::DirectionalLight{});
+
+    namespace math = borov_engine::math;
+
+    AmbientLight().Primitive().color = math::colors::linear::White * 0.1f;
+    DirectionalLight().Primitive().color = math::colors::linear::White;
+    DirectionalLight().Primitive().direction = math::Normalize(math::Vector3::Down + math::Vector3::Forward);
 }
 
 void Game::Update(const float delta_time) {

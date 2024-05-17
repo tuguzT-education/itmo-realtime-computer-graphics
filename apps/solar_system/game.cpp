@@ -95,6 +95,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
         .camera = &camera_,
     });
     ViewportManager<::ViewportManager>();
+    AmbientLight().Primitive().color = borov_engine::math::colors::linear::White;
 
     input.OnInputKeyDown().AddRaw(this, &Game::OnInputKeyDown);
 }

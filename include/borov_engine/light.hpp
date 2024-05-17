@@ -8,12 +8,33 @@
 
 namespace borov_engine {
 
-struct DirectionalLight {
-    alignas(16) math::Vector3 direction = math::Normalize(math::Vector3::Down + math::Vector3::Forward);
-    alignas(16) math::Color color{math::colors::linear::White};
+struct alignas(16) AmbientLight {
+    math::Color color;
 };
 
-class DirectionalLightComponent : public Component {
+class AmbientLightComponent final : public Component {
+  public:
+    using PrimitiveType = AmbientLight;
+
+    struct Initializer : Component::Initializer {
+        PrimitiveType light;
+    };
+
+    explicit AmbientLightComponent(class Game& game, const Initializer& initializer = {});
+
+    [[nodiscard]] const PrimitiveType& Primitive() const noexcept;
+    [[nodiscard]] PrimitiveType& Primitive() noexcept;
+
+  private:
+    PrimitiveType light_;
+};
+
+struct alignas(16) DirectionalLight {
+    alignas(16) math::Vector3 direction;
+    alignas(16) math::Color color;
+};
+
+class DirectionalLightComponent final : public Component {
   public:
     using PrimitiveType = DirectionalLight;
 

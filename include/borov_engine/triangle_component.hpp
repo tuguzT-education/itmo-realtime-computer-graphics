@@ -53,6 +53,7 @@ class TriangleComponent : public SceneComponent {
     struct alignas(16) PixelShaderConstantBuffer {
         std::uint32_t has_texture = false;
         math::Vector3 view_position;
+        AmbientLight ambient_light;
         DirectionalLight directional_light;
     };
 

@@ -26,6 +26,8 @@ Game::Game(class Window &window, class Input &input)
 
     ViewportManager<class ViewportManager>();
     DebugDraw<class DebugDraw>();
+    ambient_light_ = std::make_unique<AmbientLightComponent>(*this);
+    directional_light_ = std::make_unique<DirectionalLightComponent>(*this);
 
     window_.OnResize().AddRaw(this, &Game::OnWindowResize);
 }
@@ -78,22 +80,20 @@ DebugDraw &Game::DebugDraw() {
     return *debug_draw_;
 }
 
-const DirectionalLightComponent *Game::DirectionalLight() const {
-    return directional_light_.get();
+const AmbientLightComponent &Game::AmbientLight() const {
+    return *ambient_light_;
 }
 
-DirectionalLightComponent *Game::DirectionalLight() {
-    return directional_light_.get();
+AmbientLightComponent &Game::AmbientLight() {
+    return *ambient_light_;
 }
 
-DirectionalLightComponent &Game::DirectionalLight(const class DirectionalLight &directional_light) {
-    DirectionalLightComponent::Initializer initializer{.light = directional_light};
-    directional_light_ = std::make_unique<DirectionalLightComponent>(*this, initializer);
+const DirectionalLightComponent &Game::DirectionalLight() const {
     return *directional_light_;
 }
 
-void Game::RemoveDirectionalLight() {
-    directional_light_ = nullptr;
+DirectionalLightComponent &Game::DirectionalLight() {
+    return *directional_light_;
 }
 
 const Camera *Game::MainCamera() const {

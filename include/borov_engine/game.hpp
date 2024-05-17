@@ -53,11 +53,11 @@ class Game {
     template <std::derived_from<class DebugDraw> T, typename... Args>
     T &DebugDraw(Args &&...args);
 
-    [[nodiscard]] const DirectionalLightComponent *DirectionalLight() const;
-    [[nodiscard]] DirectionalLightComponent *DirectionalLight();
+    [[nodiscard]] const AmbientLightComponent &AmbientLight() const;
+    [[nodiscard]] AmbientLightComponent &AmbientLight();
 
-    DirectionalLightComponent &DirectionalLight(const class DirectionalLight &directional_light);
-    void RemoveDirectionalLight();
+    [[nodiscard]] const DirectionalLightComponent &DirectionalLight() const;
+    [[nodiscard]] DirectionalLightComponent &DirectionalLight();
 
     [[nodiscard]] const Camera *MainCamera() const;
     [[nodiscard]] Camera *MainCamera();
@@ -110,6 +110,7 @@ class Game {
     std::unique_ptr<class ViewportManager> viewport_manager_;
     std::unique_ptr<class CameraManager> camera_manager_;
     std::unique_ptr<class DebugDraw> debug_draw_;
+    std::unique_ptr<AmbientLightComponent> ambient_light_;
     std::unique_ptr<DirectionalLightComponent> directional_light_;
     std::vector<std::unique_ptr<Component>> components_;
 
