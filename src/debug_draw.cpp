@@ -66,7 +66,9 @@ void DebugDraw::InitializePrimitivePixelShader() {
 }
 
 void DebugDraw::InitializePrimitiveInputLayout() {
-    const std::array input_elements = std::to_array(Vertex::InputElements);
+    std::array input_elements = std::to_array(Vertex::InputElements);
+    input_elements[0].SemanticName = "POSITION";
+
     const HRESULT result = Device().CreateInputLayout(
         input_elements.data(), input_elements.size(), primitive_vertex_byte_code_->GetBufferPointer(),
         primitive_vertex_byte_code_->GetBufferSize(), &primitive_input_layout_);

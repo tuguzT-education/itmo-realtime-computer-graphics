@@ -181,7 +181,9 @@ void TriangleComponent::InitializePixelShaderConstantBuffer() {
 }
 
 void TriangleComponent::InitializeInputLayout() {
-    const std::array input_elements = std::to_array(Vertex::InputElements);
+    std::array input_elements = std::to_array(Vertex::InputElements);
+    input_elements[0].SemanticName = "POSITION";
+
     const HRESULT result = Device().CreateInputLayout(input_elements.data(), input_elements.size(),
                                                       vertex_byte_code_->GetBufferPointer(),
                                                       vertex_byte_code_->GetBufferSize(), &input_layout_);

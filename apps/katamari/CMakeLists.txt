@@ -12,6 +12,7 @@ set(HEADER_LIST
         objects/strawberry.hpp
         objects/tanto.hpp
         field.hpp
+        player_child.hpp
         player.hpp
         game.hpp)
 set(SOURCE_LIST
@@ -28,6 +29,7 @@ set(SOURCE_LIST
         objects/strawberry.cpp
         objects/tanto.cpp
         field.cpp
+        player_child.cpp
         player.cpp
         game.cpp
         main.cpp)

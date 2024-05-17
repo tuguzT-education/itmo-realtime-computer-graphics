@@ -4,6 +4,7 @@ cbuffer VSConstantBuffer : register(b0)
 {
     Transform transform;
     float2 tile_count;
+    float time;
 }
 
 struct VS_Input
@@ -26,6 +27,9 @@ struct VS_Output
 VS_Output VSMain(VS_Input input)
 {
 	VS_Output output;
+
+    input.position.xy += 0.25f * cos(2.0f * time);
+	input.position.z *= sin(time);
 
 	output.position = mul(WorldViewProjection(transform), float4(input.position, 1.0f));
 	output.normal = mul(transform.world, float4(input.normal, 1.0f)).xyz;

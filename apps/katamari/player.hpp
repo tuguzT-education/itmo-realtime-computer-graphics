@@ -7,7 +7,9 @@
 #include <borov_engine/input.hpp>
 #include <borov_engine/mesh_component.hpp>
 
-class Player final : public borov_engine::MeshComponent<>, public borov_engine::Collision {
+#include "player_child.hpp"
+
+class Player final : public borov_engine::MeshComponent<PlayerChild>, public borov_engine::Collision {
   public:
     struct ControlKeys {
         using enum borov_engine::InputKey;

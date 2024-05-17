@@ -31,7 +31,7 @@ class TriangleComponent : public SceneComponent {
         Initializer &TileCount(math::Vector2 tile_count);
     };
 
-    explicit TriangleComponent(class Game &game, const Initializer &initializer);
+    explicit TriangleComponent(class Game &game, const Initializer &initializer = {});
 
     void Load(std::span<const Vertex> vertices, std::span<const Index> indices);
     void LoadTexture(const std::filesystem::path &texture_path, math::Vector2 tile_count = math::Vector2::One);
@@ -41,7 +41,7 @@ class TriangleComponent : public SceneComponent {
 
     void Draw(const Camera *camera) override;
 
-  private:
+  protected:
     struct alignas(16) VertexShaderConstantBuffer {
         math::Matrix4x4 world;
         math::Matrix4x4 view;
@@ -54,21 +54,21 @@ class TriangleComponent : public SceneComponent {
         math::Vector3 view_position;
     };
 
-    void InitializeVertexShader();
-    void InitializeVertexShaderConstantBuffer();
+    virtual void InitializeVertexShader();
+    virtual void InitializeVertexShaderConstantBuffer();
 
-    void InitializePixelShader();
-    void InitializePixelShaderConstantBuffer();
+    virtual void InitializePixelShader();
+    virtual void InitializePixelShaderConstantBuffer();
 
-    void InitializeInputLayout();
-    void InitializeRasterizerState();
-    void InitializeSamplerState();
+    virtual void InitializeInputLayout();
+    virtual void InitializeRasterizerState();
+    virtual void InitializeSamplerState();
 
-    void InitializeVertexBuffer(std::span<const Vertex> vertices);
-    void InitializeIndexBuffer(std::span<const Index> indices);
+    virtual void InitializeVertexBuffer(std::span<const Vertex> vertices);
+    virtual void InitializeIndexBuffer(std::span<const Index> indices);
 
-    void UpdateVertexShaderConstantBuffer(const VertexShaderConstantBuffer &data);
-    void UpdatePixelShaderConstantBuffer(const PixelShaderConstantBuffer &data);
+    virtual void UpdateVertexShaderConstantBuffer(const VertexShaderConstantBuffer &data);
+    virtual void UpdatePixelShaderConstantBuffer(const PixelShaderConstantBuffer &data);
 
     detail::D3DPtr<ID3D11Buffer> index_buffer_;
     detail::D3DPtr<ID3D11Buffer> vertex_buffer_;

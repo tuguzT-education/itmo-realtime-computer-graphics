@@ -7,7 +7,7 @@ cbuffer VSConstantBuffer : register(b0)
 
 struct VS_Input
 {
-    float3 position : SV_Position;
+    float3 position : POSITION;
     float4 color : COLOR;
 };
 
