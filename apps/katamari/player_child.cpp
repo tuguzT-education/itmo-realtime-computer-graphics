@@ -7,13 +7,11 @@
 
 PlayerChild::PlayerChild(borov_engine::Game& game, const Initializer& initializer)
     : TriangleComponent(game, initializer) {
-    InitializeVertexShader();
-    InitializeVertexShaderConstantBuffer();
+    ReInitializeVertexShader();
+    ReInitializeVertexShaderConstantBuffer();
 }
 
-void PlayerChild::InitializeVertexShader() {
-    // TriangleComponent::InitializeVertexShader();
-
+void PlayerChild::ReInitializeVertexShader() {
     vertex_byte_code_ = borov_engine::detail::ShaderFromFile("resources/shaders/katamari_player.hlsl", nullptr,
                                                              D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0",
                                                              D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
@@ -23,9 +21,7 @@ void PlayerChild::InitializeVertexShader() {
     borov_engine::detail::CheckResult(result, "Failed to create vertex shader from byte code");
 }
 
-void PlayerChild::InitializeVertexShaderConstantBuffer() {
-    // TriangleComponent::InitializeVertexShaderConstantBuffer();
-
+void PlayerChild::ReInitializeVertexShaderConstantBuffer() {
     constexpr D3D11_BUFFER_DESC buffer_desc{
         .ByteWidth = sizeof(VertexShaderConstantBuffer),
         .Usage = D3D11_USAGE_DYNAMIC,
@@ -40,8 +36,6 @@ void PlayerChild::InitializeVertexShaderConstantBuffer() {
 }
 
 void PlayerChild::UpdateVertexShaderConstantBuffer(const TriangleComponent::VertexShaderConstantBuffer& data) {
-    // TriangleComponent::UpdateVertexShaderConstantBuffer(data);
-
     D3D11_MAPPED_SUBRESOURCE mapped_subresource{};
     const HRESULT result =
         DeviceContext().Map(vertex_shader_constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);

@@ -14,8 +14,9 @@ class PlayerChild final : public borov_engine::TriangleComponent {
         float time = 0.0f;
     };
 
-    void InitializeVertexShader() override;
-    void InitializeVertexShaderConstantBuffer() override;
+    void ReInitializeVertexShader();
+    void ReInitializeVertexShaderConstantBuffer();
+
     void UpdateVertexShaderConstantBuffer(const TriangleComponent::VertexShaderConstantBuffer& data) override;
 };
 

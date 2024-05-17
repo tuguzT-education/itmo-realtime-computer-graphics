@@ -54,19 +54,6 @@ class TriangleComponent : public SceneComponent {
         math::Vector3 view_position;
     };
 
-    virtual void InitializeVertexShader();
-    virtual void InitializeVertexShaderConstantBuffer();
-
-    virtual void InitializePixelShader();
-    virtual void InitializePixelShaderConstantBuffer();
-
-    virtual void InitializeInputLayout();
-    virtual void InitializeRasterizerState();
-    virtual void InitializeSamplerState();
-
-    virtual void InitializeVertexBuffer(std::span<const Vertex> vertices);
-    virtual void InitializeIndexBuffer(std::span<const Index> indices);
-
     virtual void UpdateVertexShaderConstantBuffer(const VertexShaderConstantBuffer &data);
     virtual void UpdatePixelShaderConstantBuffer(const PixelShaderConstantBuffer &data);
 
@@ -89,6 +76,20 @@ class TriangleComponent : public SceneComponent {
 
     bool wireframe_;
     math::Vector2 tile_count_;
+
+  private:
+    void InitializeVertexShader();
+    void InitializeVertexShaderConstantBuffer();
+
+    void InitializePixelShader();
+    void InitializePixelShaderConstantBuffer();
+
+    void InitializeInputLayout();
+    void InitializeRasterizerState();
+    void InitializeSamplerState();
+
+    void InitializeVertexBuffer(std::span<const Vertex> vertices);
+    void InitializeIndexBuffer(std::span<const Index> indices);
 };
 
 }  // namespace borov_engine
