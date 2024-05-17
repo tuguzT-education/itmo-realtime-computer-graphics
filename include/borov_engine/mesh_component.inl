@@ -49,7 +49,7 @@ ChildMesh &ChildFromMesh(Game &game, const SceneComponent &parent, const aiScene
         const auto [x, y, z] = ai_position;
         const math::Vector3 position{x, y, z};
 
-        math::Vector3 normal = math::Vector3::Right;
+        math::Vector3 normal;
         if (const aiVector3D *ai_normals = mesh.mNormals) {
             const auto [x, y, z] = ai_normals[index];
             normal = math::Vector3{x, y, z};
