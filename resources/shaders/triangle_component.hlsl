@@ -48,6 +48,7 @@ cbuffer PSConstantBuffer : register(b0)
     Material material;
     AmbientLight ambient_light;
     DirectionalLight directional_light;
+    PointLight point_light;
 }
 
 typedef VS_Output PS_Input;
@@ -57,13 +58,25 @@ float4 PSMain(PS_Input input) : SV_Target
     float4 color = has_texture ? DiffuseMap.Sample(Sampler, input.texture_coordinate) : float4(1.0f, 1.0f, 1.0f, 1.0f);
     color *= input.color;
 
-    const float3 view_direction = normalize(view_position - input.world_position);
-    const float3 light_direction = normalize(-directional_light.direction);
-    const float3 reflect_direction = reflect(light_direction, input.normal);
+    float3 view_direction = normalize(input.world_position - view_position);
+
+    float3 d_light_direction = normalize(-directional_light.direction);
+    float3 d_reflect_direction = reflect(d_light_direction, input.normal);
+    float4 d_diffuse = saturate(dot(d_light_direction, input.normal) * directional_light.color * material.diffuse * color);
+    float4 d_specular = saturate(pow(max(0.0f, dot(view_direction, d_reflect_direction)), material.exponent) * material.specular);
+
+    float3 p_light_direction = normalize(point_light.position - input.world_position);
+    float3 p_reflect_direction = reflect(p_light_direction, input.normal);
+    float p_distance = length(p_light_direction);
+    float4 p_attenuation = point_light.attenuation.const_factor +
+                           point_light.attenuation.linear_factor * p_distance +
+                           point_light.attenuation.quad_factor * p_distance * p_distance;
+    float4 p_diffuse = saturate(dot(p_light_direction, input.normal) * point_light.color * material.diffuse * color) / p_attenuation;
+    float4 p_specular = saturate(pow(max(0.0f, dot(view_direction, p_reflect_direction)), material.exponent) * material.specular) / p_attenuation;
 
     float4 ambient = color * ambient_light.color * material.ambient;
-    float4 diffuse = saturate(dot(light_direction, input.normal) * directional_light.color * material.diffuse * color);
-    float4 specular = pow(max(0.0f, dot(-view_direction, reflect_direction)), material.exponent) * material.specular;
+    float4 diffuse = d_diffuse + p_diffuse;
+    float4 specular = d_specular + p_specular;
     float4 emissive = material.emissive;
-    return ambient + diffuse + specular + emissive;
+    return saturate(ambient + diffuse + specular + emissive);
 }

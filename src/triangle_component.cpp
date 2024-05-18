@@ -138,6 +138,7 @@ void TriangleComponent::Draw(const Camera *camera) {
         .material = material_,
         .ambient_light = Game().AmbientLight().Primitive(),
         .directional_light = Game().DirectionalLight().Primitive(),
+        .point_light = Game().PointLight().Primitive(),
     };
     UpdatePixelShaderConstantBuffer(ps_constant_buffer);
 

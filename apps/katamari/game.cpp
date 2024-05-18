@@ -83,9 +83,14 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
 
     namespace math = borov_engine::math;
 
-    AmbientLight().Primitive().color = math::colors::linear::White * 0.1f;
+    ClearColor() = math::colors::linear::SkyBlue;
+    AmbientLight().Primitive().color = math::Color{math::colors::linear::White} * 0.2f;
     DirectionalLight().Primitive().color = math::colors::linear::White;
     DirectionalLight().Primitive().direction = math::Normalize(math::Vector3::Down + math::Vector3::Forward);
+    PointLight().Color() = math::colors::linear::White;
+    PointLight().Attenuation().linear_factor = math::Color{math::colors::linear::White};
+    PointLight().Parent(&bulb_.get());
+    PointLight().Transform() = borov_engine::Transform{.position = math::Vector3::Up * 0.2f};
 }
 
 void Game::Update(const float delta_time) {

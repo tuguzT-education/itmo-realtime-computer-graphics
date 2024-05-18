@@ -5,6 +5,7 @@
 #include "borov_engine/camera.hpp"
 #include "borov_engine/detail/d3d_ptr.hpp"
 #include "borov_engine/detail/texture.hpp"
+#include "borov_engine/light.hpp"
 
 namespace borov_engine {
 

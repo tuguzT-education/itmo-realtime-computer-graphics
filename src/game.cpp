@@ -5,6 +5,7 @@
 #include "borov_engine/camera.hpp"
 #include "borov_engine/camera_manager.hpp"
 #include "borov_engine/detail/check_result.hpp"
+#include "borov_engine/light.hpp"
 #include "borov_engine/viewport_manager.hpp"
 
 namespace borov_engine {
@@ -28,6 +29,7 @@ Game::Game(class Window &window, class Input &input)
     DebugDraw<class DebugDraw>();
     ambient_light_ = std::make_unique<AmbientLightComponent>(*this);
     directional_light_ = std::make_unique<DirectionalLightComponent>(*this);
+    point_light_ = std::make_unique<PointLightComponent>(*this);
 
     window_.OnResize().AddRaw(this, &Game::OnWindowResize);
 }
@@ -94,6 +96,14 @@ const DirectionalLightComponent &Game::DirectionalLight() const {
 
 DirectionalLightComponent &Game::DirectionalLight() {
     return *directional_light_;
+}
+
+const PointLightComponent &Game::PointLight() const {
+    return *point_light_;
+}
+
+PointLightComponent &Game::PointLight() {
+    return *point_light_;
 }
 
 const Camera *Game::MainCamera() const {
