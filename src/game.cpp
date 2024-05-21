@@ -372,6 +372,13 @@ void Game::DrawInternal() {
     device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
     device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+    for (const auto &viewport : viewport_manager_->Viewports()) {
+        device_context_->RSSetViewports(1, viewport.Get11());
+
+        const Camera *camera = viewport.camera;
+        Draw(camera);
+        debug_draw_->Draw(camera);
+    }
     Draw();
 
     if (camera_manager_ != nullptr) {
@@ -387,20 +394,13 @@ void Game::DrawInternal() {
     detail::CheckResult(result, "Failed to present into swapchain");
 }
 
-void Game::Draw() {
-    for (const auto &viewport : viewport_manager_->Viewports()) {
-        device_context_->RSSetViewports(1, viewport.Get11());
+void Game::Draw() {}
 
-        const Camera *camera = viewport.camera;
-        for (const auto &component : components_) {
-            component->Draw(camera);
-        }
-        Draw(camera);
-        debug_draw_->Draw(camera);
+void Game::Draw(const Camera *camera) {
+    for (const auto &component : components_) {
+        component->Draw(camera);
     }
 }
-
-void Game::Draw(const Camera *camera) {}
 
 void Game::OnTargetResize() {
     render_target_view_.Reset();
