@@ -28,8 +28,11 @@ VS_Output VSMain(VS_Input input)
 {
     VS_Output output = (VS_Output)0;
 
-    input.position.xy += 0.25f * cos(2.0f * time);
-    input.position.z *= (sin(time) + 1.0f) * 0.5f;
+    // input.position.xy += 0.25f * cos(2.0f * time);
+    // input.position.z *= (sin(time) + 1.0f) * 0.5f;
+
+    // input.texture_coordinate.x += time * 0.1f;
+    // input.texture_coordinate.y += sin(input.texture_coordinate.x * 5.0f + time) * 0.4f;
 
     output.position = mul(WorldViewProjection(transform), float4(input.position, 1.0f));
     output.normal = normalize(mul(transform.world, float4(input.normal, 0.0f)).xyz);
