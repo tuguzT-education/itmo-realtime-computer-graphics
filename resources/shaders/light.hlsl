@@ -22,3 +22,12 @@ struct PointLight
     float4 color;
     Attenuation attenuation;
 };
+
+struct SpotLight {
+    float3 position;
+    float3 direction;
+    float4 color;
+    Attenuation attenuation;
+    float inner_cone_angle;
+    float outer_cone_angle;
+};

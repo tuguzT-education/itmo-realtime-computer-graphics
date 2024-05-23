@@ -91,6 +91,14 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     PointLight().Attenuation().linear_factor = math::Color{math::colors::linear::White};
     PointLight().Parent(&bulb_.get());
     PointLight().Transform() = borov_engine::Transform{.position = math::Vector3::Up * 0.2f};
+    SpotLight().Color() = math::colors::linear::White;
+    SpotLight().Transform() = borov_engine::Transform{
+        .position = math::Vector3::Up * 2.0f,
+        .rotation = math::Quaternion::CreateFromAxisAngle(math::Vector3::Right, -std::numbers::pi_v<float> / 2.0f),
+    };
+    SpotLight().Attenuation().linear_factor = math::Color{math::colors::linear::White};
+    SpotLight().InnerConeAngle() = std::numbers::pi_v<float> / 6.0f;
+    SpotLight().OuterConeAngle() = std::numbers::pi_v<float> / 3.0f;
 }
 
 void Game::Update(const float delta_time) {

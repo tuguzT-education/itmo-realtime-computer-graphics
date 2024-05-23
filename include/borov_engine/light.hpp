@@ -89,6 +89,56 @@ class PointLightComponent final : public SceneComponent {
     class Attenuation attenuation_;
 };
 
+struct alignas(16) SpotLight {
+    alignas(16) math::Vector3 position;
+    alignas(16) math::Vector3 direction;
+    alignas(16) math::Color color;
+    alignas(16) Attenuation attenuation;
+    float inner_cone_angle;
+    float outer_cone_angle;
+};
+
+class SpotLightComponent final : public SceneComponent {
+  public:
+    using PrimitiveType = SpotLight;
+
+    struct Initializer : SceneComponent::Initializer {
+        math::Color color;
+        Attenuation attenuation;
+        float inner_cone_angle{};
+        float outer_cone_angle{};
+
+        Initializer& Color(math::Color color);
+        Initializer& Attenuation(const Attenuation& attenuation);
+        Initializer& InnerConeAngle(float inner_cone_angle);
+        Initializer& OuterConeAngle(float outer_cone_angle);
+    };
+
+    explicit SpotLightComponent(class Game& game, const Initializer& initializer = {});
+
+    [[nodiscard]] PrimitiveType Primitive() const;
+
+    [[nodiscard]] math::Vector3 Direction() const;
+
+    [[nodiscard]] math::Color Color() const;
+    [[nodiscard]] math::Color& Color();
+
+    [[nodiscard]] const Attenuation& Attenuation() const;
+    [[nodiscard]] class Attenuation& Attenuation();
+
+    [[nodiscard]] float InnerConeAngle() const;
+    [[nodiscard]] float& InnerConeAngle();
+
+    [[nodiscard]] float OuterConeAngle() const;
+    [[nodiscard]] float& OuterConeAngle();
+
+  private:
+    math::Color color_;
+    class Attenuation attenuation_;
+    float inner_cone_angle_;
+    float outer_cone_angle_;
+};
+
 }  // namespace borov_engine
 
 #endif  // BOROV_ENGINE_LIGHT_HPP_INCLUDED

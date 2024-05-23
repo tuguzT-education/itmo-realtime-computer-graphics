@@ -67,4 +67,79 @@ Attenuation& PointLightComponent::Attenuation() {
     return attenuation_;
 }
 
+auto SpotLightComponent::Initializer::Color(const math::Color color) -> Initializer& {
+    this->color = color;
+    return *this;
+}
+
+auto SpotLightComponent::Initializer::Attenuation(const borov_engine::Attenuation& attenuation) -> Initializer& {
+    this->attenuation = attenuation;
+    return *this;
+}
+
+auto SpotLightComponent::Initializer::InnerConeAngle(const float inner_cone_angle) -> Initializer& {
+    this->inner_cone_angle = inner_cone_angle;
+    return *this;
+}
+
+auto SpotLightComponent::Initializer::OuterConeAngle(const float outer_cone_angle) -> Initializer& {
+    this->outer_cone_angle = outer_cone_angle;
+    return *this;
+}
+
+SpotLightComponent::SpotLightComponent(class Game& game, const Initializer& initializer)
+    : SceneComponent(game, initializer),
+      color_{initializer.color},
+      attenuation_{initializer.attenuation},
+      inner_cone_angle_{initializer.inner_cone_angle},
+      outer_cone_angle_{initializer.outer_cone_angle} {}
+
+auto SpotLightComponent::Primitive() const -> PrimitiveType {
+    const class Transform world_transform = WorldTransform();
+    return SpotLight{
+        .position = world_transform.position,
+        .direction = world_transform.Forward(),
+        .color = color_,
+        .attenuation = attenuation_,
+        .inner_cone_angle = inner_cone_angle_,
+        .outer_cone_angle = outer_cone_angle_,
+    };
+}
+
+math::Vector3 SpotLightComponent::Direction() const {
+    return WorldTransform().Forward();
+}
+
+math::Color SpotLightComponent::Color() const {
+    return color_;
+}
+
+math::Color& SpotLightComponent::Color() {
+    return color_;
+}
+
+const Attenuation& SpotLightComponent::Attenuation() const {
+    return attenuation_;
+}
+
+Attenuation& SpotLightComponent::Attenuation() {
+    return attenuation_;
+}
+
+float SpotLightComponent::InnerConeAngle() const {
+    return inner_cone_angle_;
+}
+
+float& SpotLightComponent::InnerConeAngle() {
+    return inner_cone_angle_;
+}
+
+float SpotLightComponent::OuterConeAngle() const {
+    return outer_cone_angle_;
+}
+
+float& SpotLightComponent::OuterConeAngle() {
+    return outer_cone_angle_;
+}
+
 }  // namespace borov_engine

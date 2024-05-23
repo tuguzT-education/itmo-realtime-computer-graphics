@@ -63,6 +63,7 @@ class TriangleComponent : public SceneComponent {
         AmbientLight ambient_light;
         DirectionalLight directional_light;
         PointLight point_light;
+        SpotLight spot_light;
     };
 
     virtual void UpdateVertexShaderConstantBuffer(const VertexShaderConstantBuffer &data);

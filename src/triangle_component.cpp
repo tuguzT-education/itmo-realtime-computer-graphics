@@ -139,6 +139,7 @@ void TriangleComponent::Draw(const Camera *camera) {
         .ambient_light = Game().AmbientLight().Primitive(),
         .directional_light = Game().DirectionalLight().Primitive(),
         .point_light = Game().PointLight().Primitive(),
+        .spot_light = Game().SpotLight().Primitive(),
     };
     UpdatePixelShaderConstantBuffer(ps_constant_buffer);
 

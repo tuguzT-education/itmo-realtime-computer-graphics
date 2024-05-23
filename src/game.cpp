@@ -30,6 +30,7 @@ Game::Game(class Window &window, class Input &input)
     ambient_light_ = std::make_unique<AmbientLightComponent>(*this);
     directional_light_ = std::make_unique<DirectionalLightComponent>(*this);
     point_light_ = std::make_unique<PointLightComponent>(*this);
+    spot_light_ = std::make_unique<SpotLightComponent>(*this);
 
     window_.OnResize().AddRaw(this, &Game::OnWindowResize);
 }
@@ -104,6 +105,14 @@ const PointLightComponent &Game::PointLight() const {
 
 PointLightComponent &Game::PointLight() {
     return *point_light_;
+}
+
+const SpotLightComponent &Game::SpotLight() const {
+    return *spot_light_;
+}
+
+SpotLightComponent &Game::SpotLight() {
+    return *spot_light_;
 }
 
 const Camera *Game::MainCamera() const {

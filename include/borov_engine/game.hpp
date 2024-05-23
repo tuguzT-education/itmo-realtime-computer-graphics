@@ -19,6 +19,7 @@ namespace borov_engine {
 class AmbientLightComponent;
 class DirectionalLightComponent;
 class PointLightComponent;
+class SpotLightComponent;
 
 template <typename Range>
 concept ComponentRange = RefWrapperRange<Range, Component>;
@@ -64,6 +65,9 @@ class Game {
 
     [[nodiscard]] const PointLightComponent &PointLight() const;
     [[nodiscard]] PointLightComponent &PointLight();
+
+    [[nodiscard]] const SpotLightComponent &SpotLight() const;
+    [[nodiscard]] SpotLightComponent &SpotLight();
 
     [[nodiscard]] const Camera *MainCamera() const;
     [[nodiscard]] Camera *MainCamera();
@@ -119,6 +123,7 @@ class Game {
     std::unique_ptr<AmbientLightComponent> ambient_light_;
     std::unique_ptr<DirectionalLightComponent> directional_light_;
     std::unique_ptr<PointLightComponent> point_light_;
+    std::unique_ptr<SpotLightComponent> spot_light_;
     std::vector<std::unique_ptr<Component>> components_;
 
     class Timer timer_;
