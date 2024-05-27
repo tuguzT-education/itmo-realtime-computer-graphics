@@ -16,7 +16,6 @@
 
 namespace borov_engine {
 
-class AmbientLightComponent;
 class DirectionalLightComponent;
 class PointLightComponent;
 class SpotLightComponent;
@@ -56,9 +55,6 @@ class Game {
 
     template <std::derived_from<class DebugDraw> T, typename... Args>
     T &DebugDraw(Args &&...args);
-
-    [[nodiscard]] const AmbientLightComponent &AmbientLight() const;
-    [[nodiscard]] AmbientLightComponent &AmbientLight();
 
     [[nodiscard]] const DirectionalLightComponent &DirectionalLight() const;
     [[nodiscard]] DirectionalLightComponent &DirectionalLight();
@@ -120,7 +116,6 @@ class Game {
     std::unique_ptr<class ViewportManager> viewport_manager_;
     std::unique_ptr<class CameraManager> camera_manager_;
     std::unique_ptr<class DebugDraw> debug_draw_;
-    std::unique_ptr<AmbientLightComponent> ambient_light_;
     std::unique_ptr<DirectionalLightComponent> directional_light_;
     std::unique_ptr<PointLightComponent> point_light_;
     std::unique_ptr<SpotLightComponent> spot_light_;

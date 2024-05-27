@@ -7,47 +7,58 @@
 
 namespace borov_engine {
 
-struct alignas(16) AmbientLight {
-    math::Color color{math::colors::linear::White};
+struct alignas(16) Light {
+    math::Color ambient{math::colors::linear::White};
+    math::Color diffuse;
+    math::Color specular;
 };
 
-class AmbientLightComponent final : public Component {
+class LightComponent : public SceneComponent {
   public:
-    using PrimitiveType = AmbientLight;
-
-    struct Initializer : Component::Initializer {
-        PrimitiveType light;
+    struct Initializer : SceneComponent::Initializer {
+        Light light;
+        bool light_enabled = false;
     };
 
-    explicit AmbientLightComponent(class Game& game, const Initializer& initializer = {});
+    [[nodiscard]] math::Color Ambient() const;
+    [[nodiscard]] math::Color& Ambient();
 
-    [[nodiscard]] const PrimitiveType& Primitive() const noexcept;
-    [[nodiscard]] PrimitiveType& Primitive() noexcept;
+    [[nodiscard]] math::Color Diffuse() const;
+    [[nodiscard]] math::Color& Diffuse();
+
+    [[nodiscard]] math::Color Specular() const;
+    [[nodiscard]] math::Color& Specular();
+
+    [[nodiscard]] Light Light() const;
+
+    [[nodiscard]] bool LightEnabled() const;
+    [[nodiscard]] bool& LightEnabled();
+
+  protected:
+    explicit LightComponent(class Game& game, const Initializer& initializer = {});
 
   private:
-    PrimitiveType light_;
+    class Light light_;
+    bool enabled_;
 };
 
-struct alignas(16) DirectionalLight {
+struct alignas(16) DirectionalLight : Light {
     alignas(16) math::Vector3 direction;
-    alignas(16) math::Color color;
 };
 
-class DirectionalLightComponent final : public Component {
+class DirectionalLightComponent final : public LightComponent {
   public:
-    using PrimitiveType = DirectionalLight;
-
-    struct Initializer : Component::Initializer {
-        PrimitiveType light;
+    struct Initializer : LightComponent::Initializer {
+        [[nodiscard]] math::Vector3 Direction() const;
+        void Direction(const math::Vector3& direction);
     };
 
     explicit DirectionalLightComponent(class Game& game, const Initializer& initializer = {});
 
-    [[nodiscard]] const PrimitiveType& Primitive() const noexcept;
-    [[nodiscard]] PrimitiveType& Primitive() noexcept;
+    [[nodiscard]] math::Vector3 Direction() const;
+    void Direction(const math::Vector3& direction);
 
-  private:
-    PrimitiveType light_;
+    [[nodiscard]] DirectionalLight DirectionalLight() const;
 };
 
 struct alignas(16) Attenuation {
@@ -56,64 +67,51 @@ struct alignas(16) Attenuation {
     math::Color quad_factor;
 };
 
-struct alignas(16) PointLight {
+struct alignas(16) PointLight : Light {
     alignas(16) math::Vector3 position;
-    alignas(16) math::Color color;
     alignas(16) Attenuation attenuation;
 };
 
-class PointLightComponent final : public SceneComponent {
+class PointLightComponent final : public LightComponent {
   public:
-    using PrimitiveType = PointLight;
-
-    struct Initializer : SceneComponent::Initializer {
-        math::Color color;
+    struct Initializer : LightComponent::Initializer {
         Attenuation attenuation;
     };
 
     explicit PointLightComponent(class Game& game, const Initializer& initializer = {});
 
-    [[nodiscard]] PrimitiveType Primitive() const;
-
-    [[nodiscard]] math::Color Color() const;
-    [[nodiscard]] math::Color& Color();
-
     [[nodiscard]] const Attenuation& Attenuation() const;
     [[nodiscard]] class Attenuation& Attenuation();
 
+    [[nodiscard]] PointLight PointLight() const;
+
   private:
-    math::Color color_;
     class Attenuation attenuation_;
 };
 
-struct alignas(16) SpotLight {
-    alignas(16) math::Vector3 position;
+struct alignas(16) SpotLight : Light {
     alignas(16) math::Vector3 direction;
-    alignas(16) math::Color color;
+    alignas(16) math::Vector3 position;
     alignas(16) Attenuation attenuation;
     float inner_cone_angle;
     float outer_cone_angle;
 };
 
-class SpotLightComponent final : public SceneComponent {
+class SpotLightComponent final : public LightComponent {
   public:
-    using PrimitiveType = SpotLight;
-
-    struct Initializer : SceneComponent::Initializer {
-        math::Color color;
+    struct Initializer : LightComponent::Initializer {
         Attenuation attenuation;
         float inner_cone_angle{};
         float outer_cone_angle{};
+
+        [[nodiscard]] math::Vector3 Direction() const;
+        void Direction(const math::Vector3& direction);
     };
 
     explicit SpotLightComponent(class Game& game, const Initializer& initializer = {});
 
-    [[nodiscard]] PrimitiveType Primitive() const;
-
     [[nodiscard]] math::Vector3 Direction() const;
-
-    [[nodiscard]] math::Color Color() const;
-    [[nodiscard]] math::Color& Color();
+    void Direction(const math::Vector3& direction);
 
     [[nodiscard]] const Attenuation& Attenuation() const;
     [[nodiscard]] class Attenuation& Attenuation();
@@ -124,8 +122,9 @@ class SpotLightComponent final : public SceneComponent {
     [[nodiscard]] float OuterConeAngle() const;
     [[nodiscard]] float& OuterConeAngle();
 
+    [[nodiscard]] SpotLight SpotLight() const;
+
   private:
-    math::Color color_;
     class Attenuation attenuation_;
     float inner_cone_angle_;
     float outer_cone_angle_;

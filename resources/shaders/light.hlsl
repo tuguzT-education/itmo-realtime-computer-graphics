@@ -1,12 +1,13 @@
-struct AmbientLight
+struct Light
 {
-    float4 color;
+    float4 ambient;
+    float4 diffuse;
+    float4 specular;
 };
 
-struct DirectionalLight
+struct DirectionalLight : Light
 {
     float3 direction;
-    float4 color;
 };
 
 struct Attenuation
@@ -16,17 +17,15 @@ struct Attenuation
     float4 quad_factor;
 };
 
-struct PointLight
+struct PointLight : Light
 {
     float3 position;
-    float4 color;
     Attenuation attenuation;
 };
 
-struct SpotLight {
-    float3 position;
+struct SpotLight : Light {
     float3 direction;
-    float4 color;
+    float3 position;
     Attenuation attenuation;
     float inner_cone_angle;
     float outer_cone_angle;

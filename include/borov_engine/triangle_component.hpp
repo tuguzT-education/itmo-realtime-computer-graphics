@@ -53,7 +53,6 @@ class TriangleComponent : public SceneComponent {
         std::uint32_t has_texture = false;
         math::Vector3 view_position;
         class Material material;
-        AmbientLight ambient_light;
         DirectionalLight directional_light;
         PointLight point_light;
         SpotLight spot_light;

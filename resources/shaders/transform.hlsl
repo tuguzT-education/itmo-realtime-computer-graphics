@@ -5,7 +5,7 @@ struct Transform
     float4x4 projection;
 };
 
-float4x4 WorldViewProjection(Transform transform)
+float4x4 WorldViewProjection(in Transform transform)
 {
     return mul(mul(transform.projection, transform.view), transform.world);
 }

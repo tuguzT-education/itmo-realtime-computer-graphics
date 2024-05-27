@@ -76,7 +76,8 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
               .transform = borov_engine::Transform{.position = borov_engine::math::Vector3::Backward * 3.0f},
           }),
       } {
-    CameraManager<borov_engine::OrbitCameraManager>(borov_engine::OrbitCameraManager::Initializer{
+    using borov_engine::OrbitCameraManager;
+    CameraManager<OrbitCameraManager>(OrbitCameraManager::Initializer{
         .target = player_,
         .camera = &camera_.get(),
     });
@@ -84,18 +85,27 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     namespace math = borov_engine::math;
 
     ClearColor() = math::colors::linear::SkyBlue;
-    AmbientLight().Primitive().color = math::Color{math::colors::linear::White} * 0.2f;
-    DirectionalLight().Primitive().color = math::colors::linear::White;
-    DirectionalLight().Primitive().direction = math::Normalize(math::Vector3::Down + math::Vector3::Forward);
-    PointLight().Color() = math::colors::linear::White;
+
+    DirectionalLight().LightEnabled() = true;
+    DirectionalLight().Ambient() = math::Color{math::colors::linear::White} * 0.1f;
+    DirectionalLight().Diffuse() = math::Color{math::colors::linear::White};
+    DirectionalLight().Specular() = math::Color{math::colors::linear::White};
+    DirectionalLight().Direction(math::Normalize(math::Vector3::Down + math::Vector3::Forward));
+
+    PointLight().LightEnabled() = true;
+    PointLight().Ambient() = math::Color{math::colors::linear::Black};
+    PointLight().Diffuse() = math::Color{math::colors::linear::White};
+    PointLight().Specular() = math::Color{math::colors::linear::White};
     PointLight().Attenuation().linear_factor = math::Color{math::colors::linear::White};
     PointLight().Parent(&bulb_.get());
     PointLight().Transform() = borov_engine::Transform{.position = math::Vector3::Up * 0.2f};
-    SpotLight().Color() = math::colors::linear::White;
-    SpotLight().Transform() = borov_engine::Transform{
-        .position = math::Vector3::Up * 2.0f,
-        .rotation = math::Quaternion::CreateFromAxisAngle(math::Vector3::Right, -std::numbers::pi_v<float> / 2.0f),
-    };
+
+    SpotLight().LightEnabled() = true;
+    SpotLight().Ambient() = math::Color{math::colors::linear::Black};
+    SpotLight().Diffuse() = math::Color{math::colors::linear::White};
+    SpotLight().Specular() = math::Color{math::colors::linear::White};
+    SpotLight().Transform() = borov_engine::Transform{.position = math::Vector3::Up * 2.0f};
+    SpotLight().Direction(math::Vector3::Down);
     SpotLight().Attenuation().linear_factor = math::Color{math::colors::linear::White};
     SpotLight().InnerConeAngle() = std::numbers::pi_v<float> / 6.0f;
     SpotLight().OuterConeAngle() = std::numbers::pi_v<float> / 3.0f;

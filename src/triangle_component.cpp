@@ -106,10 +106,9 @@ void TriangleComponent::Draw(const Camera *camera) {
         .has_texture = texture_ != nullptr,
         .view_position = (camera != nullptr) ? camera->WorldTransform().position : math::Vector3::Backward,
         .material = material_,
-        .ambient_light = Game().AmbientLight().Primitive(),
-        .directional_light = Game().DirectionalLight().Primitive(),
-        .point_light = Game().PointLight().Primitive(),
-        .spot_light = Game().SpotLight().Primitive(),
+        .directional_light = Game().DirectionalLight().DirectionalLight(),
+        .point_light = Game().PointLight().PointLight(),
+        .spot_light = Game().SpotLight().SpotLight(),
     };
     UpdatePixelShaderConstantBuffer(ps_constant_buffer);
 

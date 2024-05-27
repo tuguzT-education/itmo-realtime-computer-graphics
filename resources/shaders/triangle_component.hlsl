@@ -46,7 +46,6 @@ cbuffer PSConstantBuffer : register(b0)
     bool has_texture;
     float3 view_position;
     Material material;
-    AmbientLight ambient_light;
     DirectionalLight directional_light;
     PointLight point_light;
     SpotLight spot_light;
@@ -54,15 +53,16 @@ cbuffer PSConstantBuffer : register(b0)
 
 typedef VS_Output PS_Input;
 
-float4 PhongLightning(float3 to_light_direction, float4 light_diffuse,
-                      Material material, float3 position, float3 normal)
+float4 PhongLightning(in Light light, in Material material, float3 position, float3 normal, float3 to_light_direction)
 {
     float3 to_view_direction = normalize(view_position - position);
     float3 reflect_direction = normalize(reflect(to_light_direction, normal));
 
-    float4 diffuse = max(dot(to_light_direction, normal), 0.0f) * light_diffuse * material.diffuse;
-    float4 specular = pow(max(dot(-to_view_direction, reflect_direction), 0.0f), material.exponent) * material.specular;
-    return diffuse + specular;
+    float4 ambient = light.ambient * material.ambient;
+    float4 diffuse = max(dot(to_light_direction, normal), 0.0f) * light.diffuse * material.diffuse;
+    float4 specular = pow(max(dot(-to_view_direction, reflect_direction), 0.0f), material.exponent)
+                          * light.specular * material.specular;
+    return ambient + diffuse + specular;
 }
 
 float4 PSMain(PS_Input input) : SV_Target
@@ -70,16 +70,24 @@ float4 PSMain(PS_Input input) : SV_Target
     float4 color = has_texture ? DiffuseMap.Sample(Sampler, input.texture_coordinate) : float4(1.0f, 1.0f, 1.0f, 1.0f);
     color *= input.color;
 
-    float4 d_diffuse_specular = PhongLightning(-directional_light.direction, directional_light.color,
-                                               material, input.world_position, input.normal);
+    Light d_light;
+    d_light.ambient = directional_light.ambient;
+    d_light.diffuse = directional_light.diffuse;
+    d_light.specular = directional_light.specular;
+    float4 d_color = PhongLightning(d_light, material, input.world_position, input.normal, -directional_light.direction);
 
     float3 p_light_direction = point_light.position - input.world_position;
     float p_distance = length(p_light_direction);
     float4 p_attenuation = point_light.attenuation.const_factor +
                            point_light.attenuation.linear_factor * p_distance +
                            point_light.attenuation.quad_factor * p_distance * p_distance;
-    float4 p_diffuse_specular = PhongLightning(normalize(p_light_direction), point_light.color,
-                                               material, input.world_position, input.normal) / p_attenuation;
+    p_attenuation = (length(p_attenuation) > 0.0f) ? p_attenuation : float4(1.0f, 1.0f, 1.0f, 1.0f);
+    Light p_light;
+    p_light.ambient = point_light.ambient;
+    p_light.diffuse = point_light.diffuse;
+    p_light.specular = point_light.specular;
+    float4 p_color = PhongLightning(p_light, material, input.world_position, input.normal, normalize(p_light_direction))
+                         / p_attenuation;
 
     float3 s_light_direction = normalize(-spot_light.direction);
     float3 s_to_vertex_direction = spot_light.position - input.world_position;
@@ -87,18 +95,21 @@ float4 PSMain(PS_Input input) : SV_Target
     float4 s_attenuation = spot_light.attenuation.const_factor +
                            spot_light.attenuation.linear_factor * s_distance +
                            spot_light.attenuation.quad_factor * s_distance * s_distance;
+    s_attenuation = (length(s_attenuation) > 0.0f) ? s_attenuation : float4(1.0f, 1.0f, 1.0f, 1.0f);
     float4 s_cos_alpha = dot(s_light_direction, normalize(s_to_vertex_direction));
     float falloff = spot_light.inner_cone_angle != spot_light.outer_cone_angle
                         ? (s_cos_alpha - cos(spot_light.outer_cone_angle / 2.0f)) /
                           (cos(spot_light.inner_cone_angle / 2.0f) - cos(spot_light.outer_cone_angle / 2.0f))
-                        : 0;
-    float4 s_diffuse_specular = saturate(
-        PhongLightning(s_light_direction, spot_light.color,
-                       material, input.world_position, input.normal) / s_attenuation * falloff
-    );
+                        : 0.0f;
+    falloff = max(falloff, 0.0f);
+    Light s_light;
+    s_light.ambient = spot_light.ambient;
+    s_light.diffuse = spot_light.diffuse;
+    s_light.specular = spot_light.specular;
+    float4 s_color = PhongLightning(s_light, material, input.world_position, input.normal, s_light_direction)
+                         / s_attenuation * falloff;
 
-    float4 ambient = ambient_light.color * material.ambient;
-    float4 diffuse_specular = d_diffuse_specular + p_diffuse_specular + s_diffuse_specular;
+    float4 dps_color = d_color + p_color + s_color;
     float4 emissive = material.emissive;
-    return color * (ambient + diffuse_specular + emissive);
+    return color * (dps_color + emissive);
 }

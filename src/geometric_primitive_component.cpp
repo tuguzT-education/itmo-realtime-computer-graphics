@@ -237,12 +237,30 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
     const auto effect = std::make_unique<DirectX::BasicEffect>(&Device());
     effect->SetColorAndAlpha(color_);
     effect->SetMatrices(world, view, projection);
+
+    const DirectionalLightComponent &directional_light_component = Game().DirectionalLight();
+    const DirectionalLight directional_light = directional_light_component.DirectionalLight();
+    effect->SetLightDiffuseColor(0, directional_light.diffuse);
+    effect->SetLightSpecularColor(0, directional_light.specular);
+    effect->SetLightEnabled(0, directional_light_component.LightEnabled());
+
+    const PointLightComponent &point_light_component = Game().PointLight();
+    PointLight point_light = point_light_component.PointLight();
+    effect->SetLightDiffuseColor(1, point_light.diffuse);
+    effect->SetLightSpecularColor(1, point_light.specular);
+    effect->SetLightEnabled(1, point_light_component.LightEnabled());
+
+    const SpotLightComponent &spot_light_component = Game().SpotLight();
+    SpotLight spot_light = spot_light_component.SpotLight();
+    effect->SetLightDiffuseColor(2, spot_light.diffuse);
+    effect->SetLightSpecularColor(2, spot_light.specular);
+    effect->SetLightEnabled(2, spot_light_component.LightEnabled());
+
+    const math::Color ambient_color = directional_light.ambient + point_light.ambient + spot_light.ambient;
+    effect->SetAmbientLightColor(ambient_color);
     effect->SetLightingEnabled(true);
     effect->SetPerPixelLighting(true);
-    effect->SetLightEnabled(0, false);
-    effect->SetLightEnabled(1, false);
-    effect->SetLightEnabled(2, false);
-    effect->SetAmbientLightColor(Game().AmbientLight().Primitive().color);
+
     if (texture_ != nullptr) {
         effect->SetTexture(texture_.Get());
         effect->SetTextureEnabled(true);
