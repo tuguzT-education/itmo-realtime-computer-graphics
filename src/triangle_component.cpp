@@ -93,8 +93,8 @@ void TriangleComponent::Draw(const Camera *camera) {
 
     const VertexShaderConstantBuffer vs_constant_buffer{
         .world = WorldTransform().ToMatrix(),
-        .view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity,
-        .projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity,
+        .view = (camera != nullptr) ? camera->ViewMatrix() : math::Matrix4x4::Identity,
+        .projection = (camera != nullptr) ? camera->ProjectionMatrix() : math::Matrix4x4::Identity,
         .tile_count = tile_count_,
     };
     UpdateVertexShaderConstantBuffer(vs_constant_buffer);

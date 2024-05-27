@@ -20,6 +20,8 @@ class LightComponent : public SceneComponent {
         bool light_enabled = false;
     };
 
+    explicit LightComponent(class Game& game, const Initializer& initializer = {});
+
     [[nodiscard]] math::Color Ambient() const;
     [[nodiscard]] math::Color& Ambient();
 
@@ -34,8 +36,8 @@ class LightComponent : public SceneComponent {
     [[nodiscard]] bool LightEnabled() const;
     [[nodiscard]] bool& LightEnabled();
 
-  protected:
-    explicit LightComponent(class Game& game, const Initializer& initializer = {});
+    [[nodiscard]] math::Matrix4x4 ViewMatrix() const;
+    [[nodiscard]] virtual math::Matrix4x4 ProjectionMatrix() const = 0;
 
   private:
     class Light light_;
@@ -46,7 +48,7 @@ struct alignas(16) DirectionalLight : Light {
     alignas(16) math::Vector3 direction;
 };
 
-class DirectionalLightComponent final : public LightComponent {
+class DirectionalLightComponent : public LightComponent {
   public:
     struct Initializer : LightComponent::Initializer {
         [[nodiscard]] math::Vector3 Direction() const;
@@ -59,6 +61,8 @@ class DirectionalLightComponent final : public LightComponent {
     void Direction(const math::Vector3& direction);
 
     [[nodiscard]] DirectionalLight DirectionalLight() const;
+
+    [[nodiscard]] math::Matrix4x4 ProjectionMatrix() const override;
 };
 
 struct alignas(16) Attenuation {
@@ -72,7 +76,7 @@ struct alignas(16) PointLight : Light {
     alignas(16) Attenuation attenuation;
 };
 
-class PointLightComponent final : public LightComponent {
+class PointLightComponent : public LightComponent {
   public:
     struct Initializer : LightComponent::Initializer {
         Attenuation attenuation;
@@ -84,6 +88,8 @@ class PointLightComponent final : public LightComponent {
     [[nodiscard]] class Attenuation& Attenuation();
 
     [[nodiscard]] PointLight PointLight() const;
+
+    [[nodiscard]] math::Matrix4x4 ProjectionMatrix() const override;
 
   private:
     class Attenuation attenuation_;
@@ -97,7 +103,7 @@ struct alignas(16) SpotLight : Light {
     float outer_cone_angle;
 };
 
-class SpotLightComponent final : public LightComponent {
+class SpotLightComponent : public LightComponent {
   public:
     struct Initializer : LightComponent::Initializer {
         Attenuation attenuation;
@@ -123,6 +129,8 @@ class SpotLightComponent final : public LightComponent {
     [[nodiscard]] float& OuterConeAngle();
 
     [[nodiscard]] SpotLight SpotLight() const;
+
+    [[nodiscard]] math::Matrix4x4 ProjectionMatrix() const override;
 
   private:
     class Attenuation attenuation_;

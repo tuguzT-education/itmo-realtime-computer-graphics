@@ -231,8 +231,8 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
     }
 
     const math::Matrix4x4 world = WorldTransform().ToMatrix();
-    const math::Matrix4x4 view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity;
-    const math::Matrix4x4 projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity;
+    const math::Matrix4x4 view = (camera != nullptr) ? camera->ViewMatrix() : math::Matrix4x4::Identity;
+    const math::Matrix4x4 projection = (camera != nullptr) ? camera->ProjectionMatrix() : math::Matrix4x4::Identity;
 
     const auto effect = std::make_unique<DirectX::BasicEffect>(&Device());
     effect->SetColorAndAlpha(color_);

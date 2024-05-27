@@ -36,6 +36,7 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/game.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/timer.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/component.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/projection.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/camera.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/camera_manager.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/spectator_camera_manager.hpp
@@ -69,6 +70,7 @@ set(SOURCE_LIST
         game.cpp
         timer.cpp
         component.cpp
+        projection.cpp
         camera.cpp
         camera_manager.cpp
         spectator_camera_manager.cpp

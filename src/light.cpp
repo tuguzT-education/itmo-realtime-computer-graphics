@@ -1,5 +1,7 @@
 #include "borov_engine/light.hpp"
 
+#include "borov_engine/projection.hpp"
+
 namespace borov_engine {
 
 LightComponent::LightComponent(class Game& game, const Initializer& initializer)
@@ -11,6 +13,10 @@ bool LightComponent::LightEnabled() const {
 
 bool& LightComponent::LightEnabled() {
     return enabled_;
+}
+
+math::Matrix4x4 LightComponent::ViewMatrix() const {
+    return WorldTransform().ViewMatrix();
 }
 
 math::Color LightComponent::Ambient() const {
@@ -77,6 +83,15 @@ DirectionalLight DirectionalLightComponent::DirectionalLight() const {
     return directional_light;
 }
 
+math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix() const {
+    const class Game& game = Game();
+    const auto width = static_cast<float>(game.TargetWidth());
+    const auto height = static_cast<float>(game.TargetHeight());
+
+    const OrthographicProjection projection{};
+    return projection.ToMatrix(width, height, 0.1f, 100.0f);
+}
+
 PointLightComponent::PointLightComponent(class Game& game, const Initializer& initializer)
     : LightComponent(game, initializer), attenuation_{initializer.attenuation} {}
 
@@ -105,6 +120,15 @@ PointLight PointLightComponent::PointLight() const {
     point_light.diffuse = diffuse;
     point_light.specular = specular;
     return point_light;
+}
+
+math::Matrix4x4 PointLightComponent::ProjectionMatrix() const {
+    const class Game& game = Game();
+    const auto width = static_cast<float>(game.TargetWidth());
+    const auto height = static_cast<float>(game.TargetHeight());
+
+    const PerspectiveProjection projection{};
+    return projection.ToMatrix(width, height, 0.1f, 100.0f);
 }
 
 math::Vector3 SpotLightComponent::Initializer::Direction() const {
@@ -173,6 +197,15 @@ SpotLight SpotLightComponent::SpotLight() const {
     spot_light.diffuse = diffuse;
     spot_light.specular = specular;
     return spot_light;
+}
+
+math::Matrix4x4 SpotLightComponent::ProjectionMatrix() const {
+    const class Game& game = Game();
+    const auto width = static_cast<float>(game.TargetWidth());
+    const auto height = static_cast<float>(game.TargetHeight());
+
+    const PerspectiveProjection projection{};
+    return projection.ToMatrix(width, height, 0.1f, 100.0f);
 }
 
 }  // namespace borov_engine

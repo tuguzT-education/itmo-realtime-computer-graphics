@@ -13,6 +13,7 @@ struct Transform {
     alignas(16) math::Vector3 scale = math::Vector3::One;
 
     [[nodiscard]] math::Matrix4x4 ToMatrix() const;
+    [[nodiscard]] math::Matrix4x4 ViewMatrix() const;
 
     static void Concatenate(const Transform &parent, const Transform &child, Transform &result);
     static Transform Concatenate(const Transform &parent, const Transform &child);

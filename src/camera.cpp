@@ -11,20 +11,45 @@ struct overloaded : Ts... {
 
 }  // namespace detail
 
-Camera::Camera(class Game& game, const Initializer& initializer)
+Camera::Camera(class Game& game)
+    : SceneComponent(game),
+      width_{0.0f},
+      height_{0.0f},
+      near_plane_{0.1f},
+      far_plane_{100.0f},
+      projection_{std::make_unique<OrthographicProjection>()} {}
+
+Camera::Camera(class Game& game, Initializer&& initializer)
     : SceneComponent(game, initializer),
       width_{initializer.width},
       height_{initializer.height},
       near_plane_{initializer.near_plane},
       far_plane_{initializer.far_plane},
-      projection_type_{initializer.projection_type} {}
-
-const CameraProjectionType& Camera::ProjectionType() const {
-    return projection_type_;
+      projection_{std::move(initializer.projection)} {
+    if (projection_ != nullptr) {
+        return;
+    }
+    projection_ = std::make_unique<OrthographicProjection>();
 }
 
-CameraProjectionType& Camera::ProjectionType() {
-    return projection_type_;
+const Projection& Camera::Projection() const {
+    return *projection_;
+}
+
+Projection& Camera::Projection() {
+    return *projection_;
+}
+
+void Camera::Projection(UniqueProjection&& projection) {
+    projection_ = std::move(projection);
+}
+
+math::Matrix4x4 Camera::ViewMatrix() const {
+    return WorldTransform().ViewMatrix();
+}
+
+math::Matrix4x4 Camera::ProjectionMatrix() const {
+    return projection_->ToMatrix(width_, height_, near_plane_, far_plane_);
 }
 
 float Camera::Width() const {
@@ -82,27 +107,6 @@ float Camera::AspectRatio() const {
 float Camera::InverseAspectRatio() const {
     const float aspect_ratio = AspectRatio();
     return aspect_ratio != 0.0f ? 1.0f / aspect_ratio : 0.0f;
-}
-
-math::Matrix4x4 Camera::View() const {
-    const class Transform world_transform = WorldTransform();
-    const math::Vector3 eye = world_transform.position;
-    const math::Vector3 target = world_transform.position + world_transform.Forward();
-    const math::Vector3 up = world_transform.Up();
-
-    return math::Matrix4x4::CreateLookAt(eye, target, up);
-}
-
-math::Matrix4x4 Camera::Projection() const {
-    auto perspective = [this](const PerspectiveCameraProjectionType& projection_type) {
-        const float fov = projection_type.horizontal_fov;
-        return math::Matrix4x4::CreatePerspectiveFieldOfView(fov, AspectRatio(), near_plane_, far_plane_);
-    };
-    auto orthographic = [this](const OrthographicCameraProjectionType& projection_type) {
-        const float units = projection_type.orthographic_units;
-        return math::Matrix4x4::CreateOrthographic(units, units * InverseAspectRatio(), near_plane_, far_plane_);
-    };
-    return std::visit(detail::overloaded{perspective, orthographic}, projection_type_);
 }
 
 math::Frustum Camera::Frustum() const {

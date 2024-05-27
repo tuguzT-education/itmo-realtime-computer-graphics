@@ -8,7 +8,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
       camera_{
           AddComponent<borov_engine::Camera>([] {
               borov_engine::Camera::Initializer initializer{
-                  .projection_type = borov_engine::PerspectiveCameraProjectionType{},
+                  .projection = std::make_unique<borov_engine::PerspectiveProjection>(),
               };
               initializer.transform = {.position = borov_engine::math::Vector3::Backward};
               return initializer;

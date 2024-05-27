@@ -12,7 +12,7 @@ OrbitCameraManager::OrbitCameraManager(class Game& game, const Initializer& init
       camera_{
           initializer.camera
               ? *initializer.camera
-              : game.AddComponent<Camera>(Camera::Initializer{.projection_type = PerspectiveCameraProjectionType{}}),
+              : game.AddComponent<Camera>(Camera::Initializer{.projection = std::make_unique<PerspectiveProjection>()}),
       },
       target_{initializer.target},
       distance_{initializer.distance > min_distance

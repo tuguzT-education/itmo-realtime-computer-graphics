@@ -10,7 +10,7 @@ SpectatorCameraManager::SpectatorCameraManager(class Game& game, const Initializ
       camera_{
           initializer.camera
               ? *initializer.camera
-              : game.AddComponent<Camera>(Camera::Initializer{.projection_type = PerspectiveCameraProjectionType{}}),
+              : game.AddComponent<Camera>(Camera::Initializer{.projection = std::make_unique<PerspectiveProjection>()}),
       },
       movement_input_{initializer.movement_input},
       speed_{initializer.speed},
@@ -114,11 +114,9 @@ void SpectatorCameraManager::Update(const float delta_time) {
         mouse_offset_ = math::Vector2::Zero;
     }
 
-    if (CameraProjectionType& projection_type = camera_.get().ProjectionType();
-        std::holds_alternative<PerspectiveCameraProjectionType>(projection_type)) {
-        auto& [horizontal_fov] = std::get<PerspectiveCameraProjectionType>(projection_type);
-
-        horizontal_fov -= static_cast<float>(wheel_delta_) * zoom_speed_ * delta_time;
+    if (auto* projection = dynamic_cast<PerspectiveProjection*>(&camera_.get().Projection())) {
+        const float fov = projection->HorizontalFOV() - static_cast<float>(wheel_delta_) * zoom_speed_ * delta_time;
+        projection->HorizontalFOV(fov);
         wheel_delta_ = 0;
     }
 }

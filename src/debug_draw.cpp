@@ -211,8 +211,8 @@ void DebugDraw::DrawPrimitives(const Camera* camera) {
     }
 
     const ConstantBuffer constant_buffer{
-        .view = (camera != nullptr) ? camera->View() : math::Matrix4x4::Identity,
-        .projection = (camera != nullptr) ? camera->Projection() : math::Matrix4x4::Identity,
+        .view = (camera != nullptr) ? camera->ViewMatrix() : math::Matrix4x4::Identity,
+        .projection = (camera != nullptr) ? camera->ProjectionMatrix() : math::Matrix4x4::Identity,
     };
     DeviceContext().UpdateSubresource(constant_buffer_.Get(), 0, nullptr, &constant_buffer, 0, 0);
 

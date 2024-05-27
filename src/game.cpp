@@ -145,8 +145,8 @@ math::Vector3 Game::ScreenToWorld(const math::Point screen_point) const {
             continue;
         }
         const math::Vector3 point{x, y, 1.0f};
-        const math::Matrix4x4 projection = viewport.camera->Projection();
-        const math::Matrix4x4 view = viewport.camera->View();
+        const math::Matrix4x4 projection = viewport.camera->ProjectionMatrix();
+        const math::Matrix4x4 view = viewport.camera->ViewMatrix();
         const math::Matrix4x4 world = math::Matrix4x4::Identity;
         return viewport.Unproject(point, projection, view, world);
     }
@@ -163,8 +163,8 @@ math::Point Game::WorldToScreen(const math::Vector3 position, const Viewport *vi
         };
     }
 
-    const math::Matrix4x4 projection = viewport_ref.camera->Projection();
-    const math::Matrix4x4 view = viewport_ref.camera->View();
+    const math::Matrix4x4 projection = viewport_ref.camera->ProjectionMatrix();
+    const math::Matrix4x4 view = viewport_ref.camera->ViewMatrix();
     const math::Matrix4x4 world = math::Matrix4x4::Identity;
     const math::Vector3 result = viewport_ref.Project(position, projection, view, world);
     return math::Point{
