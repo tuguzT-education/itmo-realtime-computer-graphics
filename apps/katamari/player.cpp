@@ -4,10 +4,10 @@ Player::Player(borov_engine::Game& game, const ControlKeys control_keys)
     : MeshComponent(game,
                     [] {
                         Initializer initializer{.mesh_path = "resources/meshes/katamari/katamari.fbx"};
-                        initializer.Transform({
+                        initializer.transform = borov_engine::Transform{
                             .position = borov_engine::math::Vector3::Up / 2.0f,
                             .scale = borov_engine::math::Vector3::One / 200.0f,
-                        });
+                        };
                         return initializer;
                     }()),
       control_keys_{control_keys} {}

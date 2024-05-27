@@ -69,9 +69,6 @@ class PointLightComponent final : public SceneComponent {
     struct Initializer : SceneComponent::Initializer {
         math::Color color;
         Attenuation attenuation;
-
-        Initializer& Color(math::Color color);
-        Initializer& Attenuation(const Attenuation& attenuation);
     };
 
     explicit PointLightComponent(class Game& game, const Initializer& initializer = {});
@@ -107,11 +104,6 @@ class SpotLightComponent final : public SceneComponent {
         Attenuation attenuation;
         float inner_cone_angle{};
         float outer_cone_angle{};
-
-        Initializer& Color(math::Color color);
-        Initializer& Attenuation(const Attenuation& attenuation);
-        Initializer& InnerConeAngle(float inner_cone_angle);
-        Initializer& OuterConeAngle(float outer_cone_angle);
     };
 
     explicit SpotLightComponent(class Game& game, const Initializer& initializer = {});

@@ -122,12 +122,6 @@ void TraverseNode(Game &game, const SceneComponent &parent, const aiScene &scene
 }  // namespace detail
 
 template <std::derived_from<TriangleComponent> ChildMesh>
-auto MeshComponent<ChildMesh>::Initializer::MeshPath(const std::filesystem::path &mesh_path) -> Initializer & {
-    this->mesh_path = mesh_path;
-    return *this;
-}
-
-template <std::derived_from<TriangleComponent> ChildMesh>
 MeshComponent<ChildMesh>::MeshComponent(class Game &game, const Initializer &initializer)
     : SceneComponent(game, initializer) {
     LoadMesh(initializer.mesh_path);

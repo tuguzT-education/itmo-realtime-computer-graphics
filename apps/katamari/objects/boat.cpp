@@ -7,8 +7,8 @@ Boat::Boat(borov_engine::Game& game, const Initializer& initializer)
               MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/boat/boat.fbx",
               };
-              mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 200.0f});
-              mesh_initializer.Parent(this);
+              mesh_initializer.transform = {.scale = borov_engine::math::Vector3::One / 200.0f};
+              mesh_initializer.parent = this;
               return mesh_initializer;
           }()),
       } {}

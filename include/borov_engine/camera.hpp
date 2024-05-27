@@ -28,12 +28,6 @@ class Camera : public SceneComponent {
         float height = 0.0f;
         float near_plane = 0.1f;
         float far_plane = 100.0f;
-
-        Initializer &ProjectionType(CameraProjectionType projection_type);
-        Initializer &Width(float width);
-        Initializer &Height(float height);
-        Initializer &NearPlane(float near_plane);
-        Initializer &FarPlane(float far_plane);
     };
 
     explicit Camera(class Game &game, const Initializer &initializer = {});

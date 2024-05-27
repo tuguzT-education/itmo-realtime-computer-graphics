@@ -7,37 +7,6 @@ namespace borov_engine {
 
 constexpr float OrbitCameraManager::min_distance = 1e-4f;
 
-auto OrbitCameraManager::Initializer::Target(const SceneComponent& target) -> Initializer& {
-    this->target = target;
-    return *this;
-}
-
-auto OrbitCameraManager::Initializer::Camera(class Camera* camera) -> Initializer& {
-    this->camera = camera;
-    return *this;
-}
-
-auto OrbitCameraManager::Initializer::Distance(const float distance) -> Initializer& {
-    if (distance >= min_distance) {
-        this->distance = distance;
-    }
-    return *this;
-}
-
-auto OrbitCameraManager::Initializer::Sensitivity(const float sensitivity) -> Initializer& {
-    if (sensitivity >= 0.0f) {
-        this->sensitivity = sensitivity;
-    }
-    return *this;
-}
-
-auto OrbitCameraManager::Initializer::ZoomSpeed(const float zoom_speed) -> Initializer& {
-    if (zoom_speed >= 0.0f) {
-        this->zoom_speed = zoom_speed;
-    }
-    return *this;
-}
-
 OrbitCameraManager::OrbitCameraManager(class Game& game, const Initializer& initializer)
     : CameraManager(game),
       camera_{

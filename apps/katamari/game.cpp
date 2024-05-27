@@ -10,7 +10,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
               borov_engine::Camera::Initializer initializer{
                   .projection_type = borov_engine::PerspectiveCameraProjectionType{},
               };
-              initializer.Transform({.position = borov_engine::math::Vector3::Backward});
+              initializer.transform = {.position = borov_engine::math::Vector3::Backward};
               return initializer;
           }()),
       },

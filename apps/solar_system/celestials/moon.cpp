@@ -13,7 +13,7 @@ borov_engine::GeometricPrimitiveComponent& CreateMoonMesh(borov_engine::Game& ga
             },
         .color = borov_engine::math::colors::linear::LightGray.v,
     };
-    initializer.Parent(parent);
+    initializer.parent = parent;
     return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(initializer);
 }
 

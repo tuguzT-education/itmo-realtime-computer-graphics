@@ -16,36 +16,6 @@
 
 namespace borov_engine {
 
-auto TriangleComponent::Initializer::Vertices(const std::span<const Vertex> vertices) -> Initializer & {
-    this->vertices = vertices;
-    return *this;
-}
-
-auto TriangleComponent::Initializer::Indices(const std::span<const Index> indices) -> Initializer & {
-    this->indices = indices;
-    return *this;
-}
-
-auto TriangleComponent::Initializer::TexturePath(const std::filesystem::path &texture_path) -> Initializer & {
-    this->texture_path = texture_path;
-    return *this;
-}
-
-auto TriangleComponent::Initializer::TileCount(const math::Vector2 tile_count) -> Initializer & {
-    this->tile_count = tile_count;
-    return *this;
-}
-
-auto TriangleComponent::Initializer::Wireframe(const bool wireframe) -> Initializer & {
-    this->wireframe = wireframe;
-    return *this;
-}
-
-auto TriangleComponent::Initializer::Material(const borov_engine::Material &material) -> Initializer & {
-    this->material = material;
-    return *this;
-}
-
 TriangleComponent::TriangleComponent(class Game &game, const Initializer &initializer)
     : SceneComponent(game, initializer),
       tile_count_{math::Vector2::One},

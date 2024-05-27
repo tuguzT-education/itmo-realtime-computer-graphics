@@ -201,26 +201,6 @@ std::array<BoxComponent::Index, 36> BoxIndices() {
 
 }  // namespace detail
 
-auto BoxComponent::Initializer::Length(const float length) -> Initializer & {
-    this->length = length;
-    return *this;
-}
-
-auto BoxComponent::Initializer::Height(const float height) -> Initializer & {
-    this->height = height;
-    return *this;
-}
-
-auto BoxComponent::Initializer::Width(const float width) -> Initializer & {
-    this->width = width;
-    return *this;
-}
-
-auto BoxComponent::Initializer::Color(const math::Color color) -> Initializer & {
-    this->color = color;
-    return *this;
-}
-
 BoxComponent::BoxComponent(class Game &game, const Initializer &initializer)
     : TriangleComponent(game, initializer),
       length_{initializer.length},

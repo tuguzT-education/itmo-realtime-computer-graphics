@@ -165,32 +165,6 @@ GeometricPrimitiveArguments PrimitiveArguments(const GeometricPrimitiveType prim
     }
 }
 
-auto GeometricPrimitiveComponent::Initializer::PrimitiveArguments(const GeometricPrimitiveArguments &arguments)
-    -> Initializer & {
-    this->primitive_arguments = arguments;
-    return *this;
-}
-
-auto GeometricPrimitiveComponent::Initializer::PrimitiveType(const GeometricPrimitiveType type) -> Initializer & {
-    this->primitive_arguments = borov_engine::PrimitiveArguments(type);
-    return *this;
-}
-
-auto GeometricPrimitiveComponent::Initializer::Color(const math::Color color) -> Initializer & {
-    this->color = color;
-    return *this;
-}
-
-auto GeometricPrimitiveComponent::Initializer::TexturePath(const std::filesystem::path &texture_path) -> Initializer & {
-    this->texture_path = texture_path;
-    return *this;
-}
-
-auto GeometricPrimitiveComponent::Initializer::Wireframe(const bool wireframe) -> Initializer & {
-    this->wireframe = wireframe;
-    return *this;
-}
-
 GeometricPrimitiveComponent::GeometricPrimitiveComponent(class Game &game, const Initializer &initializer)
     : SceneComponent(game, initializer),
       color_{initializer.color},

@@ -168,12 +168,6 @@ class GeometricPrimitiveComponent : public SceneComponent {
         math::Color color{math::colors::linear::White};
         std::filesystem::path texture_path;
         bool wireframe = false;
-
-        Initializer &PrimitiveArguments(const GeometricPrimitiveArguments &arguments);
-        Initializer &PrimitiveType(GeometricPrimitiveType type);
-        Initializer &Color(math::Color color);
-        Initializer &TexturePath(const std::filesystem::path &texture_path);
-        Initializer &Wireframe(bool wireframe);
     };
 
     explicit GeometricPrimitiveComponent(class Game &game, const Initializer &initializer);

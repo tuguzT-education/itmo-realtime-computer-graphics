@@ -15,11 +15,6 @@ class BoxComponent : public TriangleComponent, public Collision {
         float height = 1.0f;
         float width = 1.0f;
         math::Color color{math::colors::linear::White};
-
-        Initializer& Length(float length);
-        Initializer& Height(float height);
-        Initializer& Width(float width);
-        Initializer& Color(math::Color color);
     };
 
     explicit BoxComponent(class Game& game, const Initializer& initializer = {});

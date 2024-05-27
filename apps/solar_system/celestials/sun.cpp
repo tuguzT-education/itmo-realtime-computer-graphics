@@ -11,7 +11,7 @@ borov_engine::BoxComponent& CreateSunMesh(borov_engine::Game& game, const borov_
         .width = 1.5f,
         .color = borov_engine::math::colors::linear::Yellow.v,
     };
-    initializer.Parent(parent);
+    initializer.parent = parent;
     return game.AddComponent<borov_engine::BoxComponent>(initializer);
 }
 

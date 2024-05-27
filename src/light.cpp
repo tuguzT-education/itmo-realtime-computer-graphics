@@ -24,16 +24,6 @@ DirectionalLightComponent::PrimitiveType& DirectionalLightComponent::Primitive()
     return light_;
 }
 
-auto PointLightComponent::Initializer::Color(const math::Color color) -> Initializer& {
-    this->color = color;
-    return *this;
-}
-
-auto PointLightComponent::Initializer::Attenuation(const class Attenuation& attenuation) -> Initializer& {
-    this->attenuation = attenuation;
-    return *this;
-}
-
 PointLightComponent::PointLightComponent(class Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer), color_{initializer.color}, attenuation_{initializer.attenuation} {}
 
@@ -65,26 +55,6 @@ const Attenuation& PointLightComponent::Attenuation() const {
 
 Attenuation& PointLightComponent::Attenuation() {
     return attenuation_;
-}
-
-auto SpotLightComponent::Initializer::Color(const math::Color color) -> Initializer& {
-    this->color = color;
-    return *this;
-}
-
-auto SpotLightComponent::Initializer::Attenuation(const borov_engine::Attenuation& attenuation) -> Initializer& {
-    this->attenuation = attenuation;
-    return *this;
-}
-
-auto SpotLightComponent::Initializer::InnerConeAngle(const float inner_cone_angle) -> Initializer& {
-    this->inner_cone_angle = inner_cone_angle;
-    return *this;
-}
-
-auto SpotLightComponent::Initializer::OuterConeAngle(const float outer_cone_angle) -> Initializer& {
-    this->outer_cone_angle = outer_cone_angle;
-    return *this;
 }
 
 SpotLightComponent::SpotLightComponent(class Game& game, const Initializer& initializer)

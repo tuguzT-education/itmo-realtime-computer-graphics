@@ -26,13 +26,6 @@ class TriangleComponent : public SceneComponent {
         math::Vector2 tile_count = math::Vector2::One;
         bool wireframe = false;
         Material material;
-
-        Initializer &Vertices(std::span<const Vertex> vertices);
-        Initializer &Indices(std::span<const Index> indices);
-        Initializer &TexturePath(const std::filesystem::path &texture_path);
-        Initializer &TileCount(math::Vector2 tile_count);
-        Initializer &Wireframe(bool wireframe);
-        Initializer &Material(const Material &material);
     };
 
     explicit TriangleComponent(class Game &game, const Initializer &initializer = {});

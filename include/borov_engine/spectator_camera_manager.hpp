@@ -36,12 +36,6 @@ class SpectatorCameraManager : public CameraManager {
         float speed = 1.0f;
         float sensitivity = 1.0f;
         float zoom_speed = 1.0f;
-
-        Initializer& Camera(Camera* camera);
-        Initializer& MovementInput(MovementInput movement_input);
-        Initializer& Speed(float speed);
-        Initializer& Sensitivity(float sensitivity);
-        Initializer& ZoomSpeed(float zoom_speed);
     };
 
     explicit SpectatorCameraManager(class Game& game, const Initializer& initializer = {});

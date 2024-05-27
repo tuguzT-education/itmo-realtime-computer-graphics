@@ -11,39 +11,6 @@ struct overloaded : Ts... {
 
 }  // namespace detail
 
-auto Camera::Initializer::ProjectionType(const CameraProjectionType projection_type) -> Initializer& {
-    this->projection_type = projection_type;
-    return *this;
-}
-
-auto Camera::Initializer::Width(const float width) -> Initializer& {
-    if (width >= 0.0f) {
-        this->width = width;
-    }
-    return *this;
-}
-
-auto Camera::Initializer::Height(const float height) -> Initializer& {
-    if (height >= 0.0f) {
-        this->height = height;
-    }
-    return *this;
-}
-
-auto Camera::Initializer::NearPlane(const float near_plane) -> Initializer& {
-    if (near_plane > 0.0f && near_plane != this->far_plane) {
-        this->near_plane = near_plane;
-    }
-    return *this;
-}
-
-auto Camera::Initializer::FarPlane(const float far_plane) -> Initializer& {
-    if (far_plane > 0.0f && this->near_plane != far_plane) {
-        this->far_plane = far_plane;
-    }
-    return *this;
-}
-
 Camera::Camera(class Game& game, const Initializer& initializer)
     : SceneComponent(game, initializer),
       width_{initializer.width},

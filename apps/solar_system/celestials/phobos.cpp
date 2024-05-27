@@ -13,7 +13,7 @@ borov_engine::GeometricPrimitiveComponent& CreatePhobosMesh(borov_engine::Game& 
             },
         .color = borov_engine::math::colors::linear::PaleVioletRed.v,
     };
-    initializer.Parent(parent);
+    initializer.parent = parent;
     return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(initializer);
 }
 

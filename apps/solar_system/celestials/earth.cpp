@@ -11,7 +11,7 @@ borov_engine::BoxComponent& CreateEarthMesh(borov_engine::Game& game, const boro
         .width = 0.5f,
         .color = borov_engine::math::colors::linear::SpringGreen.v,
     };
-    initializer.Parent(parent);
+    initializer.parent = parent;
     return game.AddComponent<borov_engine::BoxComponent>(initializer);
 }
 

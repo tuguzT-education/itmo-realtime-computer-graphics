@@ -5,37 +5,6 @@
 
 namespace borov_engine {
 
-auto SpectatorCameraManager::Initializer::Camera(class Camera* camera) -> Initializer& {
-    this->camera = camera;
-    return *this;
-}
-
-auto SpectatorCameraManager::Initializer::MovementInput(const class MovementInput movement_input) -> Initializer& {
-    this->movement_input = movement_input;
-    return *this;
-}
-
-auto SpectatorCameraManager::Initializer::Speed(const float speed) -> Initializer& {
-    if (speed >= 0.0f) {
-        this->speed = speed;
-    }
-    return *this;
-}
-
-auto SpectatorCameraManager::Initializer::Sensitivity(const float sensitivity) -> Initializer& {
-    if (sensitivity >= 0.0f) {
-        this->sensitivity = sensitivity;
-    }
-    return *this;
-}
-
-auto SpectatorCameraManager::Initializer::ZoomSpeed(const float zoom_speed) -> Initializer& {
-    if (zoom_speed >= 0.0f) {
-        this->zoom_speed = zoom_speed;
-    }
-    return *this;
-}
-
 SpectatorCameraManager::SpectatorCameraManager(class Game& game, const Initializer& initializer)
     : CameraManager(game),
       camera_{

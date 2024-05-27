@@ -13,7 +13,7 @@ borov_engine::GeometricPrimitiveComponent& CreateSaturnMesh(borov_engine::Game& 
             },
         .color = borov_engine::math::colors::linear::LightGoldenrodYellow.v,
     };
-    initializer.Parent(parent);
+    initializer.parent = parent;
     return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(initializer);
 }
 

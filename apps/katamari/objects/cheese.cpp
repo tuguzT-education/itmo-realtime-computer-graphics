@@ -7,8 +7,8 @@ Cheese::Cheese(borov_engine::Game& game, const Initializer& initializer)
               MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/cheese/cheese.fbx",
               };
-              mesh_initializer.Transform({.scale = borov_engine::math::Vector3::One / 30.0f});
-              mesh_initializer.Parent(this);
+              mesh_initializer.transform = {.scale = borov_engine::math::Vector3::One / 30.0f};
+              mesh_initializer.parent = this;
               return mesh_initializer;
           }()),
       } {}

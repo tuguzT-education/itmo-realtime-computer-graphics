@@ -14,7 +14,7 @@ borov_engine::GeometricPrimitiveComponent& CreateMercuryMesh(borov_engine::Game&
             },
         .color = borov_engine::math::colors::linear::SlateGray.v,
     };
-    initializer.Parent(parent);
+    initializer.parent = parent;
     return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(initializer);
 }
 

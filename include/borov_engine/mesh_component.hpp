@@ -15,8 +15,6 @@ class MeshComponent : public SceneComponent {
 
     struct Initializer : SceneComponent::Initializer {
         std::filesystem::path mesh_path;
-
-        Initializer &MeshPath(const std::filesystem::path &mesh_path);
     };
 
     explicit MeshComponent(class Game &game, const Initializer &initializer);

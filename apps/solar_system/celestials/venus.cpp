@@ -15,12 +15,11 @@ borov_engine::GeometricPrimitiveComponent& CreateVenusMesh(borov_engine::Game& g
             },
         .color = borov_engine::math::colors::linear::LightYellow.v,
     };
-    initializer
-        .Transform({
-            .rotation = borov_engine::math::Quaternion::CreateFromAxisAngle(borov_engine::math::Vector3::Right,
-                                                                            std::numbers::pi_v<float> / 2.0f),
-        })
-        .Parent(parent);
+    initializer.transform = borov_engine::Transform{
+        .rotation = borov_engine::math::Quaternion::CreateFromAxisAngle(borov_engine::math::Vector3::Right,
+                                                                        std::numbers::pi_v<float> / 2.0f),
+    };
+    initializer.parent = parent;
     return game.AddComponent<borov_engine::GeometricPrimitiveComponent>(initializer);
 }
 

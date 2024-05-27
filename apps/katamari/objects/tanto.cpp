@@ -7,11 +7,11 @@ Tanto::Tanto(borov_engine::Game& game, const Initializer& initializer)
               MeshType::Initializer mesh_initializer{
                   .mesh_path = "resources/meshes/tanto/tanto.fbx",
               };
-              mesh_initializer.Transform({
+              mesh_initializer.transform = borov_engine::Transform{
                   .position = borov_engine::math::Vector3::Up * 0.06f,
                   .scale = borov_engine::math::Vector3::One / 40.0f,
-              });
-              mesh_initializer.Parent(this);
+              };
+              mesh_initializer.parent = this;
               return mesh_initializer;
           }()),
       } {}

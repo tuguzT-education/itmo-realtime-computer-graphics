@@ -2,16 +2,6 @@
 
 namespace borov_engine {
 
-auto SceneComponent::Initializer::Transform(const borov_engine::Transform &transform) -> Initializer & {
-    this->transform = transform;
-    return *this;
-}
-
-auto SceneComponent::Initializer::Parent(const SceneComponent *parent) -> Initializer & {
-    this->parent = parent;
-    return *this;
-}
-
 SceneComponent::SceneComponent(class Game &game, const Initializer &initializer)
     : Component(game), transform_{initializer.transform}, parent_{initializer.parent} {}
 

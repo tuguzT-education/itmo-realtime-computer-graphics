@@ -19,9 +19,6 @@ class SceneComponent : public Component {
     struct Initializer : Component::Initializer {
         Transform transform;
         const SceneComponent *parent = nullptr;
-
-        Initializer &Transform(const Transform &transform);
-        Initializer &Parent(const SceneComponent *parent);
     };
 
     explicit SceneComponent(class Game &game, const Initializer &initializer = {});

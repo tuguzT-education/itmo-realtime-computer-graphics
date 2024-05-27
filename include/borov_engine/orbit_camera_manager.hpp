@@ -19,12 +19,6 @@ class OrbitCameraManager : public CameraManager {
         float distance = min_distance;
         float sensitivity = 1.0f;
         float zoom_speed = 1.0f;
-
-        Initializer &Target(const SceneComponent &target);
-        Initializer &Camera(Camera *camera);
-        Initializer &Distance(float distance);
-        Initializer &Sensitivity(float sensitivity);
-        Initializer &ZoomSpeed(float zoom_speed);
     };
 
     explicit OrbitCameraManager(class Game &game, const Initializer &initializer);

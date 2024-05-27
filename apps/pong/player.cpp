@@ -6,7 +6,7 @@ Player::Player(borov_engine::Game &game, const enum Direction direction, const C
     : BoxComponent(game,
                    [&] {
                        Initializer initializer{.length = 0.05f, .height = 0.3f, .width = 0.05f};
-                       initializer.Transform({.position = PositionFrom(direction)});
+                       initializer.transform = {.position = PositionFrom(direction)};
                        return initializer;
                    }()),
       direction_{direction},
