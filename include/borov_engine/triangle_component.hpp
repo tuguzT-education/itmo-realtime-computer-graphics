@@ -43,7 +43,7 @@ class TriangleComponent : public SceneComponent {
     [[nodiscard]] const Material &Material() const;
     [[nodiscard]] class Material &Material();
 
-    virtual void DrawInShadowMap();
+    virtual void DrawInShadowMap(const Viewport &viewport);
     void Draw(const Camera *camera) override;
 
   protected:

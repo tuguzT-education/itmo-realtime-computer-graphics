@@ -1,5 +1,8 @@
 #include "borov_engine/light.hpp"
 
+#include <array>
+
+#include "borov_engine/camera.hpp"
 #include "borov_engine/projection.hpp"
 
 namespace borov_engine {
@@ -13,10 +16,6 @@ bool LightComponent::IsLightEnabled() const {
 
 bool& LightComponent::IsLightEnabled() {
     return is_enabled_;
-}
-
-math::Matrix4x4 LightComponent::ViewMatrix() const {
-    return WorldTransform().ViewMatrix();
 }
 
 math::Color LightComponent::Ambient() const {
@@ -83,13 +82,73 @@ DirectionalLight DirectionalLightComponent::DirectionalLight() const {
     return directional_light;
 }
 
-math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix() const {
-    const class Game& game = Game();
-    const auto width = static_cast<float>(game.TargetWidth());
-    const auto height = static_cast<float>(game.TargetHeight());
+math::Matrix4x4 DirectionalLightComponent::ViewMatrix(const Viewport& viewport) const {
+    const Camera* camera = viewport.camera;
+    if (camera == nullptr) {
+        return math::Matrix4x4::Identity;
+    }
 
-    const OrthographicProjection projection{};
-    return projection.ToMatrix(width, height, 0.1f, 100.0f);
+    const math::Frustum camera_frustum = camera->Frustum();
+
+    std::array<math::Vector3, 8> frustum_corners;
+    camera_frustum.GetCorners(frustum_corners.data());
+
+    math::Vector3 frustum_center;
+    for (const math::Vector3& corner : frustum_corners) {
+        frustum_center += corner;
+    }
+    frustum_center /= static_cast<float>(frustum_corners.size());
+
+    const math::Vector3 eye = frustum_center;
+    const math::Vector3 target = frustum_center + Transform().Forward();
+    const math::Vector3 up = Transform().Up();
+    return math::Matrix4x4::CreateLookAt(eye, target, up);
+}
+
+math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix(const Viewport& viewport) const {
+    const Camera* camera = viewport.camera;
+    if (camera == nullptr) {
+        return math::Matrix4x4::Identity;
+    }
+
+    const math::Frustum camera_frustum = camera->Frustum();
+
+    std::array<math::Vector3, 8> frustum_corners;
+    camera_frustum.GetCorners(frustum_corners.data());
+
+    math::Vector3 frustum_center;
+    for (const math::Vector3& corner : frustum_corners) {
+        frustum_center += corner;
+    }
+    frustum_center /= static_cast<float>(frustum_corners.size());
+
+    const math::Vector3 eye = frustum_center;
+    const math::Vector3 target = frustum_center + Transform().Forward();
+    const math::Vector3 up = Transform().Up();
+    const math::Matrix4x4 light_view = math::Matrix4x4::CreateLookAt(eye, target, up);
+
+    float left = (std::numeric_limits<float>::max)();
+    float right = std::numeric_limits<float>::lowest();
+    float bottom = (std::numeric_limits<float>::max)();
+    float top = std::numeric_limits<float>::lowest();
+    float near_plane = (std::numeric_limits<float>::max)();
+    float far_plane = std::numeric_limits<float>::lowest();
+    for (const math::Vector3& corner : frustum_corners) {
+        const auto trf = math::Vector3::Transform(corner, light_view);
+        left = (std::min)(left, trf.x);
+        right = (std::max)(right, trf.x);
+        bottom = (std::min)(bottom, trf.y);
+        top = (std::max)(top, trf.y);
+        near_plane = (std::min)(near_plane, trf.z);
+        far_plane = (std::max)(far_plane, trf.z);
+    }
+
+    // how much geometry to include from outside the view frustum?
+    constexpr float z_mult = 10.0f;
+    near_plane = (near_plane < 0) ? near_plane * z_mult : near_plane / z_mult;
+    far_plane = (far_plane < 0) ? far_plane / z_mult : far_plane * z_mult;
+
+    return math::Matrix4x4::CreateOrthographicOffCenter(left, right, bottom, top, near_plane, far_plane);
 }
 
 PointLightComponent::PointLightComponent(class Game& game, const Initializer& initializer)
@@ -122,13 +181,14 @@ PointLight PointLightComponent::PointLight() const {
     return point_light;
 }
 
-math::Matrix4x4 PointLightComponent::ProjectionMatrix() const {
-    const class Game& game = Game();
-    const auto width = static_cast<float>(game.TargetWidth());
-    const auto height = static_cast<float>(game.TargetHeight());
+math::Matrix4x4 PointLightComponent::ViewMatrix(const Viewport& viewport) const {
+    // TODO
+    return math::Matrix4x4::Identity;
+}
 
-    const PerspectiveProjection projection{};
-    return projection.ToMatrix(width, height, 0.1f, 100.0f);
+math::Matrix4x4 PointLightComponent::ProjectionMatrix(const Viewport& viewport) const {
+    // TODO
+    return math::Matrix4x4::Identity;
 }
 
 math::Vector3 SpotLightComponent::Initializer::Direction() const {
@@ -199,13 +259,14 @@ SpotLight SpotLightComponent::SpotLight() const {
     return spot_light;
 }
 
-math::Matrix4x4 SpotLightComponent::ProjectionMatrix() const {
-    const class Game& game = Game();
-    const auto width = static_cast<float>(game.TargetWidth());
-    const auto height = static_cast<float>(game.TargetHeight());
+math::Matrix4x4 SpotLightComponent::ViewMatrix(const Viewport& viewport) const {
+    // TODO
+    return math::Matrix4x4::Identity;
+}
 
-    const PerspectiveProjection projection{};
-    return projection.ToMatrix(width, height, 0.1f, 100.0f);
+math::Matrix4x4 SpotLightComponent::ProjectionMatrix(const Viewport& viewport) const {
+    // TODO
+    return math::Matrix4x4::Identity;
 }
 
 }  // namespace borov_engine
