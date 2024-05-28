@@ -12,12 +12,12 @@ PlayerChild::PlayerChild(borov_engine::Game& game, const Initializer& initialize
 }
 
 void PlayerChild::ReInitializeVertexShader() {
-    vertex_byte_code_ = borov_engine::detail::ShaderFromFile("resources/shaders/katamari_player.hlsl", nullptr,
+    vertex_shader_byte_code_ = borov_engine::detail::ShaderFromFile("resources/shaders/katamari_player.hlsl", nullptr,
                                                              D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0",
                                                              D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
-    const HRESULT result = Device().CreateVertexShader(vertex_byte_code_->GetBufferPointer(),
-                                                       vertex_byte_code_->GetBufferSize(), nullptr, &vertex_shader_);
+    const HRESULT result = Device().CreateVertexShader(vertex_shader_byte_code_->GetBufferPointer(),
+                                                       vertex_shader_byte_code_->GetBufferSize(), nullptr, &vertex_shader_);
     borov_engine::detail::CheckResult(result, "Failed to create vertex shader from byte code");
 }
 

@@ -106,7 +106,7 @@ class Game {
     void InitializeSwapChain(const class Window &window);
     void InitializeRenderTargetView();
     void InitializeDepthStencilView();
-    void InitializeShadowMap();
+    void InitializeShadowMapResources();
 
     void UpdateInternal(float delta_time);
     void DrawInternal();
@@ -122,7 +122,6 @@ class Game {
     std::unique_ptr<SpotLightComponent> spot_light_;
     std::vector<std::unique_ptr<Component>> components_;
 
-    // TODO shadow map data for directional light
     detail::D3DPtr<ID3D11ShaderResourceView> shadow_map_shader_resource_views_;
     detail::D3DPtr<ID3D11DepthStencilView> shadow_map_depth_stencil_views_;
     detail::D3DPtr<ID3D11Texture2D> shadow_maps_;

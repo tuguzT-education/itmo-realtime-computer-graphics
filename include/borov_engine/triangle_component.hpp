@@ -43,6 +43,7 @@ class TriangleComponent : public SceneComponent {
     [[nodiscard]] const Material &Material() const;
     [[nodiscard]] class Material &Material();
 
+    virtual void DrawInShadowMap();
     void Draw(const Camera *camera) override;
 
   protected:
@@ -74,13 +75,16 @@ class TriangleComponent : public SceneComponent {
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;
 
+    detail::D3DPtr<ID3D11VertexShader> shadow_map_vertex_shader_;
+    detail::D3DPtr<ID3DBlob> shadow_map_vertex_shader_byte_code_;
+
     detail::D3DPtr<ID3D11Buffer> pixel_shader_constant_buffer_;
     detail::D3DPtr<ID3D11PixelShader> pixel_shader_;
-    detail::D3DPtr<ID3DBlob> pixel_byte_code_;
+    detail::D3DPtr<ID3DBlob> pixel_shader_byte_code_;
 
     detail::D3DPtr<ID3D11Buffer> vertex_shader_constant_buffer_;
     detail::D3DPtr<ID3D11VertexShader> vertex_shader_;
-    detail::D3DPtr<ID3DBlob> vertex_byte_code_;
+    detail::D3DPtr<ID3DBlob> vertex_shader_byte_code_;
 
     math::Vector2 tile_count_;
     bool wireframe_;
@@ -94,6 +98,8 @@ class TriangleComponent : public SceneComponent {
 
     void InitializePixelShader();
     void InitializePixelShaderConstantBuffer();
+
+    void InitializeShadowMapVertexShader();
 
     void InitializeInputLayout();
     void InitializeRasterizerState();

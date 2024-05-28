@@ -6,6 +6,7 @@
 #include "borov_engine/camera_manager.hpp"
 #include "borov_engine/detail/check_result.hpp"
 #include "borov_engine/light.hpp"
+#include "borov_engine/triangle_component.hpp"
 #include "borov_engine/viewport_manager.hpp"
 
 namespace borov_engine {
@@ -24,6 +25,7 @@ Game::Game(class Window &window, class Input &input)
     InitializeSwapChain(window);
     InitializeRenderTargetView();
     InitializeDepthStencilView();
+    InitializeShadowMapResources();
 
     ViewportManager<class ViewportManager>();
     DebugDraw<class DebugDraw>();
@@ -349,7 +351,7 @@ void Game::InitializeDepthStencilView() {
     detail::CheckResult(result, "Failed to create depth stencil view");
 }
 
-void Game::InitializeShadowMap() {
+void Game::InitializeShadowMapResources() {
     constexpr D3D11_TEXTURE2D_DESC shadow_maps_desc{
         .Width = 1024,
         .Height = 1024,
@@ -411,6 +413,33 @@ void Game::Update(const float delta_time) {
 
 void Game::DrawInternal() {
     device_context_->ClearState();
+
+    constexpr std::array<ID3D11RenderTargetView *, 0> shadow_map_render_targets{};
+    device_context_->OMSetRenderTargets(shadow_map_render_targets.size(), shadow_map_render_targets.data(),
+                                        shadow_map_depth_stencil_views_.Get());
+    device_context_->OMSetDepthStencilState(depth_stencil_state_.Get(), 1);
+
+    device_context_->ClearDepthStencilView(shadow_map_depth_stencil_views_.Get(),
+                                           D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+    const Viewport &target_viewport = viewport_manager_->TargetViewport();
+    const Viewport shadow_map_viewport{
+        target_viewport.x,        target_viewport.y,        1024.0f, 1024.0f,
+        target_viewport.minDepth, target_viewport.maxDepth, nullptr,
+    };
+    device_context_->RSSetViewports(1, shadow_map_viewport.Get11());
+
+    auto is_triangle = [](const Component &component) {
+        return dynamic_cast<const TriangleComponent *>(&component) != nullptr;
+    };
+    auto to_triangle = [](Component &component) -> TriangleComponent & {
+        return dynamic_cast<TriangleComponent &>(component);
+    };
+    // ReSharper disable once CppTooWideScopeInitStatement
+    auto triangle_components = Components() | std::views::filter(is_triangle) | std::views::transform(to_triangle);
+    for (TriangleComponent &component : triangle_components) {
+        component.DrawInShadowMap();
+    }
 
     const std::array render_targets{render_target_view_.Get()};
     device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), depth_stencil_view_.Get());
