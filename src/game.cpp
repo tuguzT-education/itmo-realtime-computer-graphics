@@ -349,6 +349,50 @@ void Game::InitializeDepthStencilView() {
     detail::CheckResult(result, "Failed to create depth stencil view");
 }
 
+void Game::InitializeShadowMap() {
+    constexpr D3D11_TEXTURE2D_DESC shadow_maps_desc{
+        .Width = 1024,
+        .Height = 1024,
+        .MipLevels = 1,
+        .ArraySize = 1,
+        .Format = DXGI_FORMAT_R32_TYPELESS,
+        .SampleDesc =
+            DXGI_SAMPLE_DESC{
+                .Count = 1,
+                .Quality = 0,
+            },
+        .Usage = D3D11_USAGE_DEFAULT,
+        .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL,
+    };
+    HRESULT result = device_->CreateTexture2D(&shadow_maps_desc, nullptr, &shadow_maps_);
+    detail::CheckResult(result, "Failed to create shadow maps");
+
+    constexpr D3D11_DEPTH_STENCIL_VIEW_DESC shadow_map_depth_stencil_views_desc{
+        .Format = DXGI_FORMAT_D32_FLOAT,
+        .ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY,
+        .Texture2DArray =
+            D3D11_TEX2D_ARRAY_DSV{
+                .ArraySize = 1,
+            },
+    };
+    result = device_->CreateDepthStencilView(shadow_maps_.Get(), &shadow_map_depth_stencil_views_desc,
+                                             &shadow_map_depth_stencil_views_);
+    detail::CheckResult(result, "Failed to create shadow map depth stencil views");
+
+    constexpr D3D11_SHADER_RESOURCE_VIEW_DESC shadow_map_shader_resource_views_desc{
+        .Format = DXGI_FORMAT_R32_FLOAT,
+        .ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY,
+        .Texture2DArray =
+            D3D11_TEX2D_ARRAY_SRV{
+                .MipLevels = 1,
+                .ArraySize = 1,
+            },
+    };
+    result = device_->CreateShaderResourceView(shadow_maps_.Get(), &shadow_map_shader_resource_views_desc,
+                                               &shadow_map_shader_resource_views_);
+    detail::CheckResult(result, "Failed to create shadow map shader resource views");
+}
+
 void Game::UpdateInternal(const float delta_time) {
     Update(delta_time);
 
