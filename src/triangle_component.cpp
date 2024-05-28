@@ -20,7 +20,8 @@ TriangleComponent::TriangleComponent(class Game &game, const Initializer &initia
     : SceneComponent(game, initializer),
       tile_count_{math::Vector2::One},
       wireframe_{initializer.wireframe},
-      prev_wireframe_{initializer.wireframe} {
+      prev_wireframe_{initializer.wireframe},
+      is_casting_shadow_{initializer.is_casting_shadow} {
     InitializeVertexShader();
     InitializeVertexShaderConstantBuffer();
 
@@ -56,6 +57,14 @@ bool TriangleComponent::Wireframe() const {
 
 bool &TriangleComponent::Wireframe() {
     return wireframe_;
+}
+
+bool TriangleComponent::IsCastingShadow() const {
+    return is_casting_shadow_;
+}
+
+bool &TriangleComponent::IsCastingShadow() {
+    return is_casting_shadow_;
 }
 
 const Material &TriangleComponent::Material() const {

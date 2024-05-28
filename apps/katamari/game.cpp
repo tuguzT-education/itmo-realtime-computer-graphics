@@ -86,13 +86,13 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
 
     ClearColor() = math::colors::linear::SkyBlue;
 
-    DirectionalLight().LightEnabled() = true;
+    DirectionalLight().IsLightEnabled() = true;
     DirectionalLight().Ambient() = math::Color{math::colors::linear::White} * 0.1f;
     DirectionalLight().Diffuse() = math::Color{math::colors::linear::White};
     DirectionalLight().Specular() = math::Color{math::colors::linear::White};
     DirectionalLight().Direction(math::Normalize(math::Vector3::Down + math::Vector3::Forward));
 
-    PointLight().LightEnabled() = true;
+    PointLight().IsLightEnabled() = true;
     PointLight().Ambient() = math::Color{math::colors::linear::Black};
     PointLight().Diffuse() = math::Color{math::colors::linear::White};
     PointLight().Specular() = math::Color{math::colors::linear::White};
@@ -100,7 +100,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     PointLight().Parent(&bulb_.get());
     PointLight().Transform() = borov_engine::Transform{.position = math::Vector3::Up * 0.2f};
 
-    SpotLight().LightEnabled() = true;
+    SpotLight().IsLightEnabled() = true;
     SpotLight().Ambient() = math::Color{math::colors::linear::Black};
     SpotLight().Diffuse() = math::Color{math::colors::linear::White};
     SpotLight().Specular() = math::Color{math::colors::linear::White};

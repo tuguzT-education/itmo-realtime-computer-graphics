@@ -5,14 +5,14 @@
 namespace borov_engine {
 
 LightComponent::LightComponent(class Game& game, const Initializer& initializer)
-    : SceneComponent(game, initializer), light_{initializer.light}, enabled_{initializer.light_enabled} {}
+    : SceneComponent(game, initializer), light_{initializer.light}, is_enabled_{initializer.is_light_enabled} {}
 
-bool LightComponent::LightEnabled() const {
-    return enabled_;
+bool LightComponent::IsLightEnabled() const {
+    return is_enabled_;
 }
 
-bool& LightComponent::LightEnabled() {
-    return enabled_;
+bool& LightComponent::IsLightEnabled() {
+    return is_enabled_;
 }
 
 math::Matrix4x4 LightComponent::ViewMatrix() const {
@@ -46,9 +46,9 @@ math::Color& LightComponent::Specular() {
 Light LightComponent::Light() const {
     const math::Color disabled_color{math::colors::linear::Black};
     return {
-        .ambient = enabled_ ? light_.ambient : disabled_color,
-        .diffuse = enabled_ ? light_.diffuse : disabled_color,
-        .specular = enabled_ ? light_.specular : disabled_color,
+        .ambient = is_enabled_ ? light_.ambient : disabled_color,
+        .diffuse = is_enabled_ ? light_.diffuse : disabled_color,
+        .specular = is_enabled_ ? light_.specular : disabled_color,
     };
 }
 

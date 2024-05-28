@@ -17,7 +17,7 @@ class LightComponent : public SceneComponent {
   public:
     struct Initializer : SceneComponent::Initializer {
         Light light;
-        bool light_enabled = false;
+        bool is_light_enabled = false;
     };
 
     explicit LightComponent(class Game& game, const Initializer& initializer = {});
@@ -33,15 +33,15 @@ class LightComponent : public SceneComponent {
 
     [[nodiscard]] Light Light() const;
 
-    [[nodiscard]] bool LightEnabled() const;
-    [[nodiscard]] bool& LightEnabled();
+    [[nodiscard]] bool IsLightEnabled() const;
+    [[nodiscard]] bool& IsLightEnabled();
 
     [[nodiscard]] math::Matrix4x4 ViewMatrix() const;
     [[nodiscard]] virtual math::Matrix4x4 ProjectionMatrix() const = 0;
 
   private:
     class Light light_;
-    bool enabled_;
+    bool is_enabled_;
 };
 
 struct alignas(16) DirectionalLight : Light {

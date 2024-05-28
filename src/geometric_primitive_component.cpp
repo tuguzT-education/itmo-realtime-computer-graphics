@@ -242,19 +242,19 @@ void GeometricPrimitiveComponent::Draw(const Camera *camera) {
     const DirectionalLight directional_light = directional_light_component.DirectionalLight();
     effect->SetLightDiffuseColor(0, directional_light.diffuse);
     effect->SetLightSpecularColor(0, directional_light.specular);
-    effect->SetLightEnabled(0, directional_light_component.LightEnabled());
+    effect->SetLightEnabled(0, directional_light_component.IsLightEnabled());
 
     const PointLightComponent &point_light_component = Game().PointLight();
     PointLight point_light = point_light_component.PointLight();
     effect->SetLightDiffuseColor(1, point_light.diffuse);
     effect->SetLightSpecularColor(1, point_light.specular);
-    effect->SetLightEnabled(1, point_light_component.LightEnabled());
+    effect->SetLightEnabled(1, point_light_component.IsLightEnabled());
 
     const SpotLightComponent &spot_light_component = Game().SpotLight();
     SpotLight spot_light = spot_light_component.SpotLight();
     effect->SetLightDiffuseColor(2, spot_light.diffuse);
     effect->SetLightSpecularColor(2, spot_light.specular);
-    effect->SetLightEnabled(2, spot_light_component.LightEnabled());
+    effect->SetLightEnabled(2, spot_light_component.IsLightEnabled());
 
     const math::Color ambient_color = directional_light.ambient + point_light.ambient + spot_light.ambient;
     effect->SetAmbientLightColor(ambient_color);

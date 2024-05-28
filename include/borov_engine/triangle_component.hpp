@@ -25,6 +25,7 @@ class TriangleComponent : public SceneComponent {
         std::filesystem::path texture_path;
         math::Vector2 tile_count = math::Vector2::One;
         bool wireframe = false;
+        bool is_casting_shadow = true;
         Material material;
     };
 
@@ -35,6 +36,9 @@ class TriangleComponent : public SceneComponent {
 
     [[nodiscard]] bool Wireframe() const;
     [[nodiscard]] bool &Wireframe();
+
+    [[nodiscard]] bool IsCastingShadow() const;
+    [[nodiscard]] bool &IsCastingShadow();
 
     [[nodiscard]] const Material &Material() const;
     [[nodiscard]] class Material &Material();
@@ -81,6 +85,7 @@ class TriangleComponent : public SceneComponent {
     math::Vector2 tile_count_;
     bool wireframe_;
     bool prev_wireframe_;
+    bool is_casting_shadow_;
     class Material material_;
 
   private:

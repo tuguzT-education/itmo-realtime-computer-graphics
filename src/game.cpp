@@ -28,7 +28,7 @@ Game::Game(class Window &window, class Input &input)
     ViewportManager<class ViewportManager>();
     DebugDraw<class DebugDraw>();
     directional_light_ = std::make_unique<DirectionalLightComponent>(*this);
-    directional_light_->LightEnabled() = true;
+    directional_light_->IsLightEnabled() = true;
     directional_light_->Ambient() = math::Color{math::colors::linear::White};
 
     point_light_ = std::make_unique<PointLightComponent>(*this);
