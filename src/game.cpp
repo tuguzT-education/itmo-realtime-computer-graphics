@@ -422,6 +422,10 @@ void Game::Update(const float delta_time) {
 }
 
 void Game::DrawInternal() {
+    device_context_->ClearState();
+    device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
+    device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
     for (const auto &viewport : viewport_manager_->Viewports()) {
         Camera *const camera = viewport.camera;
 
@@ -435,11 +439,8 @@ void Game::DrawInternal() {
         device_context_->ClearDepthStencilView(shadow_map_depth_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
                                                1.0f, 0);
 
-        const Viewport &target_viewport = viewport_manager_->TargetViewport();
-        const Viewport shadow_map_viewport{
-            target_viewport.x,        target_viewport.y,        1024.0f, 1024.0f,
-            target_viewport.minDepth, target_viewport.maxDepth, camera,
-        };
+        const Viewport shadow_map_viewport{viewport.x,        viewport.y,        1024.0f, 1024.0f,
+                                           viewport.minDepth, viewport.maxDepth, camera};
         device_context_->RSSetViewports(1, shadow_map_viewport.Get11());
 
         auto is_triangle = [](const Component &component) {
@@ -459,10 +460,6 @@ void Game::DrawInternal() {
         const std::array render_targets{render_target_view_.Get()};
         device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), depth_stencil_view_.Get());
         device_context_->OMSetDepthStencilState(depth_stencil_state_.Get(), 1);
-
-        device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
-        device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f,
-                                               0);
 
         device_context_->RSSetViewports(1, viewport.Get11());
 

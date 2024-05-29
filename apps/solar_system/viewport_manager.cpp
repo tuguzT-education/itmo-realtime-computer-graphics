@@ -1,5 +1,7 @@
 #include "viewport_manager.hpp"
 
+#include <borov_engine/camera.hpp>
+
 ViewportManager::ViewportManager(borov_engine::Game &game) : borov_engine::ViewportManager(game) {}
 
 void ViewportManager::SplitViewports(std::vector<borov_engine::Viewport> &into) {

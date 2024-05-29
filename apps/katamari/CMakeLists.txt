@@ -11,6 +11,7 @@ set(HEADER_LIST
         objects/hog.hpp
         objects/strawberry.hpp
         objects/tanto.hpp
+        viewport_manager.hpp
         field.hpp
         player_child.hpp
         player.hpp
@@ -28,6 +29,7 @@ set(SOURCE_LIST
         objects/hog.cpp
         objects/strawberry.cpp
         objects/tanto.cpp
+        viewport_manager.cpp
         field.cpp
         player_child.cpp
         player.cpp
