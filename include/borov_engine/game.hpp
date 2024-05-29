@@ -122,6 +122,7 @@ class Game {
     std::unique_ptr<SpotLightComponent> spot_light_;
     std::vector<std::unique_ptr<Component>> components_;
 
+    detail::D3DPtr<ID3D11SamplerState> shadow_map_sampler_state_;
     detail::D3DPtr<ID3D11RenderTargetView> shadow_map_render_target_view_;
     detail::D3DPtr<ID3D11ShaderResourceView> shadow_map_shader_resource_view_;
     detail::D3DPtr<ID3D11Texture2D> shadow_map_;

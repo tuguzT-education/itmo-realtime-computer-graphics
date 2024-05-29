@@ -403,6 +403,18 @@ void Game::InitializeShadowMapResources() {
 
     result = device_->CreateRenderTargetView(shadow_map_.Get(), nullptr, &shadow_map_render_target_view_);
     detail::CheckResult(result, "Failed to create shadow map render target view");
+
+    constexpr D3D11_SAMPLER_DESC shadow_map_sampler_desc{
+        .Filter = D3D11_FILTER_ANISOTROPIC,
+        .AddressU = D3D11_TEXTURE_ADDRESS_CLAMP,
+        .AddressV = D3D11_TEXTURE_ADDRESS_CLAMP,
+        .AddressW = D3D11_TEXTURE_ADDRESS_CLAMP,
+        .ComparisonFunc = D3D11_COMPARISON_ALWAYS,
+        .BorderColor = {0.0f, 0.0f, 0.0f, 0.0f},
+        .MaxLOD = D3D11_FLOAT32_MAX,
+    };
+    result = device_->CreateSamplerState(&shadow_map_sampler_desc, &shadow_map_sampler_state_);
+    detail::CheckResult(result, "Failed to create shadow map sampler state");
 }
 
 void Game::UpdateInternal(const float delta_time) {
@@ -460,6 +472,12 @@ void Game::DrawInternal() {
         const std::array render_targets{render_target_view_.Get()};
         device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), depth_stencil_view_.Get());
         device_context_->OMSetDepthStencilState(depth_stencil_state_.Get(), 1);
+
+        const std::array shader_resources{shadow_map_shader_resource_view_.Get()};
+        device_context_->PSSetShaderResources(0, shader_resources.size(), shader_resources.data());
+
+        const std::array samplers{shadow_map_sampler_state_.Get()};
+        device_context_->PSSetSamplers(0, samplers.size(), samplers.data());
 
         device_context_->RSSetViewports(1, viewport.Get11());
 

@@ -33,7 +33,7 @@ TriangleComponent::TriangleComponent(class Game &game, const Initializer &initia
 
     InitializeInputLayout();
     InitializeRasterizerState();
-    InitializeSamplerState();
+    InitializeTextureSamplerState();
 
     Load(initializer.vertices, initializer.indices);
     LoadTexture(initializer.texture_path, initializer.tile_count);
@@ -162,10 +162,10 @@ void TriangleComponent::Draw(const Camera *camera) {
     device_context.PSSetConstantBuffers(0, ps_constant_buffers.size(), ps_constant_buffers.data());
 
     const std::array shader_resources{texture_.Get()};
-    device_context.PSSetShaderResources(0, shader_resources.size(), shader_resources.data());
+    device_context.PSSetShaderResources(1, shader_resources.size(), shader_resources.data());
 
-    const std::array sampler_states{sampler_state_.Get()};
-    device_context.PSSetSamplers(0, sampler_states.size(), sampler_states.data());
+    const std::array samplers{texture_sampler_state_.Get()};
+    device_context.PSSetSamplers(1, samplers.size(), samplers.data());
 
     const std::array vertex_buffers = {vertex_buffer_.Get()};
     constexpr std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
@@ -270,7 +270,7 @@ void TriangleComponent::InitializeRasterizerState() {
     detail::CheckResult(result, "Failed to create rasterizer state");
 }
 
-void TriangleComponent::InitializeSamplerState() {
+void TriangleComponent::InitializeTextureSamplerState() {
     constexpr D3D11_SAMPLER_DESC sampler_desc{
         .Filter = D3D11_FILTER_ANISOTROPIC,
         .AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
@@ -281,7 +281,7 @@ void TriangleComponent::InitializeSamplerState() {
         .MaxLOD = D3D11_FLOAT32_MAX,
     };
 
-    const HRESULT result = Device().CreateSamplerState(&sampler_desc, &sampler_state_);
+    const HRESULT result = Device().CreateSamplerState(&sampler_desc, &texture_sampler_state_);
     detail::CheckResult(result, "Failed to create sampler state");
 }
 

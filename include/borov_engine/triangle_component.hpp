@@ -69,7 +69,7 @@ class TriangleComponent : public SceneComponent {
     detail::D3DPtr<ID3D11Buffer> index_buffer_;
     detail::D3DPtr<ID3D11Buffer> vertex_buffer_;
 
-    detail::D3DPtr<ID3D11SamplerState> sampler_state_;
+    detail::D3DPtr<ID3D11SamplerState> texture_sampler_state_;
     detail::D3DPtr<ID3D11ShaderResourceView> texture_;
 
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
@@ -107,7 +107,7 @@ class TriangleComponent : public SceneComponent {
 
     void InitializeInputLayout();
     void InitializeRasterizerState();
-    void InitializeSamplerState();
+    void InitializeTextureSamplerState();
 
     void InitializeVertexBuffer(std::span<const Vertex> vertices);
     void InitializeIndexBuffer(std::span<const Index> indices);

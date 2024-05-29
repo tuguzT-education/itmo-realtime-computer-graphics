@@ -175,7 +175,7 @@ void Game::Draw(const borov_engine::Camera *camera) {
     borov_engine::Game::Draw(camera);
 
     const borov_engine::Camera *main_camera = MainCamera();
-    if (main_camera == nullptr) {
+    if (main_camera == nullptr || main_camera == camera) {
         return;
     }
     DebugDraw().DrawFrustrum(main_camera->Frustum());
