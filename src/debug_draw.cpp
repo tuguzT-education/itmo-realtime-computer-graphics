@@ -380,20 +380,20 @@ void DebugDraw::DrawPivot(const Transform& transform, const DrawOpts& opts) {
     const auto& [position, rotation, scale] = transform;
     const auto& [x, y, z] = position;
 
-    const math::Vector3 x_start = math::Vector3::Transform({x + scale.x, y, z}, rotation);
-    const math::Vector3 x_end = math::Vector3::Transform({x - scale.x, y, z}, rotation);
+    const math::Vector3 x_start = math::Vector3::Transform({x - scale.x, y, z}, rotation);
+    const math::Vector3 x_end = math::Vector3::Transform({x + scale.x, y, z}, rotation);
     const math::Vector3 x_normal = math::Vector3::Forward;
     const math::Color x_color{math::colors::linear::Red};
     DrawArrow(x_start, x_end, x_normal, {x_color * opts.color, opts.duration});
 
-    const math::Vector3 y_start = math::Vector3::Transform({x, y + scale.y, z}, rotation);
-    const math::Vector3 y_end = math::Vector3::Transform({x, y - scale.y, z}, rotation);
+    const math::Vector3 y_start = math::Vector3::Transform({x, y - scale.y, z}, rotation);
+    const math::Vector3 y_end = math::Vector3::Transform({x, y + scale.y, z}, rotation);
     const math::Vector3 y_normal = math::Vector3::Forward;
     const math::Color y_color{math::colors::linear::Lime};
     DrawArrow(y_start, y_end, y_normal, {y_color * opts.color, opts.duration});
 
-    const math::Vector3 z_start = math::Vector3::Transform({x, y, z + scale.z}, rotation);
-    const math::Vector3 z_end = math::Vector3::Transform({x, y, z - scale.z}, rotation);
+    const math::Vector3 z_start = math::Vector3::Transform({x, y, z - scale.z}, rotation);
+    const math::Vector3 z_end = math::Vector3::Transform({x, y, z + scale.z}, rotation);
     const math::Vector3 z_normal = math::Vector3::Up;
     const math::Color z_color{math::colors::linear::Blue};
     DrawArrow(z_start, z_end, z_normal, {z_color * opts.color, opts.duration});
@@ -500,7 +500,7 @@ void DebugDraw::DrawPlane(const math::Plane& plane, const PlaneDrawOpts& opts) {
 }
 
 void DebugDraw::DrawFrustrum(const math::Frustum& frustum, const DrawOpts& opts) {
-    std::array<math::Vector3, 8> corners;
+    std::array<math::Vector3, math::Frustum::CORNER_COUNT> corners;
     frustum.GetCorners(corners.data());
 
     const Transform pivot_transform{

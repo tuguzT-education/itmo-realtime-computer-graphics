@@ -23,7 +23,7 @@ class DebugDraw : public Component {
     void Clear();
 
     struct DrawOpts {
-        math::Color color{math::colors::linear::Red};
+        math::Color color{math::colors::linear::White};
         float duration = 0.0f;
     };
     void DrawLine(const math::Vector3& start, const math::Vector3& end, const DrawOpts& opts = {});
@@ -34,7 +34,7 @@ class DebugDraw : public Component {
     void DrawPivot(const Transform& transform, const DrawOpts& opts = {});
 
     struct EllipsisDrawOpts {
-        math::Color color{math::colors::linear::Red};
+        math::Color color{math::colors::linear::White};
         float duration = 0.0f;
         std::uint32_t density = 16;
     };
@@ -44,7 +44,7 @@ class DebugDraw : public Component {
     void DrawSphere(const math::Sphere& sphere, const EllipsisDrawOpts& opts = {});
 
     struct PlaneDrawOpts {
-        math::Color color{math::colors::linear::Red};
+        math::Color color{math::colors::linear::White};
         float duration = 0.0f;
         float width = 1.0f;
         float length_of_normal = 1.0f;

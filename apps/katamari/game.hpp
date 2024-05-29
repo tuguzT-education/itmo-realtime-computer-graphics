@@ -25,6 +25,7 @@ class Game final : public borov_engine::Game {
     explicit Game(borov_engine::Window &window, borov_engine::Input &input);
 
     void Update(float delta_time) override;
+    void Draw(const borov_engine::Camera *camera) override;
 
   private:
     std::reference_wrapper<borov_engine::Camera> camera_;
