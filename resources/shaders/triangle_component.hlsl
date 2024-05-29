@@ -56,19 +56,37 @@ cbuffer PSConstantBuffer : register(b0)
 
 typedef VS_Output PS_Input;
 
-float4 PhongLightning(in Light light, in Material material, float3 position, float3 normal, float3 to_light_direction)
+float4 PhongAmbientLightning(in Light light, in Material material)
+{
+    return light.ambient * material.ambient;
+}
+
+float4 PhongDiffuseLightning(in Light light, in Material material, float3 normal, float3 to_light_direction)
+{
+    float diffuse = max(dot(to_light_direction, normal), 0.0f);
+    return diffuse * light.diffuse * material.diffuse;
+}
+
+float4 PhongSpecularLightning(in Light light, in Material material, float3 position, float3 normal,
+                              float3 to_light_direction)
 {
     float3 to_view_direction = normalize(view_position - position);
     float3 reflect_direction = normalize(reflect(to_light_direction, normal));
 
-    float4 ambient = light.ambient * material.ambient;
-    float4 diffuse = max(dot(to_light_direction, normal), 0.0f) * light.diffuse * material.diffuse;
-    float4 specular = pow(max(dot(-to_view_direction, reflect_direction), 0.0f), material.exponent)
-                          * light.specular * material.specular;
+    float specular = pow(max(dot(-to_view_direction, reflect_direction), 0.0f), material.exponent);
+    return specular * light.specular * material.specular;
+}
+
+float4 PhongLightning(in Light light, in Material material, float3 position, float3 normal, float3 to_light_direction)
+{
+    float4 ambient = PhongAmbientLightning(light, material);
+    float4 diffuse = PhongDiffuseLightning(light, material, normal, to_light_direction);
+    float4 specular = PhongSpecularLightning(light, material, position, normal, to_light_direction);
     return ambient + diffuse + specular;
 }
 
-float4 DirectionalLightning(float3 position, float3 normal)
+float4 DirectionalLightning(in DirectionalLight directional_light, in Material material,
+                            float3 position, float3 normal)
 {
     Light light;
     light.ambient = directional_light.ambient;
@@ -80,7 +98,8 @@ float4 DirectionalLightning(float3 position, float3 normal)
     return PhongLightning(light, material, position, normal, to_light_direction);
 }
 
-float4 PointLightning(float3 position, float3 normal)
+float4 PointLightning(in PointLight point_light, in Material material,
+                      float3 position, float3 normal)
 {
     float3 to_light = point_light.position - position;
     float to_light_distance = length(to_light);
@@ -99,7 +118,8 @@ float4 PointLightning(float3 position, float3 normal)
     return PhongLightning(light, material, position, normal, to_light_direction) / attenuation;
 }
 
-float4 SpotLightning(float3 position, float3 normal)
+float4 SpotLightning(in SpotLight spot_light, in Material material,
+                     float3 position, float3 normal)
 {
     float3 to_light_direction = normalize(-spot_light.direction);
 
@@ -132,9 +152,9 @@ float4 PSMain(PS_Input input) : SV_Target
                        : float4(1.0f, 1.0f, 1.0f, 1.0f);
     color *= input.color;
 
-    float4 dl_color = DirectionalLightning(input.world_position, input.normal);
-    float4 pl_color = PointLightning(input.world_position, input.normal);
-    float4 sl_color = SpotLightning(input.world_position, input.normal);
+    float4 dl_color = DirectionalLightning(directional_light, material, input.world_position, input.normal);
+    float4 pl_color = PointLightning(point_light, material, input.world_position, input.normal);
+    float4 sl_color = SpotLightning(spot_light, material, input.world_position, input.normal);
 
     float4 l_color = dl_color + pl_color + sl_color;
     float4 emissive = material.emissive;
