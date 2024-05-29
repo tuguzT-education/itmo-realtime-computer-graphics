@@ -4,6 +4,16 @@ namespace borov_engine {
 
 Projection::~Projection() = default;
 
+math::Frustum Projection::ToFrustum(const Transform& transform, const float width, const float height,
+                                    const float near_plane, const float far_plane) const {
+    const math::Matrix4x4 projection = ToMatrix(width, height, near_plane, far_plane);
+
+    math::Frustum frustum{projection, true};
+    frustum.Transform(frustum, transform.ToMatrix());
+
+    return frustum;
+}
+
 OrthographicProjection::OrthographicProjection(const math::Vector2 units) : units_{2.0f} {
     Units(units);
 }

@@ -6,6 +6,7 @@
 #include <numbers>
 
 #include "math.hpp"
+#include "transform.hpp"
 
 namespace borov_engine {
 
@@ -15,6 +16,8 @@ class Projection {
 
     [[nodiscard]] virtual math::Matrix4x4 ToMatrix(float width, float height, float near_plane,
                                                    float far_plane) const = 0;
+    [[nodiscard]] virtual math::Frustum ToFrustum(const Transform& transform, float width, float height,
+                                                  float near_plane, float far_plane) const;
 };
 
 class OrthographicProjection : public Projection {
