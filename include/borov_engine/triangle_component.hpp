@@ -75,6 +75,9 @@ class TriangleComponent : public SceneComponent {
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;
 
+    detail::D3DPtr<ID3D11PixelShader> shadow_map_pixel_shader_;
+    detail::D3DPtr<ID3DBlob> shadow_map_pixel_shader_byte_code_;
+
     detail::D3DPtr<ID3D11VertexShader> shadow_map_vertex_shader_;
     detail::D3DPtr<ID3DBlob> shadow_map_vertex_shader_byte_code_;
 
@@ -100,6 +103,7 @@ class TriangleComponent : public SceneComponent {
     void InitializePixelShaderConstantBuffer();
 
     void InitializeShadowMapVertexShader();
+    void InitializeShadowMapPixelShader();
 
     void InitializeInputLayout();
     void InitializeRasterizerState();

@@ -29,6 +29,7 @@ TriangleComponent::TriangleComponent(class Game &game, const Initializer &initia
     InitializePixelShaderConstantBuffer();
 
     InitializeShadowMapVertexShader();
+    InitializeShadowMapPixelShader();
 
     InitializeInputLayout();
     InitializeRasterizerState();
@@ -102,7 +103,7 @@ void TriangleComponent::DrawInShadowMap(const Viewport &viewport) {
     device_context.VSSetConstantBuffers(0, vs_constant_buffers.size(), vs_constant_buffers.data());
 
     constexpr std::array<ID3D11ClassInstance *, 0> ps_class_instances{};
-    device_context.PSSetShader(nullptr, ps_class_instances.data(), ps_class_instances.size());
+    device_context.PSSetShader(shadow_map_pixel_shader_.Get(), ps_class_instances.data(), ps_class_instances.size());
 
     const std::array vertex_buffers = {vertex_buffer_.Get()};
     constexpr std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
@@ -236,6 +237,17 @@ void TriangleComponent::InitializeShadowMapVertexShader() {
                                                        shadow_map_vertex_shader_byte_code_->GetBufferSize(), nullptr,
                                                        &shadow_map_vertex_shader_);
     detail::CheckResult(result, "Failed to create shadow map vertex shader from byte code");
+}
+
+void TriangleComponent::InitializeShadowMapPixelShader() {
+    shadow_map_pixel_shader_byte_code_ = detail::ShaderFromFile(
+        "resources/shaders/triangle_component_shadow_map.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain",
+        "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+
+    const HRESULT result = Device().CreatePixelShader(shadow_map_pixel_shader_byte_code_->GetBufferPointer(),
+                                                      shadow_map_pixel_shader_byte_code_->GetBufferSize(), nullptr,
+                                                      &shadow_map_pixel_shader_);
+    detail::CheckResult(result, "Failed to create shadow map pixel shader from byte code");
 }
 
 void TriangleComponent::InitializeInputLayout() {

@@ -122,9 +122,12 @@ class Game {
     std::unique_ptr<SpotLightComponent> spot_light_;
     std::vector<std::unique_ptr<Component>> components_;
 
-    detail::D3DPtr<ID3D11ShaderResourceView> shadow_map_shader_resource_views_;
-    detail::D3DPtr<ID3D11DepthStencilView> shadow_map_depth_stencil_views_;
-    detail::D3DPtr<ID3D11Texture2D> shadow_maps_;
+    detail::D3DPtr<ID3D11RenderTargetView> shadow_map_render_target_view_;
+    detail::D3DPtr<ID3D11ShaderResourceView> shadow_map_shader_resource_view_;
+    detail::D3DPtr<ID3D11Texture2D> shadow_map_;
+
+    detail::D3DPtr<ID3D11DepthStencilView> shadow_map_depth_view_;
+    detail::D3DPtr<ID3D11Texture2D> shadow_map_depth_;
 
     class Timer timer_;
     Timer::Duration time_per_update_;

@@ -352,7 +352,7 @@ void Game::InitializeDepthStencilView() {
 }
 
 void Game::InitializeShadowMapResources() {
-    constexpr D3D11_TEXTURE2D_DESC shadow_maps_desc{
+    constexpr D3D11_TEXTURE2D_DESC shadow_map_depth_desc{
         .Width = 1024,
         .Height = 1024,
         .MipLevels = 1,
@@ -364,12 +364,12 @@ void Game::InitializeShadowMapResources() {
                 .Quality = 0,
             },
         .Usage = D3D11_USAGE_DEFAULT,
-        .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL,
+        .BindFlags = D3D11_BIND_DEPTH_STENCIL,
     };
-    HRESULT result = device_->CreateTexture2D(&shadow_maps_desc, nullptr, &shadow_maps_);
-    detail::CheckResult(result, "Failed to create shadow maps");
+    HRESULT result = device_->CreateTexture2D(&shadow_map_depth_desc, nullptr, &shadow_map_depth_);
+    detail::CheckResult(result, "Failed to create shadow map depth");
 
-    constexpr D3D11_DEPTH_STENCIL_VIEW_DESC shadow_map_depth_stencil_views_desc{
+    constexpr D3D11_DEPTH_STENCIL_VIEW_DESC shadow_map_depth_stencil_view_desc{
         .Format = DXGI_FORMAT_D32_FLOAT,
         .ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY,
         .Texture2DArray =
@@ -377,22 +377,32 @@ void Game::InitializeShadowMapResources() {
                 .ArraySize = 1,
             },
     };
-    result = device_->CreateDepthStencilView(shadow_maps_.Get(), &shadow_map_depth_stencil_views_desc,
-                                             &shadow_map_depth_stencil_views_);
-    detail::CheckResult(result, "Failed to create shadow map depth stencil views");
+    result = device_->CreateDepthStencilView(shadow_map_depth_.Get(), &shadow_map_depth_stencil_view_desc,
+                                             &shadow_map_depth_view_);
+    detail::CheckResult(result, "Failed to create shadow map depth stencil view");
 
-    constexpr D3D11_SHADER_RESOURCE_VIEW_DESC shadow_map_shader_resource_views_desc{
-        .Format = DXGI_FORMAT_R32_FLOAT,
-        .ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY,
-        .Texture2DArray =
-            D3D11_TEX2D_ARRAY_SRV{
-                .MipLevels = 1,
-                .ArraySize = 1,
+    constexpr D3D11_TEXTURE2D_DESC shadow_map_desc{
+        .Width = 1024,
+        .Height = 1024,
+        .MipLevels = 1,
+        .ArraySize = 1,
+        .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+        .SampleDesc =
+            DXGI_SAMPLE_DESC{
+                .Count = 1,
+                .Quality = 0,
             },
+        .Usage = D3D11_USAGE_DEFAULT,
+        .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
     };
-    result = device_->CreateShaderResourceView(shadow_maps_.Get(), &shadow_map_shader_resource_views_desc,
-                                               &shadow_map_shader_resource_views_);
-    detail::CheckResult(result, "Failed to create shadow map shader resource views");
+    result = device_->CreateTexture2D(&shadow_map_desc, nullptr, &shadow_map_);
+    detail::CheckResult(result, "Failed to create shadow map");
+
+    result = device_->CreateShaderResourceView(shadow_map_.Get(), nullptr, &shadow_map_shader_resource_view_);
+    detail::CheckResult(result, "Failed to create shadow map shader resource view");
+
+    result = device_->CreateRenderTargetView(shadow_map_.Get(), nullptr, &shadow_map_render_target_view_);
+    detail::CheckResult(result, "Failed to create shadow map render target view");
 }
 
 void Game::UpdateInternal(const float delta_time) {
@@ -412,18 +422,18 @@ void Game::Update(const float delta_time) {
 }
 
 void Game::DrawInternal() {
-    device_context_->ClearState();
-
     for (const auto &viewport : viewport_manager_->Viewports()) {
         Camera *const camera = viewport.camera;
 
-        constexpr std::array<ID3D11RenderTargetView *, 0> shadow_map_render_targets{};
-        device_context_->OMSetRenderTargets(shadow_map_render_targets.size(), shadow_map_render_targets.data(),
-                                            shadow_map_depth_stencil_views_.Get());
-        device_context_->OMSetDepthStencilState(depth_stencil_state_.Get(), 1);
+        device_context_->ClearState();
 
-        device_context_->ClearDepthStencilView(shadow_map_depth_stencil_views_.Get(),
-                                               D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+        const std::array shadow_map_render_targets{shadow_map_render_target_view_.Get()};
+        device_context_->OMSetRenderTargets(shadow_map_render_targets.size(), shadow_map_render_targets.data(),
+                                            shadow_map_depth_view_.Get());
+
+        device_context_->ClearRenderTargetView(shadow_map_render_target_view_.Get(), math::colors::linear::White);
+        device_context_->ClearDepthStencilView(shadow_map_depth_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+                                               1.0f, 0);
 
         const Viewport &target_viewport = viewport_manager_->TargetViewport();
         const Viewport shadow_map_viewport{
@@ -443,6 +453,8 @@ void Game::DrawInternal() {
         for (TriangleComponent &component : triangle_components) {
             component.DrawInShadowMap(shadow_map_viewport);
         }
+
+        device_context_->ClearState();
 
         const std::array render_targets{render_target_view_.Get()};
         device_context_->OMSetRenderTargets(render_targets.size(), render_targets.data(), depth_stencil_view_.Get());
