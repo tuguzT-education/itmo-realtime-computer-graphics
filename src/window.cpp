@@ -108,6 +108,15 @@ bool Window::CursorPosition(const math::Point cursor_position) {
     return SetCursorPos(point.x, point.y);
 }
 
+bool Window::IsCursorInWindow() const {
+    auto [x, y] = CursorPosition();
+    auto [_x, _y, width, height] = ClientDimensions();
+
+    const bool x_in_window = 0 <= x && x <= width;
+    const bool y_in_window = 0 <= y && y <= height;
+    return x_in_window && y_in_window;
+}
+
 bool Window::IsDestroyed() const {
     return is_destroyed_;
 }
