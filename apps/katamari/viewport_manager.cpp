@@ -12,7 +12,7 @@ ViewportManager::ViewportManager(borov_engine::Game &game)
 
               namespace math = borov_engine::math;
 
-              initializer.transform.position = math::Vector3::Up * 10.0f;
+              initializer.transform.position = math::Vector3::Up * 12.0f;
               initializer.transform.rotation =
                   math::Quaternion::CreateFromAxisAngle(math::Vector3::Right, -std::numbers::pi_v<float> / 2.0f);
               return initializer;

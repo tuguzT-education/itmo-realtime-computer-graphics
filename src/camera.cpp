@@ -110,14 +110,10 @@ float Camera::InverseAspectRatio() const {
 }
 
 math::Frustum Camera::Frustum() const {
-    const auto [origin, orientation, scale] = WorldTransform();
-    const float right_slope = width_ / 2.0f;
-    const float left_slope = -width_ / 2.0f;
-    const float top_slope = height_ / 2.0f;
-    const float bottom_slope = -height_ / 2.0f;
-    return math::Frustum{
-        origin, orientation, right_slope, left_slope, top_slope, bottom_slope, near_plane_, far_plane_,
-    };
+    math::Frustum frustum{ProjectionMatrix(), true};
+    frustum.Transform(frustum, WorldTransform().ToMatrix());
+
+    return frustum;
 }
 
 }  // namespace borov_engine

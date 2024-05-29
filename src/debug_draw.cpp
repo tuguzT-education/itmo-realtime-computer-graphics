@@ -378,23 +378,25 @@ void DebugDraw::DrawArrow(const math::Vector3& start, const math::Vector3& end, 
 
 void DebugDraw::DrawPivot(const Transform& transform, const DrawOpts& opts) {
     const auto& [position, rotation, scale] = transform;
-    const auto& [x, y, z] = position;
 
-    const math::Vector3 x_start = math::Vector3::Transform({x - scale.x, y, z}, rotation);
-    const math::Vector3 x_end = math::Vector3::Transform({x + scale.x, y, z}, rotation);
-    const math::Vector3 x_normal = math::Vector3::Forward;
+    const math::Vector3 x_delta = math::Vector3::Transform({scale.x, 0.0f, 0.0f}, rotation);
+    const math::Vector3 x_start = position - x_delta;
+    const math::Vector3 x_end = position + x_delta;
+    const math::Vector3 x_normal = math::Vector3::Transform(math::Vector3::Forward, rotation);
     const math::Color x_color{math::colors::linear::Red};
     DrawArrow(x_start, x_end, x_normal, {x_color * opts.color, opts.duration});
 
-    const math::Vector3 y_start = math::Vector3::Transform({x, y - scale.y, z}, rotation);
-    const math::Vector3 y_end = math::Vector3::Transform({x, y + scale.y, z}, rotation);
-    const math::Vector3 y_normal = math::Vector3::Forward;
+    const math::Vector3 y_delta = math::Vector3::Transform({0.0f, scale.y, 0.0f}, rotation);
+    const math::Vector3 y_start = position - y_delta;
+    const math::Vector3 y_end = position + y_delta;
+    const math::Vector3 y_normal = math::Vector3::Transform(math::Vector3::Forward, rotation);
     const math::Color y_color{math::colors::linear::Lime};
     DrawArrow(y_start, y_end, y_normal, {y_color * opts.color, opts.duration});
 
-    const math::Vector3 z_start = math::Vector3::Transform({x, y, z - scale.z}, rotation);
-    const math::Vector3 z_end = math::Vector3::Transform({x, y, z + scale.z}, rotation);
-    const math::Vector3 z_normal = math::Vector3::Up;
+    const math::Vector3 z_delta = math::Vector3::Transform({0.0f, 0.0f, scale.z}, rotation);
+    const math::Vector3 z_start = position - z_delta;
+    const math::Vector3 z_end = position + z_delta;
+    const math::Vector3 z_normal = math::Vector3::Transform(math::Vector3::Up, rotation);
     const math::Color z_color{math::colors::linear::Blue};
     DrawArrow(z_start, z_end, z_normal, {z_color * opts.color, opts.duration});
 }
