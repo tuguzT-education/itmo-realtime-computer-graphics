@@ -1,5 +1,7 @@
 #include "borov_engine/spectator_camera_manager.hpp"
 
+#include <algorithm>
+
 #include "borov_engine/camera.hpp"
 #include "borov_engine/game.hpp"
 
