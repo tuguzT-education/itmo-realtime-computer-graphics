@@ -92,8 +92,8 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
 
     DirectionalLight().IsLightEnabled() = true;
     DirectionalLight().Ambient() = math::Color{math::colors::linear::White} * 0.1f;
-    DirectionalLight().Diffuse() = math::Color{math::colors::linear::White};
-    DirectionalLight().Specular() = math::Color{math::colors::linear::White};
+    DirectionalLight().Diffuse() = math::Color{math::colors::linear::White} * 0.5f;
+    DirectionalLight().Specular() = math::Color{math::colors::linear::White} * 0.5f;
     DirectionalLight().Direction(math::Normalize(math::Vector3::Down + math::Vector3::Forward));
 
     PointLight().IsLightEnabled() = true;
@@ -169,10 +169,40 @@ void Game::Update(const float delta_time) {
             scene_component.Parent(&player_.get());
         }
     }
+
+    const borov_engine::Window *window = Window();
+    if (window != nullptr && input->IsKeyDown(borov_engine::InputKey::LeftButton)) {
+        const math::Vector3 world_cursor_position = ScreenToWorld(window->CursorPosition());
+        if (std::isnan(world_cursor_position.LengthSquared())) {
+            return;
+        }
+        const math::Vector3 ray_position = camera_.get().WorldTransform().position;
+        const math::Vector3 ray_direction = math::Normalize(world_cursor_position - ray_position);
+        const math::Ray ray{ray_position, ray_direction};
+
+        auto is_collision = [](const borov_engine::Component &component) {
+            return dynamic_cast<const borov_engine::Collision *>(&component) != nullptr;
+        };
+        for (borov_engine::Component &component : Components() | std::views::filter(is_collision)) {
+            auto &collision = dynamic_cast<const borov_engine::Collision &>(component);
+            if (float distance = 100.0f; collision.Intersects(ray, distance)) {
+                const math::Vector3 hit_position = ray_position + ray_direction * distance;
+                const math::Vector3 light_direction =
+                    math::Normalize(hit_position - SpotLight().WorldTransform().position);
+                SpotLight().Direction(light_direction);
+
+                const borov_engine::Transform debug_transform{.position = hit_position};
+                DebugDraw().DrawPivot(debug_transform, {.duration = delta_time});
+                return;
+            }
+        }
+    }
 }
 
 void Game::Draw(const borov_engine::Camera *camera) {
     borov_engine::Game::Draw(camera);
+
+    DebugDraw().DrawPivot(SpotLight().WorldTransform());
 
     const borov_engine::Camera *main_camera = MainCamera();
     if (main_camera == nullptr || main_camera == camera) {

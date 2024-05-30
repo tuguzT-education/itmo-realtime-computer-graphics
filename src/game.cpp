@@ -136,7 +136,7 @@ std::uint32_t Game::TargetHeight() const {
     return target_height_;
 }
 
-math::Vector3 Game::ScreenToWorld(const math::Point screen_point) const {
+math::Vector3 Game::ScreenToWorld(const math::Point screen_point, const float depth) const {
     const auto x = static_cast<float>(screen_point.x);
     const auto y = static_cast<float>(screen_point.y);
 
@@ -149,7 +149,7 @@ math::Vector3 Game::ScreenToWorld(const math::Point screen_point) const {
         if (!contains(viewport) || viewport.camera == nullptr) {
             continue;
         }
-        const math::Vector3 point{x, y, 1.0f};
+        const math::Vector3 point{x, y, std::clamp(depth, 0.0f, 1.0f)};
         const math::Matrix4x4 projection = viewport.camera->ProjectionMatrix();
         const math::Matrix4x4 view = viewport.camera->ViewMatrix();
         const math::Matrix4x4 world = math::Matrix4x4::Identity;
