@@ -30,6 +30,7 @@ TriangleComponent::TriangleComponent(class Game &game, const Initializer &initia
 
     InitializeShadowMapVertexShader();
     InitializeShadowMapPixelShader();
+    InitializeShadowMapRasterizerState();
 
     InitializeInputLayout();
     InitializeRasterizerState();
@@ -88,7 +89,7 @@ void TriangleComponent::DrawInShadowMap(const Viewport &viewport) {
 
     ID3D11DeviceContext &device_context = DeviceContext();
 
-    device_context.RSSetState(rasterizer_state_.Get());
+    device_context.RSSetState(shadow_map_rasterizer_state_.Get());
     device_context.IASetInputLayout(input_layout_.Get());
     device_context.IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -253,6 +254,19 @@ void TriangleComponent::InitializeShadowMapPixelShader() {
                                                       shadow_map_pixel_shader_byte_code_->GetBufferSize(), nullptr,
                                                       &shadow_map_pixel_shader_);
     detail::CheckResult(result, "Failed to create shadow map pixel shader from byte code");
+}
+
+void TriangleComponent::InitializeShadowMapRasterizerState() {
+    const D3D11_RASTERIZER_DESC shadow_map_rasterizer_desc{
+        .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID,
+        .CullMode = D3D11_CULL_FRONT,
+        .DepthBias = 1,
+        .DepthBiasClamp = 0.0f,
+        .SlopeScaledDepthBias = 2.0f,
+    };
+
+    const HRESULT result = Device().CreateRasterizerState(&shadow_map_rasterizer_desc, &shadow_map_rasterizer_state_);
+    detail::CheckResult(result, "Failed to create rasterizer state");
 }
 
 void TriangleComponent::InitializeInputLayout() {

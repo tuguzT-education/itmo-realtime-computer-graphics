@@ -74,6 +74,7 @@ class TriangleComponent : public SceneComponent {
     detail::D3DPtr<ID3D11SamplerState> texture_sampler_state_;
     detail::D3DPtr<ID3D11ShaderResourceView> texture_;
 
+    detail::D3DPtr<ID3D11RasterizerState> shadow_map_rasterizer_state_;
     detail::D3DPtr<ID3D11RasterizerState> rasterizer_state_;
     detail::D3DPtr<ID3D11InputLayout> input_layout_;
 
@@ -109,6 +110,7 @@ class TriangleComponent : public SceneComponent {
 
     void InitializeShadowMapVertexShader();
     void InitializeShadowMapPixelShader();
+    void InitializeShadowMapRasterizerState();
 
     void InitializeInputLayout();
     void InitializeRasterizerState();
