@@ -8,6 +8,7 @@ ViewportManager::ViewportManager(borov_engine::Game &game)
           Game().AddComponent<borov_engine::Camera>([] {
               borov_engine::Camera::Initializer initializer{
                   .projection = std::make_unique<borov_engine::PerspectiveProjection>(),
+                  .far_plane = 12.01f,
               };
 
               namespace math = borov_engine::math;

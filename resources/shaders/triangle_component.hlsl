@@ -5,6 +5,8 @@
 cbuffer VSConstantBuffer : register(b0)
 {
     Transform transform;
+    float4x4 directional_light_view;
+    float4x4 directional_light_projection;
     float2 tile_count;
 }
 
@@ -23,6 +25,7 @@ struct VS_Output
     float4 color : COLOR0;
     float2 texture_coordinate : TEXCOORD0;
     float3 world_position : TEXCOORD1;
+    float4 directional_light_position : TEXCOORD2;
 };
 
 VS_Output VSMain(VS_Input input)
@@ -34,6 +37,8 @@ VS_Output VSMain(VS_Input input)
     output.color = input.color;
     output.texture_coordinate = input.texture_coordinate * tile_count;
     output.world_position = mul(transform.world, float4(input.position, 1.0f)).xyz;
+    output.directional_light_position = mul(mul(directional_light_projection, directional_light_view),
+                                            float4(output.world_position.xyz, 1.0f));
 
     return output;
 }
@@ -86,16 +91,36 @@ float4 PhongLightning(in Light light, in Material material, float3 position, flo
 }
 
 float4 DirectionalLightning(in DirectionalLight directional_light, in Material material,
-                            float3 position, float3 normal)
+                            float3 position, float3 normal, float4 directional_light_position)
 {
     Light light;
     light.ambient = directional_light.ambient;
     light.diffuse = directional_light.diffuse;
     light.specular = directional_light.specular;
 
-    float3 to_light_direction = -directional_light.direction;
+    float4 color = PhongAmbientLightning(light, material);
 
-    return PhongLightning(light, material, position, normal, to_light_direction);
+    float2 shadow_map_texture_coordinate = float2(
+        0.5f + (directional_light_position.x / directional_light_position.w * 0.5f),
+        0.5f - (directional_light_position.y / directional_light_position.w * 0.5f)
+    );
+    if ((saturate(shadow_map_texture_coordinate.x) == shadow_map_texture_coordinate.x) &&
+        (saturate(shadow_map_texture_coordinate.y) == shadow_map_texture_coordinate.y))
+    {
+        float shadow_map_depth = ShadowMapDirectionalLight.Sample(ShadowMapSampler, shadow_map_texture_coordinate).r;
+        float light_depth = directional_light_position.z / directional_light_position.w - 5e-6;
+
+        if (light_depth < shadow_map_depth)
+        {
+            float3 to_light_direction = -directional_light.direction;
+
+            float4 diffuse = PhongDiffuseLightning(light, material, normal, to_light_direction);
+            float4 specular = PhongSpecularLightning(light, material, position, normal, to_light_direction);
+            color += diffuse + specular;
+        }
+    }
+
+    return color;
 }
 
 float4 PointLightning(in PointLight point_light, in Material material,
@@ -152,7 +177,8 @@ float4 PSMain(PS_Input input) : SV_Target
                        : float4(1.0f, 1.0f, 1.0f, 1.0f);
     color *= input.color;
 
-    float4 dl_color = DirectionalLightning(directional_light, material, input.world_position, input.normal);
+    float4 dl_color = DirectionalLightning(directional_light, material, input.world_position, input.normal,
+                                           input.directional_light_position);
     float4 pl_color = PointLightning(point_light, material, input.world_position, input.normal);
     float4 sl_color = SpotLightning(spot_light, material, input.world_position, input.normal);
 

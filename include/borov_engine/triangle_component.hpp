@@ -51,7 +51,9 @@ class TriangleComponent : public SceneComponent {
         math::Matrix4x4 world;
         math::Matrix4x4 view;
         math::Matrix4x4 projection;
-        math::Vector2 tile_count = math::Vector2::One;
+        math::Matrix4x4 directional_light_view;
+        math::Matrix4x4 directional_light_projection;
+        alignas(16) math::Vector2 tile_count = math::Vector2::One;
     };
 
     struct alignas(16) PixelShaderConstantBuffer {
@@ -94,6 +96,9 @@ class TriangleComponent : public SceneComponent {
     bool prev_wireframe_;
     bool is_casting_shadow_;
     class Material material_;
+
+    math::Matrix4x4 directional_light_view_;
+    math::Matrix4x4 directional_light_projection_;
 
   private:
     void InitializeVertexShader();
