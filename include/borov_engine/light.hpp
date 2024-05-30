@@ -36,8 +36,8 @@ class LightComponent : public SceneComponent {
     [[nodiscard]] bool IsLightEnabled() const;
     [[nodiscard]] bool& IsLightEnabled();
 
-    [[nodiscard]] virtual math::Matrix4x4 ViewMatrix(const Viewport& viewport) const = 0;
-    [[nodiscard]] virtual math::Matrix4x4 ProjectionMatrix(const Viewport& viewport) const = 0;
+    [[nodiscard]] virtual math::Matrix4x4 ViewMatrix(const math::Frustum& camera_frustum) const = 0;
+    [[nodiscard]] virtual math::Matrix4x4 ProjectionMatrix(const math::Frustum& camera_frustum) const = 0;
 
   private:
     class Light light_;
@@ -62,8 +62,8 @@ class DirectionalLightComponent : public LightComponent {
 
     [[nodiscard]] DirectionalLight DirectionalLight() const;
 
-    [[nodiscard]] math::Matrix4x4 ViewMatrix(const Viewport& viewport) const override;
-    [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const Viewport& viewport) const override;
+    [[nodiscard]] math::Matrix4x4 ViewMatrix(const math::Frustum& camera_frustum) const override;
+    [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const math::Frustum& camera_frustum) const override;
 };
 
 struct alignas(16) Attenuation {
@@ -90,8 +90,8 @@ class PointLightComponent : public LightComponent {
 
     [[nodiscard]] PointLight PointLight() const;
 
-    [[nodiscard]] math::Matrix4x4 ViewMatrix(const Viewport& viewport) const override;
-    [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const Viewport& viewport) const override;
+    [[nodiscard]] math::Matrix4x4 ViewMatrix(const math::Frustum& camera_frustum) const override;
+    [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const math::Frustum& camera_frustum) const override;
 
   private:
     class Attenuation attenuation_;
@@ -132,8 +132,8 @@ class SpotLightComponent : public LightComponent {
 
     [[nodiscard]] SpotLight SpotLight() const;
 
-    [[nodiscard]] math::Matrix4x4 ViewMatrix(const Viewport& viewport) const override;
-    [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const Viewport& viewport) const override;
+    [[nodiscard]] math::Matrix4x4 ViewMatrix(const math::Frustum& camera_frustum) const override;
+    [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const math::Frustum& camera_frustum) const override;
 
   private:
     class Attenuation attenuation_;

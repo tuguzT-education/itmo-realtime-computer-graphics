@@ -3,8 +3,8 @@
 cbuffer VSConstantBuffer : register(b0)
 {
     Transform transform;
-    float4x4 directional_light_view;
-    float4x4 directional_light_projection;
+    float4x4 directional_light_shadow_map_view;
+    float4x4 directional_light_shadow_map_projection;
     float2 tile_count;
     float time;
 }
@@ -24,7 +24,7 @@ struct VS_Output
     float4 color : COLOR;
     float2 texture_coordinate : TEXCOORD0;
     float3 world_position : TEXCOORD1;
-    float4 directional_light_position : TEXCOORD2;
+    float4 directional_light_shadow_map_position : TEXCOORD2;
 };
 
 VS_Output VSMain(VS_Input input)
@@ -42,8 +42,10 @@ VS_Output VSMain(VS_Input input)
     output.color = input.color;
     output.texture_coordinate = input.texture_coordinate * tile_count;
     output.world_position = mul(transform.world, float4(input.position, 1.0f)).xyz;
-    output.directional_light_position = mul(mul(directional_light_projection, directional_light_view),
-                                            float4(output.world_position.xyz, 1.0f));
+    output.directional_light_shadow_map_position = mul(
+        mul(directional_light_shadow_map_projection, directional_light_shadow_map_view),
+        float4(output.world_position.xyz, 1.0f)
+    );
 
     return output;
 }

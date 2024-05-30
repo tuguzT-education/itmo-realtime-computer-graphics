@@ -43,7 +43,7 @@ class TriangleComponent : public SceneComponent {
     [[nodiscard]] const Material &Material() const;
     [[nodiscard]] class Material &Material();
 
-    virtual void DrawInShadowMap(const Viewport &viewport);
+    virtual void DrawInShadowMap(const math::Frustum &camera_frustum);
     void Draw(const Camera *camera) override;
 
   protected:
@@ -51,8 +51,8 @@ class TriangleComponent : public SceneComponent {
         math::Matrix4x4 world;
         math::Matrix4x4 view;
         math::Matrix4x4 projection;
-        math::Matrix4x4 directional_light_view;
-        math::Matrix4x4 directional_light_projection;
+        math::Matrix4x4 directional_light_shadow_map_view;
+        math::Matrix4x4 directional_light_shadow_map_projection;
         alignas(16) math::Vector2 tile_count = math::Vector2::One;
     };
 
@@ -98,8 +98,8 @@ class TriangleComponent : public SceneComponent {
     bool is_casting_shadow_;
     class Material material_;
 
-    math::Matrix4x4 directional_light_view_;
-    math::Matrix4x4 directional_light_projection_;
+    math::Matrix4x4 directional_light_shadow_map_view_;
+    math::Matrix4x4 directional_light_shadow_map_projection_;
 
   private:
     void InitializeVertexShader();

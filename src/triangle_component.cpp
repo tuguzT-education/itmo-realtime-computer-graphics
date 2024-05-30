@@ -79,9 +79,9 @@ Material &TriangleComponent::Material() {
     return material_;
 }
 
-void TriangleComponent::DrawInShadowMap(const Viewport &viewport) {
-    directional_light_view_ = Game().DirectionalLight().ViewMatrix(viewport);
-    directional_light_projection_ = Game().DirectionalLight().ProjectionMatrix(viewport);
+void TriangleComponent::DrawInShadowMap(const math::Frustum &camera_frustum) {
+    directional_light_shadow_map_view_ = Game().DirectionalLight().ViewMatrix(camera_frustum);
+    directional_light_shadow_map_projection_ = Game().DirectionalLight().ProjectionMatrix(camera_frustum);
 
     if (!is_casting_shadow_ || vertex_buffer_ == nullptr || index_buffer_ == nullptr) {
         return;
@@ -98,8 +98,8 @@ void TriangleComponent::DrawInShadowMap(const Viewport &viewport) {
 
     const VertexShaderConstantBuffer vs_constant_buffer{
         .world = WorldTransform().ToMatrix(),
-        .view = directional_light_view_,
-        .projection = directional_light_projection_,
+        .view = directional_light_shadow_map_view_,
+        .projection = directional_light_shadow_map_projection_,
         .tile_count = tile_count_,
     };
     UpdateVertexShaderConstantBuffer(vs_constant_buffer);
@@ -144,8 +144,8 @@ void TriangleComponent::Draw(const Camera *camera) {
         .world = WorldTransform().ToMatrix(),
         .view = (camera != nullptr) ? camera->ViewMatrix() : math::Matrix4x4::Identity,
         .projection = (camera != nullptr) ? camera->ProjectionMatrix() : math::Matrix4x4::Identity,
-        .directional_light_view = directional_light_view_,
-        .directional_light_projection = directional_light_projection_,
+        .directional_light_shadow_map_view = directional_light_shadow_map_view_,
+        .directional_light_shadow_map_projection = directional_light_shadow_map_projection_,
         .tile_count = tile_count_,
     };
     UpdateVertexShaderConstantBuffer(vs_constant_buffer);
@@ -211,7 +211,15 @@ void TriangleComponent::InitializeVertexShaderConstantBuffer() {
 }
 
 void TriangleComponent::InitializePixelShader() {
-    pixel_shader_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr,
+    const std::string shadow_map_cascade_count = std::to_string(Game::shadow_map_cascade_count);
+    const std::array defines{
+        D3D_SHADER_MACRO{
+            .Name = "SHADOW_MAP_CASCADE_COUNT",
+            .Definition = shadow_map_cascade_count.c_str(),
+        },
+        D3D_SHADER_MACRO{},
+    };
+    pixel_shader_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", defines.data(),
                                                      D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0",
                                                      D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 

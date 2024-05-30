@@ -28,6 +28,9 @@ concept ConstComponentRange = RefWrapperRange<Range, const Component>;
 
 class Game {
   public:
+    static const std::uint16_t shadow_map_resolution;
+    static const std::uint8_t shadow_map_cascade_count;
+
     explicit Game(Window &window, Input &input);
     virtual ~Game();
 

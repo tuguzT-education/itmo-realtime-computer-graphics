@@ -13,6 +13,9 @@ namespace borov_engine {
 
 constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{6500};
 
+constexpr std::uint16_t Game::shadow_map_resolution = 2048;
+constexpr std::uint8_t Game::shadow_map_cascade_count = 4;
+
 Game::Game(class Window &window, class Input &input)
     : window_{window},
       input_{input},
@@ -353,8 +356,8 @@ void Game::InitializeDepthStencilView() {
 
 void Game::InitializeShadowMapResources() {
     constexpr D3D11_TEXTURE2D_DESC shadow_map_depth_desc{
-        .Width = 2048,
-        .Height = 2048,
+        .Width = shadow_map_resolution,
+        .Height = shadow_map_resolution,
         .MipLevels = 1,
         .ArraySize = 1,
         .Format = DXGI_FORMAT_R32_TYPELESS,
@@ -382,8 +385,8 @@ void Game::InitializeShadowMapResources() {
     detail::CheckResult(result, "Failed to create shadow map depth stencil view");
 
     constexpr D3D11_TEXTURE2D_DESC shadow_map_desc{
-        .Width = 2048,
-        .Height = 2048,
+        .Width = shadow_map_resolution,
+        .Height = shadow_map_resolution,
         .MipLevels = 1,
         .ArraySize = 1,
         .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
@@ -451,8 +454,9 @@ void Game::DrawInternal() {
         device_context_->ClearDepthStencilView(shadow_map_depth_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
                                                1.0f, 0);
 
-        const Viewport shadow_map_viewport{viewport.x,        viewport.y,        2048.0f, 2048.0f,
-                                           viewport.minDepth, viewport.maxDepth, camera};
+        const math::Viewport shadow_map_viewport{
+            viewport.x, viewport.y, shadow_map_resolution, shadow_map_resolution, viewport.minDepth, viewport.maxDepth,
+        };
         device_context_->RSSetViewports(1, shadow_map_viewport.Get11());
 
         auto is_triangle = [](const Component &component) {
@@ -464,7 +468,8 @@ void Game::DrawInternal() {
         // ReSharper disable once CppTooWideScopeInitStatement
         auto triangle_components = Components() | std::views::filter(is_triangle) | std::views::transform(to_triangle);
         for (TriangleComponent &component : triangle_components) {
-            component.DrawInShadowMap(shadow_map_viewport);
+            const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
+            component.DrawInShadowMap(camera_frustum);
         }
 
         device_context_->ClearState();
