@@ -353,8 +353,8 @@ void Game::InitializeDepthStencilView() {
 
 void Game::InitializeShadowMapResources() {
     constexpr D3D11_TEXTURE2D_DESC shadow_map_depth_desc{
-        .Width = 1024,
-        .Height = 1024,
+        .Width = 2048,
+        .Height = 2048,
         .MipLevels = 1,
         .ArraySize = 1,
         .Format = DXGI_FORMAT_R32_TYPELESS,
@@ -382,8 +382,8 @@ void Game::InitializeShadowMapResources() {
     detail::CheckResult(result, "Failed to create shadow map depth stencil view");
 
     constexpr D3D11_TEXTURE2D_DESC shadow_map_desc{
-        .Width = 1024,
-        .Height = 1024,
+        .Width = 2048,
+        .Height = 2048,
         .MipLevels = 1,
         .ArraySize = 1,
         .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
@@ -451,7 +451,7 @@ void Game::DrawInternal() {
         device_context_->ClearDepthStencilView(shadow_map_depth_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
                                                1.0f, 0);
 
-        const Viewport shadow_map_viewport{viewport.x,        viewport.y,        1024.0f, 1024.0f,
+        const Viewport shadow_map_viewport{viewport.x,        viewport.y,        2048.0f, 2048.0f,
                                            viewport.minDepth, viewport.maxDepth, camera};
         device_context_->RSSetViewports(1, shadow_map_viewport.Get11());
 
