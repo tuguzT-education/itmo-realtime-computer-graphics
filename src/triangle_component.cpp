@@ -80,8 +80,10 @@ Material &TriangleComponent::Material() {
 }
 
 void TriangleComponent::DrawInShadowMap(const math::Frustum &camera_frustum) {
-    directional_light_shadow_map_view_ = Game().DirectionalLight().ViewMatrix(camera_frustum);
-    directional_light_shadow_map_projection_ = Game().DirectionalLight().ProjectionMatrix(camera_frustum);
+    const DirectionalLightComponent &directional_light = Game().DirectionalLight();
+    math::Matrix4x4 view = directional_light.ViewMatrix(camera_frustum);
+    math::Matrix4x4 projection = directional_light.ProjectionMatrix(camera_frustum);
+    directional_light_shadow_map_view_projection_ = view * projection;
 
     if (!is_casting_shadow_ || vertex_buffer_ == nullptr || index_buffer_ == nullptr) {
         return;
@@ -98,8 +100,8 @@ void TriangleComponent::DrawInShadowMap(const math::Frustum &camera_frustum) {
 
     const VertexShaderConstantBuffer vs_constant_buffer{
         .world = WorldTransform().ToMatrix(),
-        .view = directional_light_shadow_map_view_,
-        .projection = directional_light_shadow_map_projection_,
+        .view = view,
+        .projection = projection,
         .tile_count = tile_count_,
     };
     UpdateVertexShaderConstantBuffer(vs_constant_buffer);
@@ -144,8 +146,7 @@ void TriangleComponent::Draw(const Camera *camera) {
         .world = WorldTransform().ToMatrix(),
         .view = (camera != nullptr) ? camera->ViewMatrix() : math::Matrix4x4::Identity,
         .projection = (camera != nullptr) ? camera->ProjectionMatrix() : math::Matrix4x4::Identity,
-        .directional_light_shadow_map_view = directional_light_shadow_map_view_,
-        .directional_light_shadow_map_projection = directional_light_shadow_map_projection_,
+        .directional_light_shadow_map_view_projection = directional_light_shadow_map_view_projection_,
         .tile_count = tile_count_,
     };
     UpdateVertexShaderConstantBuffer(vs_constant_buffer);

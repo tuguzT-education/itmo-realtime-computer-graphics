@@ -5,8 +5,7 @@
 cbuffer VSConstantBuffer : register(b0)
 {
     Transform transform;
-    float4x4 directional_light_shadow_map_view;
-    float4x4 directional_light_shadow_map_projection;
+    float4x4 directional_light_shadow_map_view_projection;
     float2 tile_count;
 }
 
@@ -37,10 +36,8 @@ VS_Output VSMain(VS_Input input)
     output.color = input.color;
     output.texture_coordinate = input.texture_coordinate * tile_count;
     output.world_position = mul(transform.world, float4(input.position, 1.0f)).xyz;
-    output.directional_light_shadow_map_position = mul(
-        mul(directional_light_shadow_map_projection, directional_light_shadow_map_view),
-        float4(output.world_position.xyz, 1.0f)
-    );
+    output.directional_light_shadow_map_position = mul(directional_light_shadow_map_view_projection,
+                                                       float4(output.world_position.xyz, 1.0f));
 
     return output;
 }

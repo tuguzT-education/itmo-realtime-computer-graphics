@@ -51,8 +51,7 @@ class TriangleComponent : public SceneComponent {
         math::Matrix4x4 world;
         math::Matrix4x4 view;
         math::Matrix4x4 projection;
-        math::Matrix4x4 directional_light_shadow_map_view;
-        math::Matrix4x4 directional_light_shadow_map_projection;
+        math::Matrix4x4 directional_light_shadow_map_view_projection;
         alignas(16) math::Vector2 tile_count = math::Vector2::One;
     };
 
@@ -92,14 +91,12 @@ class TriangleComponent : public SceneComponent {
     detail::D3DPtr<ID3D11VertexShader> vertex_shader_;
     detail::D3DPtr<ID3DBlob> vertex_shader_byte_code_;
 
+    math::Matrix4x4 directional_light_shadow_map_view_projection_;
     math::Vector2 tile_count_;
     bool wireframe_;
     bool prev_wireframe_;
     bool is_casting_shadow_;
     class Material material_;
-
-    math::Matrix4x4 directional_light_shadow_map_view_;
-    math::Matrix4x4 directional_light_shadow_map_projection_;
 
   private:
     void InitializeVertexShader();
