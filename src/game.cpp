@@ -418,7 +418,7 @@ void Game::InitializeShadowMapResources() {
         D3D_SHADER_MACRO{},
     };
     shadow_map_geometry_shader_byte_code_ = detail::ShaderFromFile(
-        "resources/shaders/game_cascade_shadow_map.hlsl", shadow_map_geometry_shader_defines.data(),
+        "resources/shaders/triangle_component_shadow_map.hlsl", shadow_map_geometry_shader_defines.data(),
         D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
     result = device_->CreateGeometryShader(shadow_map_geometry_shader_byte_code_->GetBufferPointer(),

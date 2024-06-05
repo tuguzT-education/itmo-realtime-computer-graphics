@@ -251,9 +251,17 @@ void TriangleComponent::InitializePixelShaderConstantBuffer() {
 }
 
 void TriangleComponent::InitializeShadowMapVertexShader() {
+    const std::string shadow_map_cascade_count_definition = std::to_string(Game::shadow_map_cascade_count);
+    const std::array shadow_map_geometry_shader_defines{
+        D3D_SHADER_MACRO{
+            .Name = Game::shadow_map_cascade_count_name.data(),
+            .Definition = shadow_map_cascade_count_definition.c_str(),
+        },
+        D3D_SHADER_MACRO{},
+    };
     shadow_map_vertex_shader_byte_code_ = detail::ShaderFromFile(
-        "resources/shaders/triangle_component_shadow_map.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain",
-        "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+        "resources/shaders/triangle_component_shadow_map.hlsl", shadow_map_geometry_shader_defines.data(),
+        D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
     const HRESULT result = Device().CreateVertexShader(shadow_map_vertex_shader_byte_code_->GetBufferPointer(),
                                                        shadow_map_vertex_shader_byte_code_->GetBufferSize(), nullptr,
