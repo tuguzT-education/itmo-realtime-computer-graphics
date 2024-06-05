@@ -26,12 +26,3 @@ VS_Output VSMain(VS_Input input)
 
     return output;
 }
-
-typedef VS_Output PS_Input;
-
-float4 PSMain(PS_Input input) : SV_Target
-{
-    float depth = input.position.z / input.position.w;
-    float4 color = float4(depth, depth, depth, 1.0f);
-    return color;
-}

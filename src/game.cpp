@@ -1,10 +1,13 @@
 #include "borov_engine/game.hpp"
 
+#include <d3dcompiler.h>
+
 #include <array>
 
 #include "borov_engine/camera.hpp"
 #include "borov_engine/camera_manager.hpp"
 #include "borov_engine/detail/check_result.hpp"
+#include "borov_engine/detail/shader.hpp"
 #include "borov_engine/light.hpp"
 #include "borov_engine/triangle_component.hpp"
 #include "borov_engine/viewport_manager.hpp"
@@ -12,9 +15,6 @@
 namespace borov_engine {
 
 constexpr Timer::Duration default_time_per_update = std::chrono::microseconds{6500};
-
-constexpr std::uint16_t Game::shadow_map_resolution = 2048;
-constexpr std::uint8_t Game::shadow_map_cascade_count = 4;
 
 Game::Game(class Window &window, class Input &input)
     : window_{window},
@@ -355,11 +355,11 @@ void Game::InitializeDepthStencilView() {
 }
 
 void Game::InitializeShadowMapResources() {
-    constexpr D3D11_TEXTURE2D_DESC shadow_map_depth_desc{
+    constexpr D3D11_TEXTURE2D_DESC shadow_map_desc{
         .Width = shadow_map_resolution,
         .Height = shadow_map_resolution,
         .MipLevels = 1,
-        .ArraySize = 1,
+        .ArraySize = shadow_map_cascade_count,
         .Format = DXGI_FORMAT_R32_TYPELESS,
         .SampleDesc =
             DXGI_SAMPLE_DESC{
@@ -367,9 +367,9 @@ void Game::InitializeShadowMapResources() {
                 .Quality = 0,
             },
         .Usage = D3D11_USAGE_DEFAULT,
-        .BindFlags = D3D11_BIND_DEPTH_STENCIL,
+        .BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE,
     };
-    HRESULT result = device_->CreateTexture2D(&shadow_map_depth_desc, nullptr, &shadow_map_depth_);
+    HRESULT result = device_->CreateTexture2D(&shadow_map_desc, nullptr, &shadow_map_);
     detail::CheckResult(result, "Failed to create shadow map depth");
 
     constexpr D3D11_DEPTH_STENCIL_VIEW_DESC shadow_map_depth_stencil_view_desc{
@@ -377,35 +377,25 @@ void Game::InitializeShadowMapResources() {
         .ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY,
         .Texture2DArray =
             D3D11_TEX2D_ARRAY_DSV{
-                .ArraySize = 1,
+                .ArraySize = shadow_map_cascade_count,
             },
     };
-    result = device_->CreateDepthStencilView(shadow_map_depth_.Get(), &shadow_map_depth_stencil_view_desc,
+    result = device_->CreateDepthStencilView(shadow_map_.Get(), &shadow_map_depth_stencil_view_desc,
                                              &shadow_map_depth_view_);
     detail::CheckResult(result, "Failed to create shadow map depth stencil view");
 
-    constexpr D3D11_TEXTURE2D_DESC shadow_map_desc{
-        .Width = shadow_map_resolution,
-        .Height = shadow_map_resolution,
-        .MipLevels = 1,
-        .ArraySize = 1,
-        .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
-        .SampleDesc =
-            DXGI_SAMPLE_DESC{
-                .Count = 1,
-                .Quality = 0,
+    constexpr D3D11_SHADER_RESOURCE_VIEW_DESC shadow_map_shader_resource_view_desc{
+        .Format = DXGI_FORMAT_R32_FLOAT,
+        .ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY,
+        .Texture2DArray =
+            D3D11_TEX2D_ARRAY_SRV{
+                .MipLevels = 1,
+                .ArraySize = shadow_map_cascade_count,
             },
-        .Usage = D3D11_USAGE_DEFAULT,
-        .BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
     };
-    result = device_->CreateTexture2D(&shadow_map_desc, nullptr, &shadow_map_);
-    detail::CheckResult(result, "Failed to create shadow map");
-
-    result = device_->CreateShaderResourceView(shadow_map_.Get(), nullptr, &shadow_map_shader_resource_view_);
+    result = device_->CreateShaderResourceView(shadow_map_.Get(), &shadow_map_shader_resource_view_desc,
+                                               &shadow_map_shader_resource_view_);
     detail::CheckResult(result, "Failed to create shadow map shader resource view");
-
-    result = device_->CreateRenderTargetView(shadow_map_.Get(), nullptr, &shadow_map_render_target_view_);
-    detail::CheckResult(result, "Failed to create shadow map render target view");
 
     constexpr D3D11_SAMPLER_DESC shadow_map_sampler_desc{
         .Filter = D3D11_FILTER_ANISOTROPIC,
@@ -418,6 +408,45 @@ void Game::InitializeShadowMapResources() {
     };
     result = device_->CreateSamplerState(&shadow_map_sampler_desc, &shadow_map_sampler_state_);
     detail::CheckResult(result, "Failed to create shadow map sampler state");
+
+    const std::string shadow_map_cascade_count_definition = std::to_string(shadow_map_cascade_count);
+    const std::array shadow_map_geometry_shader_defines{
+        D3D_SHADER_MACRO{
+            .Name = shadow_map_cascade_count_name.data(),
+            .Definition = shadow_map_cascade_count_definition.c_str(),
+        },
+        D3D_SHADER_MACRO{},
+    };
+    shadow_map_geometry_shader_byte_code_ = detail::ShaderFromFile(
+        "resources/shaders/game_cascade_shadow_map.hlsl", shadow_map_geometry_shader_defines.data(),
+        D3D_COMPILE_STANDARD_FILE_INCLUDE, "GSMain", "gs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+
+    result = device_->CreateGeometryShader(shadow_map_geometry_shader_byte_code_->GetBufferPointer(),
+                                           shadow_map_geometry_shader_byte_code_->GetBufferSize(), nullptr,
+                                           &shadow_map_geometry_shader_);
+    detail::CheckResult(result, "Failed to create shadow map geometry shader from byte code");
+
+    constexpr D3D11_BUFFER_DESC shadow_map_geometry_shader_buffer_desc{
+        .ByteWidth = sizeof(ShadowMapConstantBuffer),
+        .Usage = D3D11_USAGE_DYNAMIC,
+        .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+        .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+        .MiscFlags = 0,
+        .StructureByteStride = 0,
+    };
+    result = device_->CreateBuffer(&shadow_map_geometry_shader_buffer_desc, nullptr, &shadow_map_constant_buffer_);
+    detail::CheckResult(result, "Failed to create shadow map geometry shader constant buffer");
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void Game::UpdateShadowMapConstantBuffer(const ShadowMapConstantBuffer &data) {
+    D3D11_MAPPED_SUBRESOURCE mapped_subresource{};
+    const HRESULT result =
+        device_context_->Map(shadow_map_constant_buffer_.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_subresource);
+    detail::CheckResult(result, "Failed to map constant buffer data");
+
+    std::memcpy(mapped_subresource.pData, &data, sizeof(data));
+    device_context_->Unmap(shadow_map_constant_buffer_.Get(), 0);
 }
 
 void Game::UpdateInternal(const float delta_time) {
@@ -442,15 +471,14 @@ void Game::DrawInternal() {
     device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
     for (const auto &viewport : viewport_manager_->Viewports()) {
-        Camera *const camera = viewport.camera;
+        Camera *camera = viewport.camera;
 
         device_context_->ClearState();
 
-        const std::array shadow_map_render_targets{shadow_map_render_target_view_.Get()};
+        constexpr std::array<ID3D11RenderTargetView *, 0> shadow_map_render_targets{};
         device_context_->OMSetRenderTargets(shadow_map_render_targets.size(), shadow_map_render_targets.data(),
                                             shadow_map_depth_view_.Get());
 
-        device_context_->ClearRenderTargetView(shadow_map_render_target_view_.Get(), math::colors::linear::White);
         device_context_->ClearDepthStencilView(shadow_map_depth_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
                                                1.0f, 0);
 
@@ -458,6 +486,42 @@ void Game::DrawInternal() {
             viewport.x, viewport.y, shadow_map_resolution, shadow_map_resolution, viewport.minDepth, viewport.maxDepth,
         };
         device_context_->RSSetViewports(1, shadow_map_viewport.Get11());
+
+        constexpr std::array<ID3D11ClassInstance *, 0> gs_class_instances{};
+        device_context_->GSSetShader(shadow_map_geometry_shader_.Get(), gs_class_instances.data(),
+                                     gs_class_instances.size());
+
+        // TODO: rework distances calculation
+        // https://github.com/elizoorg/DirectXCourseProject/commit/db139bc41f27e34a9f757e014115f130c1c31f57#diff-3ddc8bf742cffeb52dd53848d6c7c5528f18e064486ae0e0a8741feb3db4a15cR11
+        const float camera_near = camera != nullptr ? camera->NearPlane() : 0.0f;
+        const float camera_far = camera != nullptr ? camera->FarPlane() : 0.0f;
+        ShadowMapConstantBuffer shadow_map_constant_buffer{
+            .distances =
+                {
+                    camera_near + (camera_far - camera_near) / 10.0f,
+                    camera_near + (camera_far - camera_near) / 5.0f,
+                    camera_near + (camera_far - camera_near) / 2.0f,
+                    camera_far,
+                },
+        };
+        for (std::uint8_t i = 0; i < shadow_map_cascade_count; ++i) {
+            if (camera != nullptr && i != 0) {
+                camera->NearPlane(shadow_map_constant_buffer.distances[i - 1]);
+            }
+            if (camera != nullptr && i != shadow_map_cascade_count - 1) {
+                camera->FarPlane(shadow_map_constant_buffer.distances[i]);
+            }
+
+            shadow_map_constant_buffer.shadow_map_view_projections[i] = DirectionalLight().ViewMatrix(camera) *
+                                                                        DirectionalLight().ProjectionMatrix(camera);
+        }
+        if (camera != nullptr) {
+            camera->NearPlane(camera_near);
+            camera->FarPlane(camera_far);
+        }
+        UpdateShadowMapConstantBuffer(shadow_map_constant_buffer);
+        const std::array gs_constant_buffers{shadow_map_constant_buffer_.Get()};
+        device_context_->GSSetConstantBuffers(0, gs_constant_buffers.size(), gs_constant_buffers.data());
 
         auto is_triangle = [](const Component &component) {
             return dynamic_cast<const TriangleComponent *>(&component) != nullptr;
@@ -468,8 +532,7 @@ void Game::DrawInternal() {
         // ReSharper disable once CppTooWideScopeInitStatement
         auto triangle_components = Components() | std::views::filter(is_triangle) | std::views::transform(to_triangle);
         for (TriangleComponent &component : triangle_components) {
-            const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
-            component.DrawInShadowMap(camera_frustum);
+            component.DrawInShadowMap(camera);
         }
 
         device_context_->ClearState();
@@ -480,6 +543,9 @@ void Game::DrawInternal() {
 
         const std::array shader_resources{shadow_map_shader_resource_view_.Get()};
         device_context_->PSSetShaderResources(0, shader_resources.size(), shader_resources.data());
+
+        const std::array ps_constant_buffers{shadow_map_constant_buffer_.Get()};
+        device_context_->PSSetConstantBuffers(0, ps_constant_buffers.size(), ps_constant_buffers.data());
 
         const std::array samplers{shadow_map_sampler_state_.Get()};
         device_context_->PSSetSamplers(0, samplers.size(), samplers.data());

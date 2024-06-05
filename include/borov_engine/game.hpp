@@ -28,8 +28,9 @@ concept ConstComponentRange = RefWrapperRange<Range, const Component>;
 
 class Game {
   public:
-    static const std::uint16_t shadow_map_resolution;
-    static const std::uint8_t shadow_map_cascade_count;
+    static constexpr std::uint16_t shadow_map_resolution = 2048;
+    static constexpr std::uint8_t shadow_map_cascade_count = 4;
+    static constexpr std::string_view shadow_map_cascade_count_name = "SHADOW_MAP_CASCADE_COUNT";
 
     explicit Game(Window &window, Input &input);
     virtual ~Game();
@@ -105,11 +106,19 @@ class Game {
   private:
     friend Component;
 
+    struct alignas(16) ShadowMapConstantBuffer {
+        math::Matrix4x4 shadow_map_view_projections[shadow_map_cascade_count];
+        float distances[shadow_map_cascade_count];
+    };
+
     void InitializeDevice();
     void InitializeSwapChain(const class Window &window);
     void InitializeRenderTargetView();
     void InitializeDepthStencilView();
+
     void InitializeShadowMapResources();
+
+    void UpdateShadowMapConstantBuffer(const ShadowMapConstantBuffer &data);
 
     void UpdateInternal(float delta_time);
     void DrawInternal();
@@ -125,13 +134,14 @@ class Game {
     std::unique_ptr<SpotLightComponent> spot_light_;
     std::vector<std::unique_ptr<Component>> components_;
 
-    detail::D3DPtr<ID3D11SamplerState> shadow_map_sampler_state_;
-    detail::D3DPtr<ID3D11RenderTargetView> shadow_map_render_target_view_;
-    detail::D3DPtr<ID3D11ShaderResourceView> shadow_map_shader_resource_view_;
-    detail::D3DPtr<ID3D11Texture2D> shadow_map_;
+    detail::D3DPtr<ID3D11Buffer> shadow_map_constant_buffer_;
+    detail::D3DPtr<ID3D11GeometryShader> shadow_map_geometry_shader_;
+    detail::D3DPtr<ID3DBlob> shadow_map_geometry_shader_byte_code_;
 
+    detail::D3DPtr<ID3D11SamplerState> shadow_map_sampler_state_;
+    detail::D3DPtr<ID3D11ShaderResourceView> shadow_map_shader_resource_view_;
     detail::D3DPtr<ID3D11DepthStencilView> shadow_map_depth_view_;
-    detail::D3DPtr<ID3D11Texture2D> shadow_map_depth_;
+    detail::D3DPtr<ID3D11Texture2D> shadow_map_;
 
     class Timer timer_;
     Timer::Duration time_per_update_;

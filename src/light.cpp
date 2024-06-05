@@ -82,7 +82,9 @@ DirectionalLight DirectionalLightComponent::DirectionalLight() const {
     return directional_light;
 }
 
-math::Matrix4x4 DirectionalLightComponent::ViewMatrix(const math::Frustum& camera_frustum) const {
+math::Matrix4x4 DirectionalLightComponent::ViewMatrix(const Camera* camera) const {
+    const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
+
     std::array<math::Vector3, 8> frustum_corners;
     camera_frustum.GetCorners(frustum_corners.data());
 
@@ -98,11 +100,13 @@ math::Matrix4x4 DirectionalLightComponent::ViewMatrix(const math::Frustum& camer
     return math::Matrix4x4::CreateLookAt(eye, target, up);
 }
 
-math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix(const math::Frustum& camera_frustum) const {
+math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix(const Camera* camera) const {
+    const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
+
     std::array<math::Vector3, 8> frustum_corners;
     camera_frustum.GetCorners(frustum_corners.data());
 
-    const math::Matrix4x4 light_view = ViewMatrix(camera_frustum);
+    const math::Matrix4x4 light_view = ViewMatrix(camera);
 
     float left = (std::numeric_limits<float>::max)();
     float right = std::numeric_limits<float>::lowest();
@@ -158,12 +162,12 @@ PointLight PointLightComponent::PointLight() const {
     return point_light;
 }
 
-math::Matrix4x4 PointLightComponent::ViewMatrix(const math::Frustum& camera_frustum) const {
+math::Matrix4x4 PointLightComponent::ViewMatrix(const Camera* camera) const {
     // TODO
     return math::Matrix4x4::Identity;
 }
 
-math::Matrix4x4 PointLightComponent::ProjectionMatrix(const math::Frustum& camera_frustum) const {
+math::Matrix4x4 PointLightComponent::ProjectionMatrix(const Camera* camera) const {
     // TODO
     return math::Matrix4x4::Identity;
 }
@@ -236,12 +240,12 @@ SpotLight SpotLightComponent::SpotLight() const {
     return spot_light;
 }
 
-math::Matrix4x4 SpotLightComponent::ViewMatrix(const math::Frustum& camera_frustum) const {
+math::Matrix4x4 SpotLightComponent::ViewMatrix(const Camera* camera) const {
     // TODO
     return math::Matrix4x4::Identity;
 }
 
-math::Matrix4x4 SpotLightComponent::ProjectionMatrix(const math::Frustum& camera_frustum) const {
+math::Matrix4x4 SpotLightComponent::ProjectionMatrix(const Camera* camera) const {
     // TODO
     return math::Matrix4x4::Identity;
 }

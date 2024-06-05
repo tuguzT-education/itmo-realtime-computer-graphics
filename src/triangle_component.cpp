@@ -29,7 +29,6 @@ TriangleComponent::TriangleComponent(class Game &game, const Initializer &initia
     InitializePixelShaderConstantBuffer();
 
     InitializeShadowMapVertexShader();
-    InitializeShadowMapPixelShader();
     InitializeShadowMapRasterizerState();
 
     InitializeInputLayout();
@@ -79,10 +78,10 @@ Material &TriangleComponent::Material() {
     return material_;
 }
 
-void TriangleComponent::DrawInShadowMap(const math::Frustum &camera_frustum) {
+void TriangleComponent::DrawInShadowMap(const Camera *camera) {
     const DirectionalLightComponent &directional_light = Game().DirectionalLight();
-    math::Matrix4x4 view = directional_light.ViewMatrix(camera_frustum);
-    math::Matrix4x4 projection = directional_light.ProjectionMatrix(camera_frustum);
+    math::Matrix4x4 view = directional_light.ViewMatrix(camera);
+    math::Matrix4x4 projection = directional_light.ProjectionMatrix(camera);
     directional_light_shadow_map_view_projection_ = view * projection;
 
     if (!is_casting_shadow_ || vertex_buffer_ == nullptr || index_buffer_ == nullptr) {
@@ -109,7 +108,7 @@ void TriangleComponent::DrawInShadowMap(const math::Frustum &camera_frustum) {
     device_context.VSSetConstantBuffers(0, vs_constant_buffers.size(), vs_constant_buffers.data());
 
     constexpr std::array<ID3D11ClassInstance *, 0> ps_class_instances{};
-    device_context.PSSetShader(shadow_map_pixel_shader_.Get(), ps_class_instances.data(), ps_class_instances.size());
+    device_context.PSSetShader(nullptr, ps_class_instances.data(), ps_class_instances.size());
 
     const std::array vertex_buffers = {vertex_buffer_.Get()};
     constexpr std::array<std::uint32_t, vertex_buffers.size()> strides{sizeof(Vertex)};
@@ -166,7 +165,7 @@ void TriangleComponent::Draw(const Camera *camera) {
     };
     UpdatePixelShaderConstantBuffer(ps_constant_buffer);
     const std::array ps_constant_buffers{pixel_shader_constant_buffer_.Get()};
-    device_context.PSSetConstantBuffers(0, ps_constant_buffers.size(), ps_constant_buffers.data());
+    device_context.PSSetConstantBuffers(1, ps_constant_buffers.size(), ps_constant_buffers.data());
 
     const std::array shader_resources{texture_.Get()};
     device_context.PSSetShaderResources(1, shader_resources.size(), shader_resources.data());
@@ -187,9 +186,17 @@ void TriangleComponent::Draw(const Camera *camera) {
 }
 
 void TriangleComponent::InitializeVertexShader() {
-    vertex_shader_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", nullptr,
-                                                      D3D_COMPILE_STANDARD_FILE_INCLUDE, "VSMain", "vs_5_0",
-                                                      D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+    const std::string shadow_map_cascade_count_definition = std::to_string(Game::shadow_map_cascade_count);
+    const std::array vertex_shader_defines{
+        D3D_SHADER_MACRO{
+            .Name = Game::shadow_map_cascade_count_name.data(),
+            .Definition = shadow_map_cascade_count_definition.c_str(),
+        },
+        D3D_SHADER_MACRO{},
+    };
+    vertex_shader_byte_code_ = detail::ShaderFromFile(
+        "resources/shaders/triangle_component.hlsl", vertex_shader_defines.data(), D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "VSMain", "vs_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
     const HRESULT result = Device().CreateVertexShader(vertex_shader_byte_code_->GetBufferPointer(),
                                                        vertex_shader_byte_code_->GetBufferSize(), nullptr,
@@ -212,17 +219,17 @@ void TriangleComponent::InitializeVertexShaderConstantBuffer() {
 }
 
 void TriangleComponent::InitializePixelShader() {
-    const std::string shadow_map_cascade_count = std::to_string(Game::shadow_map_cascade_count);
-    const std::array defines{
+    const std::string shadow_map_cascade_count_definition = std::to_string(Game::shadow_map_cascade_count);
+    const std::array pixel_shader_defines{
         D3D_SHADER_MACRO{
-            .Name = "SHADOW_MAP_CASCADE_COUNT",
-            .Definition = shadow_map_cascade_count.c_str(),
+            .Name = Game::shadow_map_cascade_count_name.data(),
+            .Definition = shadow_map_cascade_count_definition.c_str(),
         },
         D3D_SHADER_MACRO{},
     };
-    pixel_shader_byte_code_ = detail::ShaderFromFile("resources/shaders/triangle_component.hlsl", defines.data(),
-                                                     D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain", "ps_5_0",
-                                                     D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
+    pixel_shader_byte_code_ = detail::ShaderFromFile(
+        "resources/shaders/triangle_component.hlsl", pixel_shader_defines.data(), D3D_COMPILE_STANDARD_FILE_INCLUDE,
+        "PSMain", "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
 
     const HRESULT result = Device().CreatePixelShader(
         pixel_shader_byte_code_->GetBufferPointer(), pixel_shader_byte_code_->GetBufferSize(), nullptr, &pixel_shader_);
@@ -254,24 +261,12 @@ void TriangleComponent::InitializeShadowMapVertexShader() {
     detail::CheckResult(result, "Failed to create shadow map vertex shader from byte code");
 }
 
-void TriangleComponent::InitializeShadowMapPixelShader() {
-    shadow_map_pixel_shader_byte_code_ = detail::ShaderFromFile(
-        "resources/shaders/triangle_component_shadow_map.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PSMain",
-        "ps_5_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0);
-
-    const HRESULT result = Device().CreatePixelShader(shadow_map_pixel_shader_byte_code_->GetBufferPointer(),
-                                                      shadow_map_pixel_shader_byte_code_->GetBufferSize(), nullptr,
-                                                      &shadow_map_pixel_shader_);
-    detail::CheckResult(result, "Failed to create shadow map pixel shader from byte code");
-}
-
 void TriangleComponent::InitializeShadowMapRasterizerState() {
     const D3D11_RASTERIZER_DESC shadow_map_rasterizer_desc{
-        .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID,
-        .CullMode = D3D11_CULL_FRONT,
-        .DepthBias = 1,
-        .DepthBiasClamp = 0.0f,
-        .SlopeScaledDepthBias = 2.0f,
+        .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID, .CullMode = D3D11_CULL_FRONT,
+        // .DepthBias = 1,
+        // .DepthBiasClamp = 0.0f,
+        // .SlopeScaledDepthBias = 2.0f,
     };
 
     const HRESULT result = Device().CreateRasterizerState(&shadow_map_rasterizer_desc, &shadow_map_rasterizer_state_);

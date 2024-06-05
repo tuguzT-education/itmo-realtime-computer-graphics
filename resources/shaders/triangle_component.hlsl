@@ -24,7 +24,7 @@ struct VS_Output
     float4 color : COLOR0;
     float2 texture_coordinate : TEXCOORD0;
     float3 world_position : TEXCOORD1;
-    float4 directional_light_shadow_map_position : TEXCOORD2;
+    float3 world_view_position : TEXCOORD2;
 };
 
 VS_Output VSMain(VS_Input input)
@@ -36,8 +36,7 @@ VS_Output VSMain(VS_Input input)
     output.color = input.color;
     output.texture_coordinate = input.texture_coordinate * tile_count;
     output.world_position = mul(transform.world, float4(input.position, 1.0f)).xyz;
-    output.directional_light_shadow_map_position = mul(directional_light_shadow_map_view_projection,
-                                                       float4(output.world_position.xyz, 1.0f));
+    output.world_view_position = mul(mul(transform.view, transform.world), float4(input.position, 1.0f)).xyz;
 
     return output;
 }
@@ -48,7 +47,13 @@ SamplerState ShadowMapSampler : register(s0);
 Texture2D DiffuseMap : register(t1);
 SamplerState TextureSampler : register(s1);
 
-cbuffer PSConstantBuffer : register(b0)
+cbuffer PSShadowMapConstantBuffer : register(b0)
+{
+    float4x4 shadow_map_view_projections[SHADOW_MAP_CASCADE_COUNT];
+    float4 shadow_map_distances[((SHADOW_MAP_CASCADE_COUNT - 1) / 4) + 1];
+};
+
+cbuffer PSConstantBuffer : register(b1)
 {
     bool has_texture;
     float3 view_position;
@@ -90,7 +95,7 @@ float4 PhongLightning(in Light light, in Material material, float3 position, flo
 }
 
 float4 DirectionalLightning(in DirectionalLight directional_light, in Material material,
-                            float3 position, float3 normal, float4 directional_light_shadow_map_position)
+                            float3 position, float3 normal, float3 world_view_position)
 {
     Light light;
     light.ambient = directional_light.ambient;
@@ -99,15 +104,29 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
 
     float4 color = PhongAmbientLightning(light, material);
 
+    int shadow_map_slice = SHADOW_MAP_CASCADE_COUNT - 1;
+    float world_view_distance = abs(world_view_position.z);
+    for (int i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++)
+    {
+        float shadow_map_distance = shadow_map_distances[i / 4][i % 4];
+        if (world_view_distance < shadow_map_distance)
+        {
+            shadow_map_slice = i;
+            break;
+        }
+    }
+
+    float4 shadow_map_position = mul(shadow_map_view_projections[shadow_map_slice], float4(position, 1.0f));
     float2 shadow_map_texture_coordinate = float2(
-        0.5f + (directional_light_shadow_map_position.x / directional_light_shadow_map_position.w * 0.5f),
-        0.5f - (directional_light_shadow_map_position.y / directional_light_shadow_map_position.w * 0.5f)
+        0.5f + (shadow_map_position.x / shadow_map_position.w * 0.5f),
+        0.5f - (shadow_map_position.y / shadow_map_position.w * 0.5f)
     );
     if ((saturate(shadow_map_texture_coordinate.x) == shadow_map_texture_coordinate.x) &&
         (saturate(shadow_map_texture_coordinate.y) == shadow_map_texture_coordinate.y))
     {
-        float shadow_map_depth = ShadowMapDirectionalLight.Sample(ShadowMapSampler, shadow_map_texture_coordinate).r;
-        float light_depth = directional_light_shadow_map_position.z / directional_light_shadow_map_position.w;
+        float shadow_map_depth = ShadowMapDirectionalLight
+            .Sample(ShadowMapSampler, float3(shadow_map_texture_coordinate.xy, shadow_map_slice)).r;
+        float light_depth = shadow_map_position.z / shadow_map_position.w;
 
         if (light_depth < shadow_map_depth)
         {
@@ -177,7 +196,7 @@ float4 PSMain(PS_Input input) : SV_Target
     color *= input.color;
 
     float4 dl_color = DirectionalLightning(directional_light, material, input.world_position, input.normal,
-                                           input.directional_light_shadow_map_position);
+                                           input.world_view_position);
     float4 pl_color = PointLightning(point_light, material, input.world_position, input.normal);
     float4 sl_color = SpotLightning(spot_light, material, input.world_position, input.normal);
 
