@@ -15,7 +15,7 @@ struct VS_Input
 
 struct VS_Output
 {
-    float4 position : SV_Position0;
+    float4 position : SV_Position;
 };
 
 VS_Output VSMain(VS_Input input)

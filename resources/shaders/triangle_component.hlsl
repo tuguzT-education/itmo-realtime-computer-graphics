@@ -19,7 +19,7 @@ struct VS_Input
 
 struct VS_Output
 {
-    float4 position : SV_Position0;
+    float4 position : SV_Position;
     float3 normal : NORMAL0;
     float4 color : COLOR0;
     float2 texture_coordinate : TEXCOORD0;

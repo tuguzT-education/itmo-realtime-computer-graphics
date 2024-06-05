@@ -3,6 +3,7 @@
 #ifndef BOROV_ENGINE_GAME_HPP_INCLUDED
 #define BOROV_ENGINE_GAME_HPP_INCLUDED
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -107,8 +108,8 @@ class Game {
     friend Component;
 
     struct alignas(16) ShadowMapConstantBuffer {
-        math::Matrix4x4 shadow_map_view_projections[shadow_map_cascade_count];
-        float distances[shadow_map_cascade_count];
+        std::array<math::Matrix4x4, shadow_map_cascade_count> shadow_map_view_projections{};
+        std::array<float, shadow_map_cascade_count> distances{};
     };
 
     void InitializeDevice();

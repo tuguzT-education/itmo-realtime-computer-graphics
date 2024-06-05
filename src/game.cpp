@@ -491,8 +491,6 @@ void Game::DrawInternal() {
         device_context_->GSSetShader(shadow_map_geometry_shader_.Get(), gs_class_instances.data(),
                                      gs_class_instances.size());
 
-        // TODO: rework distances calculation
-        // https://github.com/elizoorg/DirectXCourseProject/commit/db139bc41f27e34a9f757e014115f130c1c31f57#diff-3ddc8bf742cffeb52dd53848d6c7c5528f18e064486ae0e0a8741feb3db4a15cR11
         const float camera_near = camera != nullptr ? camera->NearPlane() : 0.0f;
         const float camera_far = camera != nullptr ? camera->FarPlane() : 0.0f;
         ShadowMapConstantBuffer shadow_map_constant_buffer{

@@ -7,14 +7,14 @@ cbuffer VSConstantBuffer : register(b0)
 
 struct VS_Input
 {
-    float3 position : POSITION;
-    float4 color : COLOR;
+    float3 position : POSITION0;
+    float4 color : COLOR0;
 };
 
 struct VS_Output
 {
     float4 position : SV_Position;
-    float4 color : COLOR;
+    float4 color : COLOR0;
 };
 
 VS_Output VSMain(VS_Input input)
