@@ -83,6 +83,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
     CameraManager<OrbitCameraManager>(OrbitCameraManager::Initializer{
         .target = player_,
         .camera = &camera_.get(),
+        .zoom_speed = 10.0f,
     });
     ViewportManager<::ViewportManager>();
 

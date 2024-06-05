@@ -30,6 +30,7 @@ VS_Output VSMain(VS_Input input)
 cbuffer ShadowMapConstantBuffer : register(b0)
 {
     float4x4 shadow_map_view_projections[SHADOW_MAP_CASCADE_COUNT];
+    float4 shadow_map_debug_colors[SHADOW_MAP_CASCADE_COUNT];
     float4 shadow_map_distances[((SHADOW_MAP_CASCADE_COUNT - 1) / 4) + 1];
 };
 

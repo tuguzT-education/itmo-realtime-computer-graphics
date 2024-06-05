@@ -494,7 +494,7 @@ void Game::DrawInternal() {
         const float camera_near = camera != nullptr ? camera->NearPlane() : 0.0f;
         const float camera_far = camera != nullptr ? camera->FarPlane() : 0.0f;
         ShadowMapConstantBuffer shadow_map_constant_buffer{
-            .distances =
+            .shadow_map_distances =
                 {
                     camera_near + (camera_far - camera_near) / 10.0f,
                     camera_near + (camera_far - camera_near) / 5.0f,
@@ -504,10 +504,10 @@ void Game::DrawInternal() {
         };
         for (std::uint8_t i = 0; i < shadow_map_cascade_count; ++i) {
             if (camera != nullptr && i != 0) {
-                camera->NearPlane(shadow_map_constant_buffer.distances[i - 1]);
+                camera->NearPlane(shadow_map_constant_buffer.shadow_map_distances[i - 1]);
             }
             if (camera != nullptr && i != shadow_map_cascade_count - 1) {
-                camera->FarPlane(shadow_map_constant_buffer.distances[i]);
+                camera->FarPlane(shadow_map_constant_buffer.shadow_map_distances[i]);
             }
 
             shadow_map_constant_buffer.shadow_map_view_projections[i] = DirectionalLight().ViewMatrix(camera) *

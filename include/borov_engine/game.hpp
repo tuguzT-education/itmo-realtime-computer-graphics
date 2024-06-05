@@ -109,7 +109,13 @@ class Game {
 
     struct alignas(16) ShadowMapConstantBuffer {
         std::array<math::Matrix4x4, shadow_map_cascade_count> shadow_map_view_projections{};
-        std::array<float, shadow_map_cascade_count> distances{};
+        std::array<math::Color, shadow_map_cascade_count> shadow_map_debug_colors{
+            math::Color{math::colors::linear::Red},
+            math::Color{math::colors::linear::Lime},
+            math::Color{math::colors::linear::Blue},
+            math::Color{math::colors::linear::White},
+        };
+        std::array<float, shadow_map_cascade_count> shadow_map_distances{};
     };
 
     void InitializeDevice();

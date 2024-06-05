@@ -50,6 +50,7 @@ SamplerState TextureSampler : register(s1);
 cbuffer PSShadowMapConstantBuffer : register(b0)
 {
     float4x4 shadow_map_view_projections[SHADOW_MAP_CASCADE_COUNT];
+    float4 shadow_map_debug_colors[SHADOW_MAP_CASCADE_COUNT];
     float4 shadow_map_distances[((SHADOW_MAP_CASCADE_COUNT - 1) / 4) + 1];
 };
 
@@ -138,6 +139,7 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
         }
     }
 
+    color *= shadow_map_debug_colors[shadow_map_slice];
     return color;
 }
 
