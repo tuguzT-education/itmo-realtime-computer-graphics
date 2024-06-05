@@ -5,7 +5,6 @@
 cbuffer VSConstantBuffer : register(b0)
 {
     Transform transform;
-    float4x4 directional_light_shadow_map_view_projection;
     float2 tile_count;
 }
 
