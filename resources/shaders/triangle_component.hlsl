@@ -106,7 +106,7 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
     float4 color = PhongAmbientLightning(light, material);
 
     int shadow_map_slice = SHADOW_MAP_CASCADE_COUNT - 1;
-    float world_view_distance = -world_view_position.z;
+    float world_view_distance = abs(world_view_position.z);
     for (int i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++)
     {
         float shadow_map_distance = shadow_map_distances[i / 4][i % 4];
