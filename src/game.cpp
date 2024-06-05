@@ -512,10 +512,11 @@ void Game::DrawInternal() {
 
             shadow_map_constant_buffer.shadow_map_view_projections[i] = DirectionalLight().ViewMatrix(camera) *
                                                                         DirectionalLight().ProjectionMatrix(camera);
-        }
-        if (camera != nullptr) {
-            camera->NearPlane(camera_near);
-            camera->FarPlane(camera_far);
+
+            if (camera != nullptr) {
+                camera->NearPlane(camera_near);
+                camera->FarPlane(camera_far);
+            }
         }
         UpdateShadowMapConstantBuffer(shadow_map_constant_buffer);
         const std::array gs_constant_buffers{shadow_map_constant_buffer_.Get()};
