@@ -1,6 +1,7 @@
 #include "borov_engine/math.hpp"
 
 #include <array>
+#include <numeric>
 
 namespace borov_engine::math {
 
@@ -54,6 +55,11 @@ std::array<Vector3, Frustum::CORNER_COUNT> Corners(const Frustum &frustum) {
     std::array<Vector3, Frustum::CORNER_COUNT> corners;
     frustum.GetCorners(corners.data());
     return corners;
+}
+
+Vector3 FrustumCenter(const Frustum &frustum) {
+    const auto corners = Corners(frustum);
+    return std::accumulate(std::begin(corners), std::end(corners), Vector3::Zero) / static_cast<float>(corners.size());
 }
 
 Vector3 Triangle::Tangent() const {

@@ -84,13 +84,7 @@ DirectionalLight DirectionalLightComponent::DirectionalLight() const {
 
 math::Matrix4x4 DirectionalLightComponent::ViewMatrix(const Camera* camera) const {
     const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
-    const auto frustum_corners = math::Corners(camera_frustum);
-
-    math::Vector3 frustum_center;
-    for (const math::Vector3& corner : frustum_corners) {
-        frustum_center += corner;
-    }
-    frustum_center /= static_cast<float>(frustum_corners.size());
+    const math::Vector3 frustum_center = math::FrustumCenter(camera_frustum);
 
     const auto& [position, rotation, scale] = Transform();
     const class Transform transform {
