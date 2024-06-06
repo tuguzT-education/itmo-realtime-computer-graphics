@@ -1,5 +1,7 @@
 #include "borov_engine/math.hpp"
 
+#include <array>
+
 namespace borov_engine::math {
 
 void Normalize(const Vector3 &vector, Vector3 &result) {
@@ -34,6 +36,24 @@ bool Intersects(const Plane lhs, const Plane rhs) {
     };
     const bool parallel = all_nan(line_point_1) && all_nan(line_point_2);
     return !parallel;
+}
+
+std::array<Vector3, Box::CORNER_COUNT> Corners(const Box &box) {
+    std::array<Vector3, Box::CORNER_COUNT> corners;
+    box.GetCorners(corners.data());
+    return corners;
+}
+
+std::array<Vector3, AxisAlignedBox::CORNER_COUNT> Corners(const AxisAlignedBox &box) {
+    std::array<Vector3, AxisAlignedBox::CORNER_COUNT> corners;
+    box.GetCorners(corners.data());
+    return corners;
+}
+
+std::array<Vector3, Frustum::CORNER_COUNT> Corners(const Frustum &frustum) {
+    std::array<Vector3, Frustum::CORNER_COUNT> corners;
+    frustum.GetCorners(corners.data());
+    return corners;
 }
 
 Vector3 Triangle::Tangent() const {

@@ -327,8 +327,7 @@ void DebugDraw::DrawLine(const math::Vector3& start, const math::Vector3& end, c
 }
 
 void DebugDraw::DrawBox(const math::Box& box, const DrawOpts& opts) {
-    std::array<math::Vector3, 8> corners;
-    box.GetCorners(corners.data());
+    const auto corners = math::Corners(box);
 
     DrawLine(corners[0], corners[1], opts);
     DrawLine(corners[1], corners[2], opts);
@@ -347,8 +346,7 @@ void DebugDraw::DrawBox(const math::Box& box, const DrawOpts& opts) {
 }
 
 void DebugDraw::DrawAxisAlignedBox(const math::AxisAlignedBox& box, const DrawOpts& opts) {
-    std::array<math::Vector3, 8> corners;
-    box.GetCorners(corners.data());
+    const auto corners = math::Corners(box);
 
     DrawLine(corners[0], corners[1], opts);
     DrawLine(corners[1], corners[2], opts);
@@ -502,8 +500,7 @@ void DebugDraw::DrawPlane(const math::Plane& plane, const PlaneDrawOpts& opts) {
 }
 
 void DebugDraw::DrawFrustrum(const math::Frustum& frustum, const DrawOpts& opts) {
-    std::array<math::Vector3, math::Frustum::CORNER_COUNT> corners;
-    frustum.GetCorners(corners.data());
+    const auto corners = math::Corners(frustum);
 
     const Transform pivot_transform{
         .position = frustum.Origin,

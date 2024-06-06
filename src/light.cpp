@@ -84,9 +84,7 @@ DirectionalLight DirectionalLightComponent::DirectionalLight() const {
 
 math::Matrix4x4 DirectionalLightComponent::ViewMatrix(const Camera* camera) const {
     const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
-
-    std::array<math::Vector3, 8> frustum_corners;
-    camera_frustum.GetCorners(frustum_corners.data());
+    const auto frustum_corners = math::Corners(camera_frustum);
 
     math::Vector3 frustum_center;
     for (const math::Vector3& corner : frustum_corners) {
@@ -94,18 +92,16 @@ math::Matrix4x4 DirectionalLightComponent::ViewMatrix(const Camera* camera) cons
     }
     frustum_center /= static_cast<float>(frustum_corners.size());
 
-    const math::Vector3 eye = frustum_center;
-    const math::Vector3 target = frustum_center + Transform().Forward();
-    const math::Vector3 up = Transform().Up();
-    return math::Matrix4x4::CreateLookAt(eye, target, up);
+    const auto& [position, rotation, scale] = Transform();
+    const class Transform transform {
+        .position = frustum_center, .rotation = rotation, .scale = scale
+    };
+    return transform.ViewMatrix();
 }
 
 math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix(const Camera* camera) const {
     const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
-
-    std::array<math::Vector3, 8> frustum_corners;
-    camera_frustum.GetCorners(frustum_corners.data());
-
+    const auto frustum_corners = math::Corners(camera_frustum);
     const math::Matrix4x4 light_view = ViewMatrix(camera);
 
     float left = (std::numeric_limits<float>::max)();
@@ -115,13 +111,13 @@ math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix(const Camera* camera
     float near_plane = (std::numeric_limits<float>::max)();
     float far_plane = std::numeric_limits<float>::lowest();
     for (const math::Vector3& corner : frustum_corners) {
-        const auto trf = math::Vector3::Transform(corner, light_view);
-        left = (std::min)(left, trf.x);
-        right = (std::max)(right, trf.x);
-        bottom = (std::min)(bottom, trf.y);
-        top = (std::max)(top, trf.y);
-        near_plane = (std::min)(near_plane, trf.z);
-        far_plane = (std::max)(far_plane, trf.z);
+        const math::Vector3 light_view_corner = math::Vector3::Transform(corner, light_view);
+        left = (std::min)(left, light_view_corner.x);
+        right = (std::max)(right, light_view_corner.x);
+        bottom = (std::min)(bottom, light_view_corner.y);
+        top = (std::max)(top, light_view_corner.y);
+        near_plane = (std::min)(near_plane, light_view_corner.z);
+        far_plane = (std::max)(far_plane, light_view_corner.z);
     }
 
     // how much geometry to include from outside the view frustum?

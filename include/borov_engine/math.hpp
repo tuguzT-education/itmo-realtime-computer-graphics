@@ -51,6 +51,10 @@ using AxisAlignedBox = DirectX::BoundingBox;
 using Sphere = DirectX::BoundingSphere;
 using Frustum = DirectX::BoundingFrustum;
 
+std::array<Vector3, Box::CORNER_COUNT> Corners(const Box &box);
+std::array<Vector3, AxisAlignedBox::CORNER_COUNT> Corners(const AxisAlignedBox &box);
+std::array<Vector3, Frustum::CORNER_COUNT> Corners(const Frustum &frustum);
+
 struct Triangle {
     Vector3 point0;
     Vector3 point1;
