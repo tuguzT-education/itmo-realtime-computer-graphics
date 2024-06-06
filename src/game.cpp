@@ -470,6 +470,8 @@ void Game::DrawInternal() {
     device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
     device_context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+    std::array<math::Frustum, shadow_map_cascade_count> debug_shadow_maps;
+
     for (const auto &viewport : viewport_manager_->Viewports()) {
         Camera *camera = viewport.camera;
 
@@ -483,7 +485,7 @@ void Game::DrawInternal() {
                                                1.0f, 0);
 
         const math::Viewport shadow_map_viewport{
-            viewport.x, viewport.y, shadow_map_resolution, shadow_map_resolution, viewport.minDepth, viewport.maxDepth,
+            0.0f, 0.0f, shadow_map_resolution, shadow_map_resolution, viewport.minDepth, viewport.maxDepth,
         };
         device_context_->RSSetViewports(1, shadow_map_viewport.Get11());
 
@@ -514,6 +516,11 @@ void Game::DrawInternal() {
                                                                         DirectionalLight().ProjectionMatrix(camera);
 
             if (camera != nullptr) {
+                if (camera == MainCamera()) {
+                    debug_shadow_maps[i] = camera->Frustum();
+                } else {
+                    DebugDraw().DrawFrustrum(debug_shadow_maps[i]);
+                }
                 camera->NearPlane(camera_near);
                 camera->FarPlane(camera_far);
             }
