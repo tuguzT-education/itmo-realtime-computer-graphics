@@ -76,26 +76,27 @@ float4 PhongDiffuseLightning(in Light light, in Material material, float3 normal
     return diffuse * light.diffuse * material.diffuse;
 }
 
-float4 PhongSpecularLightning(in Light light, in Material material, float3 position, float3 normal,
+float4 PhongSpecularLightning(in Light light, in Material material, float3 world_position, float3 normal,
                               float3 to_light_direction)
 {
-    float3 to_view_direction = normalize(view_position - position);
+    float3 to_view_direction = normalize(view_position - world_position);
     float3 reflect_direction = normalize(reflect(to_light_direction, normal));
 
     float specular = pow(max(dot(-to_view_direction, reflect_direction), 0.0f), material.exponent);
     return specular * light.specular * material.specular;
 }
 
-float4 PhongLightning(in Light light, in Material material, float3 position, float3 normal, float3 to_light_direction)
+float4 PhongLightning(in Light light, in Material material,
+                      float3 world_position, float3 normal, float3 to_light_direction)
 {
     float4 ambient = PhongAmbientLightning(light, material);
     float4 diffuse = PhongDiffuseLightning(light, material, normal, to_light_direction);
-    float4 specular = PhongSpecularLightning(light, material, position, normal, to_light_direction);
+    float4 specular = PhongSpecularLightning(light, material, world_position, normal, to_light_direction);
     return ambient + diffuse + specular;
 }
 
 float4 DirectionalLightning(in DirectionalLight directional_light, in Material material,
-                            float3 position, float3 normal, float3 world_view_position)
+                            float3 world_position, float3 normal, float3 world_view_position)
 {
     Light light;
     light.ambient = directional_light.ambient;
@@ -116,7 +117,7 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
         }
     }
 
-    float4 shadow_map_position = mul(shadow_map_view_projections[shadow_map_slice], float4(position, 1.0f));
+    float4 shadow_map_position = mul(shadow_map_view_projections[shadow_map_slice], float4(world_position, 1.0f));
     float2 shadow_map_texture_coordinate = float2(
         0.5f + (shadow_map_position.x / shadow_map_position.w * 0.5f),
         0.5f - (shadow_map_position.y / shadow_map_position.w * 0.5f)
@@ -133,7 +134,7 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
             float3 to_light_direction = -directional_light.direction;
 
             float4 diffuse = PhongDiffuseLightning(light, material, normal, to_light_direction);
-            float4 specular = PhongSpecularLightning(light, material, position, normal, to_light_direction);
+            float4 specular = PhongSpecularLightning(light, material, world_position, normal, to_light_direction);
             color += diffuse + specular;
         }
     }
@@ -143,9 +144,9 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
 }
 
 float4 PointLightning(in PointLight point_light, in Material material,
-                      float3 position, float3 normal)
+                      float3 world_position, float3 normal)
 {
-    float3 to_light = point_light.position - position;
+    float3 to_light = point_light.position - world_position;
     float to_light_distance = length(to_light);
     float4 attenuation = point_light.attenuation.const_factor +
                          point_light.attenuation.linear_factor * to_light_distance +
@@ -159,15 +160,15 @@ float4 PointLightning(in PointLight point_light, in Material material,
 
     float3 to_light_direction = normalize(to_light);
 
-    return PhongLightning(light, material, position, normal, to_light_direction) / attenuation;
+    return PhongLightning(light, material, world_position, normal, to_light_direction) / attenuation;
 }
 
 float4 SpotLightning(in SpotLight spot_light, in Material material,
-                     float3 position, float3 normal)
+                     float3 world_position, float3 normal)
 {
     float3 to_light_direction = normalize(-spot_light.direction);
 
-    float3 to_vertex = spot_light.position - position;
+    float3 to_vertex = spot_light.position - world_position;
     float to_vertex_distance = length(to_vertex);
     float4 attenuation = spot_light.attenuation.const_factor +
                          spot_light.attenuation.linear_factor * to_vertex_distance +
@@ -186,7 +187,7 @@ float4 SpotLightning(in SpotLight spot_light, in Material material,
     light.diffuse = spot_light.diffuse;
     light.specular = spot_light.specular;
 
-    return PhongLightning(light, material, position, normal, to_light_direction) / attenuation * falloff;
+    return PhongLightning(light, material, world_position, normal, to_light_direction) / attenuation * falloff;
 }
 
 float4 PSMain(PS_Input input) : SV_Target

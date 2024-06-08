@@ -15,14 +15,14 @@ struct VS_Input
 
 struct VS_Output
 {
-    float4 position : SV_Position;
+    float4 world_position : SV_Position;
 };
 
 VS_Output VSMain(VS_Input input)
 {
     VS_Output output = (VS_Output)0;
 
-    output.position = mul(transform.world, float4(input.position, 1.0f));
+    output.world_position = mul(transform.world, float4(input.position, 1.0f));
 
     return output;
 }
@@ -50,7 +50,7 @@ void GSMain(triangle GS_Input inputs[3], in uint id : SV_GSInstanceID, inout Tri
     for (int i = 0; i < 3; ++i)
     {
         GS_Output output = (GS_Output) 0;
-        output.position = mul(shadow_map_view_projections[id], float4(inputs[i].position.xyz, 1.0f));
+        output.position = mul(shadow_map_view_projections[id], float4(inputs[i].world_position.xyz, 1.0f));
         output.index = id;
 
         stream.Append(output);

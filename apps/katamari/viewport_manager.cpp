@@ -10,7 +10,7 @@ ViewportManager::ViewportManager(borov_engine::Game &game)
 
               borov_engine::Camera::Initializer initializer{
                   .projection = std::make_unique<borov_engine::OrthographicProjection>(math::Vector2{20.0f}),
-                  .far_plane = 20.01f,
+                  .far_plane = 21.0f,
               };
 
               initializer.transform.position = math::Vector3::Up * 20.0f;

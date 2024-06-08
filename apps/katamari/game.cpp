@@ -11,6 +11,7 @@ Game::Game(borov_engine::Window &window, borov_engine::Input &input)
           AddComponent<borov_engine::Camera>([] {
               borov_engine::Camera::Initializer initializer{
                   .projection = std::make_unique<borov_engine::PerspectiveProjection>(),
+                  .far_plane = 10.0f,
               };
               initializer.transform = {.position = borov_engine::math::Vector3::Backward};
               return initializer;
