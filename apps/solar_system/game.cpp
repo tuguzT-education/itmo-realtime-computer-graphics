@@ -233,9 +233,7 @@ void Game::OnInputKeyDown(const borov_engine::InputKey input_key) {
                 const auto &scene_component = dynamic_cast<const borov_engine::SceneComponent &>(component);
                 const auto &collision_primitive = dynamic_cast<const borov_engine::Collision &>(component);
                 if (float distance = 1000.0f; collision_primitive.Intersects(ray, distance)) {
-                    if (target == nullptr) {
-                        target = &scene_component;
-                    } else if (distance < nearest_distance) {
+                    if (target == nullptr || distance < nearest_distance) {
                         target = &scene_component;
                         nearest_distance = distance;
                     }

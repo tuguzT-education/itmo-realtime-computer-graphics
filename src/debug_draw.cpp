@@ -494,19 +494,22 @@ void DebugDraw::DrawPlane(const math::Plane& plane, const PlaneDrawOpts& opts) {
         DrawLine(left_point, right_point, draw_opts);
         DrawLine(down_point, up_point, draw_opts);
     }
-
-    DrawPivot({.position = position, .scale = math::Vector3::One * 0.5f}, draw_opts);
-    DrawArrow(position, position + normal * opts.length_of_normal, right, draw_opts);
+    if (opts.draw_position) {
+        DrawPivot({.position = position, .scale = math::Vector3::One * 0.5f}, draw_opts);
+    }
+    if (opts.draw_normal) {
+        DrawArrow(position, position + normal * opts.length_of_normal, right, draw_opts);
+    }
 }
 
 void DebugDraw::DrawFrustrum(const math::Frustum& frustum, const DrawOpts& opts) {
-    const auto corners = math::Corners(frustum);
-
     const Transform pivot_transform{
         .position = frustum.Origin,
         .rotation = frustum.Orientation,
     };
     DrawPivot(pivot_transform, opts);
+
+    const auto corners = math::Corners(frustum);
 
     const math::Color blue{math::colors::linear::Blue};
     DrawLine(corners[0], corners[1], {blue * opts.color, opts.duration});

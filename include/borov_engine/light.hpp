@@ -36,6 +36,7 @@ class LightComponent : public SceneComponent {
     [[nodiscard]] bool IsLightEnabled() const;
     [[nodiscard]] bool& IsLightEnabled();
 
+    [[nodiscard]] virtual math::Frustum Frustum(const Camera* camera) const = 0;
     [[nodiscard]] virtual math::Matrix4x4 ViewMatrix(const Camera* camera) const = 0;
     [[nodiscard]] virtual math::Matrix4x4 ProjectionMatrix(const Camera* camera) const = 0;
 
@@ -62,6 +63,7 @@ class DirectionalLightComponent : public LightComponent {
 
     [[nodiscard]] DirectionalLight DirectionalLight() const;
 
+    [[nodiscard]] math::Frustum Frustum(const Camera* camera) const override;
     [[nodiscard]] math::Matrix4x4 ViewMatrix(const Camera* camera) const override;
     [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const Camera* camera) const override;
 };
@@ -90,6 +92,7 @@ class PointLightComponent : public LightComponent {
 
     [[nodiscard]] PointLight PointLight() const;
 
+    [[nodiscard]] math::Frustum Frustum(const Camera* camera) const override;
     [[nodiscard]] math::Matrix4x4 ViewMatrix(const Camera* camera) const override;
     [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const Camera* camera) const override;
 
@@ -132,6 +135,7 @@ class SpotLightComponent : public LightComponent {
 
     [[nodiscard]] SpotLight SpotLight() const;
 
+    [[nodiscard]] math::Frustum Frustum(const Camera* camera) const override;
     [[nodiscard]] math::Matrix4x4 ViewMatrix(const Camera* camera) const override;
     [[nodiscard]] math::Matrix4x4 ProjectionMatrix(const Camera* camera) const override;
 

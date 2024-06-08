@@ -5,6 +5,9 @@
 #include "borov_engine/camera.hpp"
 #include "borov_engine/projection.hpp"
 
+#undef min
+#undef max
+
 namespace borov_engine {
 
 LightComponent::LightComponent(class Game& game, const Initializer& initializer)
@@ -82,15 +85,31 @@ DirectionalLight DirectionalLightComponent::DirectionalLight() const {
     return directional_light;
 }
 
+math::Frustum DirectionalLightComponent::Frustum(const Camera* camera) const {
+    const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
+    const math::Vector3 frustum_center = math::FrustumCenter(camera_frustum);
+
+    const auto& [position, rotation, scale] = WorldTransform();
+    const class Transform light_transform {
+        .position = frustum_center, .rotation = rotation, .scale = scale
+    };
+
+    const math::Matrix4x4 projection = ProjectionMatrix(camera);
+
+    math::Frustum frustum{projection, true};
+    frustum.Transform(frustum, light_transform.ToMatrix());
+    return frustum;
+}
+
 math::Matrix4x4 DirectionalLightComponent::ViewMatrix(const Camera* camera) const {
     const math::Frustum camera_frustum = camera != nullptr ? camera->Frustum() : math::Frustum{};
     const math::Vector3 frustum_center = math::FrustumCenter(camera_frustum);
 
-    const auto& [position, rotation, scale] = Transform();
-    const class Transform transform {
+    const auto& [position, rotation, scale] = WorldTransform();
+    const class Transform light_transform {
         .position = frustum_center, .rotation = rotation, .scale = scale
     };
-    return transform.ViewMatrix();
+    return light_transform.ViewMatrix();
 }
 
 math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix(const Camera* camera) const {
@@ -98,26 +117,26 @@ math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix(const Camera* camera
     const auto frustum_corners = math::Corners(camera_frustum);
     const math::Matrix4x4 light_view = ViewMatrix(camera);
 
-    float left = (std::numeric_limits<float>::max)();
+    float left = std::numeric_limits<float>::max();
     float right = std::numeric_limits<float>::lowest();
-    float bottom = (std::numeric_limits<float>::max)();
+    float bottom = std::numeric_limits<float>::max();
     float top = std::numeric_limits<float>::lowest();
-    float near_plane = (std::numeric_limits<float>::max)();
+    float near_plane = std::numeric_limits<float>::max();
     float far_plane = std::numeric_limits<float>::lowest();
     for (const math::Vector3& corner : frustum_corners) {
         const math::Vector3 light_view_corner = math::Vector3::Transform(corner, light_view);
-        left = (std::min)(left, light_view_corner.x);
-        right = (std::max)(right, light_view_corner.x);
-        bottom = (std::min)(bottom, light_view_corner.y);
-        top = (std::max)(top, light_view_corner.y);
-        near_plane = (std::min)(near_plane, light_view_corner.z);
-        far_plane = (std::max)(far_plane, light_view_corner.z);
+        left = std::min(left, light_view_corner.x);
+        right = std::max(right, light_view_corner.x);
+        bottom = std::min(bottom, light_view_corner.y);
+        top = std::max(top, light_view_corner.y);
+        near_plane = std::min(near_plane, light_view_corner.z);
+        far_plane = std::max(far_plane, light_view_corner.z);
     }
 
     // how much geometry to include from outside the view frustum?
-    constexpr float z_mult = 10.0f;
-    near_plane = (near_plane < 0) ? near_plane * z_mult : near_plane / z_mult;
-    far_plane = (far_plane < 0) ? far_plane / z_mult : far_plane * z_mult;
+    // constexpr float z_mult = 10.0f;
+    // near_plane = (near_plane < 0) ? near_plane * z_mult : near_plane / z_mult;
+    // far_plane = (far_plane < 0) ? far_plane / z_mult : far_plane * z_mult;
 
     return math::Matrix4x4::CreateOrthographicOffCenter(left, right, bottom, top, near_plane, far_plane);
 }
@@ -150,6 +169,11 @@ PointLight PointLightComponent::PointLight() const {
     point_light.diffuse = diffuse;
     point_light.specular = specular;
     return point_light;
+}
+
+math::Frustum PointLightComponent::Frustum(const Camera* camera) const {
+    // TODO
+    return math::Frustum{};
 }
 
 math::Matrix4x4 PointLightComponent::ViewMatrix(const Camera* camera) const {
@@ -228,6 +252,11 @@ SpotLight SpotLightComponent::SpotLight() const {
     spot_light.diffuse = diffuse;
     spot_light.specular = specular;
     return spot_light;
+}
+
+math::Frustum SpotLightComponent::Frustum(const Camera* camera) const {
+    // TODO
+    return math::Frustum{};
 }
 
 math::Matrix4x4 SpotLightComponent::ViewMatrix(const Camera* camera) const {

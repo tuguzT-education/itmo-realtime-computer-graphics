@@ -6,12 +6,12 @@ ViewportManager::ViewportManager(borov_engine::Game &game)
     : borov_engine::ViewportManager(game),
       stationary_camera_{
           Game().AddComponent<borov_engine::Camera>([] {
+              namespace math = borov_engine::math;
+
               borov_engine::Camera::Initializer initializer{
-                  .projection = std::make_unique<borov_engine::PerspectiveProjection>(),
+                  .projection = std::make_unique<borov_engine::OrthographicProjection>(math::Vector2{20.0f}),
                   .far_plane = 20.01f,
               };
-
-              namespace math = borov_engine::math;
 
               initializer.transform.position = math::Vector3::Up * 20.0f;
               initializer.transform.rotation =

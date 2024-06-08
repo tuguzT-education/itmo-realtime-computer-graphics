@@ -49,6 +49,8 @@ class DebugDraw : public Component {
         float width = 1.0f;
         float length_of_normal = 1.0f;
         bool draw_center_cross = false;
+        bool draw_position = false;
+        bool draw_normal = false;
     };
     void DrawPlane(const math::Plane& plane, const PlaneDrawOpts& opts = {});
 
