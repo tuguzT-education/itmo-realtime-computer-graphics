@@ -265,7 +265,7 @@ void TriangleComponent::InitializeShadowMapVertexShader() {
 
 void TriangleComponent::InitializeShadowMapRasterizerState() {
     const D3D11_RASTERIZER_DESC shadow_map_rasterizer_desc{
-        .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID, .CullMode = D3D11_CULL_FRONT,
+        .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID, .CullMode = D3D11_CULL_BACK,
         // .DepthBias = 1,
         // .DepthBiasClamp = 0.0f,
         // .SlopeScaledDepthBias = 2.0f,
