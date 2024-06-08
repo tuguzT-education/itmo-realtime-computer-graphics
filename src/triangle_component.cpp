@@ -92,11 +92,10 @@ void TriangleComponent::DrawInShadowMap(const Camera *camera) {
     constexpr std::array<ID3D11ClassInstance *, 0> vs_class_instances{};
     device_context.VSSetShader(shadow_map_vertex_shader_.Get(), vs_class_instances.data(), vs_class_instances.size());
 
-    const DirectionalLightComponent &directional_light = Game().DirectionalLight();
     const VertexShaderConstantBuffer vs_constant_buffer{
         .world = WorldTransform().ToMatrix(),
-        .view = directional_light.ViewMatrix(camera),
-        .projection = directional_light.ProjectionMatrix(camera),
+        .view = (camera != nullptr) ? camera->ViewMatrix() : math::Matrix4x4::Identity,
+        .projection = (camera != nullptr) ? camera->ProjectionMatrix() : math::Matrix4x4::Identity,
         .tile_count = tile_count_,
     };
     UpdateVertexShaderConstantBuffer(vs_constant_buffer);
