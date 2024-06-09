@@ -6,6 +6,7 @@
 #undef max
 
 #include <array>
+#include <constexpr-to-string/to_string.hpp>
 #include <range/v3/view/enumerate.hpp>
 
 #include "borov_engine/camera.hpp"
@@ -180,11 +181,10 @@ void TriangleComponent::Draw(const Camera *camera) {
 }
 
 void TriangleComponent::InitializeVertexShader() {
-    const std::string shadow_map_cascade_count_definition = std::to_string(Game::shadow_map_cascade_count);
-    const std::array vertex_shader_defines{
+    constexpr std::array vertex_shader_defines{
         D3D_SHADER_MACRO{
             .Name = Game::shadow_map_cascade_count_name.data(),
-            .Definition = shadow_map_cascade_count_definition.c_str(),
+            .Definition = to_string<Game::shadow_map_cascade_count>,
         },
         D3D_SHADER_MACRO{},
     };
@@ -213,11 +213,10 @@ void TriangleComponent::InitializeVertexShaderConstantBuffer() {
 }
 
 void TriangleComponent::InitializePixelShader() {
-    const std::string shadow_map_cascade_count_definition = std::to_string(Game::shadow_map_cascade_count);
-    const std::array pixel_shader_defines{
+    constexpr std::array pixel_shader_defines{
         D3D_SHADER_MACRO{
             .Name = Game::shadow_map_cascade_count_name.data(),
-            .Definition = shadow_map_cascade_count_definition.c_str(),
+            .Definition = to_string<Game::shadow_map_cascade_count>,
         },
         D3D_SHADER_MACRO{},
     };
@@ -245,11 +244,10 @@ void TriangleComponent::InitializePixelShaderConstantBuffer() {
 }
 
 void TriangleComponent::InitializeShadowMapVertexShader() {
-    const std::string shadow_map_cascade_count_definition = std::to_string(Game::shadow_map_cascade_count);
-    const std::array shadow_map_geometry_shader_defines{
+    constexpr std::array shadow_map_geometry_shader_defines{
         D3D_SHADER_MACRO{
             .Name = Game::shadow_map_cascade_count_name.data(),
-            .Definition = shadow_map_cascade_count_definition.c_str(),
+            .Definition = to_string<Game::shadow_map_cascade_count>,
         },
         D3D_SHADER_MACRO{},
     };
@@ -265,7 +263,8 @@ void TriangleComponent::InitializeShadowMapVertexShader() {
 
 void TriangleComponent::InitializeShadowMapRasterizerState() {
     const D3D11_RASTERIZER_DESC shadow_map_rasterizer_desc{
-        .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID, .CullMode = D3D11_CULL_BACK,
+        .FillMode = wireframe_ ? D3D11_FILL_WIREFRAME : D3D11_FILL_SOLID,
+        .CullMode = D3D11_CULL_BACK,
         .DepthBias = 1,
         .DepthBiasClamp = 0.0f,
         .SlopeScaledDepthBias = 2.0f,

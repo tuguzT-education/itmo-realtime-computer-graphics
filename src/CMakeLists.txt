@@ -1,4 +1,6 @@
 set(HEADER_LIST
+        ${PROJECT_SOURCE_DIR}/include/constexpr-to-string/to_string.hpp
+        ${PROJECT_SOURCE_DIR}/include/constexpr-to-string/f_to_string.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/alloc/inline_allocator.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/alloc/inline_allocator.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/delegate/member_function.hpp

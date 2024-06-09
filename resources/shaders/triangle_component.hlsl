@@ -99,8 +99,6 @@ float4 PhongLightning(in Light light, in Material material,
 
 float4 DirectionalLightningShadow(float3 world_position, float3 world_view_position)
 {
-    float4 result = float4(1.0f, 1.0f, 1.0f, 1.0f);
-
     int shadow_map_slice = SHADOW_MAP_CASCADE_COUNT - 1;
     float world_view_distance = abs(world_view_position.z);
     for (int i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++)
@@ -115,17 +113,18 @@ float4 DirectionalLightningShadow(float3 world_position, float3 world_view_posit
 
     float4 shadow_map_position = mul(float4(world_position, 1.0f), shadow_map_view_projections[shadow_map_slice]);
     shadow_map_position /= shadow_map_position.w;
-
     float3 shadow_map_texture_coordinate = float3(
         0.5f + (shadow_map_position.x * 0.5f),
         0.5f - (shadow_map_position.y * 0.5f),
         shadow_map_slice
     );
+
+    float4 result = 1.0f;
     if ((saturate(shadow_map_texture_coordinate.x) == shadow_map_texture_coordinate.x) &&
         (saturate(shadow_map_texture_coordinate.y) == shadow_map_texture_coordinate.y))
     {
         float current_depth = shadow_map_position.z;
-        result *= ShadowMapDirectionalLight.SampleCmp(ShadowMapSampler, shadow_map_texture_coordinate, current_depth).r;
+        result = ShadowMapDirectionalLight.SampleCmp(ShadowMapSampler, shadow_map_texture_coordinate, current_depth);
     }
 
     result *= shadow_map_debug_colors[shadow_map_slice];

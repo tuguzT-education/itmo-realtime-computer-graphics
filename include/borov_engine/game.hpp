@@ -30,6 +30,8 @@ concept ConstComponentRange = RefWrapperRange<Range, const Component>;
 class Game {
   public:
     static constexpr std::uint16_t shadow_map_resolution = 2048;
+    static constexpr std::string_view shadow_map_resolution_name = "SHADOW_MAP_RESOLUTION";
+
     static constexpr std::uint8_t shadow_map_cascade_count = 4;
     static constexpr std::string_view shadow_map_cascade_count_name = "SHADOW_MAP_CASCADE_COUNT";
 

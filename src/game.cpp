@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 
 #include <array>
+#include <constexpr-to-string/to_string.hpp>
 
 #include "borov_engine/camera.hpp"
 #include "borov_engine/camera_manager.hpp"
@@ -409,11 +410,10 @@ void Game::InitializeShadowMapResources() {
     result = device_->CreateSamplerState(&shadow_map_sampler_desc, &shadow_map_sampler_state_);
     detail::CheckResult(result, "Failed to create shadow map sampler state");
 
-    const std::string shadow_map_cascade_count_definition = std::to_string(shadow_map_cascade_count);
-    const std::array shadow_map_geometry_shader_defines{
+    constexpr std::array shadow_map_geometry_shader_defines{
         D3D_SHADER_MACRO{
             .Name = shadow_map_cascade_count_name.data(),
-            .Definition = shadow_map_cascade_count_definition.c_str(),
+            .Definition = to_string<shadow_map_cascade_count>,
         },
         D3D_SHADER_MACRO{},
     };
