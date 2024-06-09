@@ -119,13 +119,18 @@ float4 DirectionalLightningShadow(float3 world_position, float3 world_view_posit
         shadow_map_slice
     );
 
-    float4 result = 1.0f;
-    if ((saturate(shadow_map_texture_coordinate.x) == shadow_map_texture_coordinate.x) &&
-        (saturate(shadow_map_texture_coordinate.y) == shadow_map_texture_coordinate.y))
+    float4 result = 0.0f;
+    float3 texel_size = 1.0f / SHADOW_MAP_RESOLUTION;
+    for (int x = -1; x <= 1; ++x)
     {
-        float current_depth = shadow_map_position.z;
-        result = ShadowMapDirectionalLight.SampleCmp(ShadowMapSampler, shadow_map_texture_coordinate, current_depth);
+        for (int y = -1; y <= 1; ++y)
+        {
+            float current_depth = shadow_map_position.z;
+            float3 sample_coordinates = shadow_map_texture_coordinate + float3(x, y, 0.0f) * texel_size;
+            result += ShadowMapDirectionalLight.SampleCmpLevelZero(ShadowMapSampler, sample_coordinates, current_depth);
+        }
     }
+    result /= 9.0f;
 
     result *= shadow_map_debug_colors[shadow_map_slice];
     return result;

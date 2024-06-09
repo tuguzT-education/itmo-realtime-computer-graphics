@@ -186,6 +186,10 @@ void TriangleComponent::InitializeVertexShader() {
             .Name = Game::shadow_map_cascade_count_name.data(),
             .Definition = to_string<Game::shadow_map_cascade_count>,
         },
+        D3D_SHADER_MACRO{
+            .Name = Game::shadow_map_resolution_name.data(),
+            .Definition = to_string<Game::shadow_map_resolution>,
+        },
         D3D_SHADER_MACRO{},
     };
     vertex_shader_byte_code_ = detail::ShaderFromFile(
@@ -217,6 +221,10 @@ void TriangleComponent::InitializePixelShader() {
         D3D_SHADER_MACRO{
             .Name = Game::shadow_map_cascade_count_name.data(),
             .Definition = to_string<Game::shadow_map_cascade_count>,
+        },
+        D3D_SHADER_MACRO{
+            .Name = Game::shadow_map_resolution_name.data(),
+            .Definition = to_string<Game::shadow_map_resolution>,
         },
         D3D_SHADER_MACRO{},
     };
