@@ -43,7 +43,7 @@ VS_Output VSMain(VS_Input input)
 }
 
 Texture2DArray ShadowMapDirectionalLight : register(t0);
-SamplerState ShadowMapSampler : register(s0);
+SamplerComparisonState ShadowMapSampler : register(s0);
 
 Texture2D DiffuseMap : register(t1);
 SamplerState TextureSampler : register(s1);
@@ -124,13 +124,8 @@ float4 DirectionalLightningShadow(float3 world_position, float3 world_view_posit
     if ((saturate(shadow_map_texture_coordinate.x) == shadow_map_texture_coordinate.x) &&
         (saturate(shadow_map_texture_coordinate.y) == shadow_map_texture_coordinate.y))
     {
-        float shadow_map_depth = ShadowMapDirectionalLight.Sample(ShadowMapSampler, shadow_map_texture_coordinate).r;
-        float light_depth = shadow_map_position.z;
-
-        if (light_depth >= shadow_map_depth)
-        {
-            result *= 0.0f;
-        }
+        float current_depth = shadow_map_position.z;
+        result *= ShadowMapDirectionalLight.SampleCmp(ShadowMapSampler, shadow_map_texture_coordinate, current_depth).r;
     }
 
     result *= shadow_map_debug_colors[shadow_map_slice];

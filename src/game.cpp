@@ -398,11 +398,11 @@ void Game::InitializeShadowMapResources() {
     detail::CheckResult(result, "Failed to create shadow map shader resource view");
 
     constexpr D3D11_SAMPLER_DESC shadow_map_sampler_desc{
-        .Filter = D3D11_FILTER_ANISOTROPIC,
+        .Filter = D3D11_FILTER_COMPARISON_ANISOTROPIC,
         .AddressU = D3D11_TEXTURE_ADDRESS_CLAMP,
         .AddressV = D3D11_TEXTURE_ADDRESS_CLAMP,
         .AddressW = D3D11_TEXTURE_ADDRESS_CLAMP,
-        .ComparisonFunc = D3D11_COMPARISON_ALWAYS,
+        .ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL,
         .BorderColor = {0.0f, 0.0f, 0.0f, 0.0f},
         .MaxLOD = D3D11_FLOAT32_MAX,
     };
