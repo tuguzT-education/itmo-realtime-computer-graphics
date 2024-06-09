@@ -133,7 +133,7 @@ float4 DirectionalLightningShadow(float3 world_position, float3 world_view_posit
         }
     }
 
-    // result *= shadow_map_debug_colors[shadow_map_slice];
+    result *= shadow_map_debug_colors[shadow_map_slice];
     return result;
 }
 
