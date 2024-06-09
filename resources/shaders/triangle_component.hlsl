@@ -42,7 +42,7 @@ VS_Output VSMain(VS_Input input)
     return output;
 }
 
-Texture2D ShadowMapDirectionalLight : register(t0);
+Texture2DArray ShadowMapDirectionalLight : register(t0);
 SamplerState ShadowMapSampler : register(s0);
 
 Texture2D DiffuseMap : register(t1);
@@ -118,12 +118,11 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
             break;
         }
     }
-    shadow_map_slice = 1;
 
     float4 shadow_map_position = mul(float4(world_position, 1.0f), shadow_map_view_projections[shadow_map_slice]);
     shadow_map_position = shadow_map_position / shadow_map_position.w;
     float2 texCoords = (shadow_map_position.xy + float2(1.0f, 1.0f)) * 0.5f;
-    // texCoords.y = 1.0f - texCoords.y;
+    texCoords.y = 1.0f - texCoords.y;
     if ((saturate(texCoords.x) == texCoords.x) &&
         (saturate(texCoords.y) == texCoords.y))
     {
