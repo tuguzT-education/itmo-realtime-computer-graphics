@@ -134,7 +134,7 @@ math::Matrix4x4 DirectionalLightComponent::ProjectionMatrix(const Camera* camera
     }
 
     // how much geometry to include from outside the view frustum?
-    constexpr float z_mult = 10.0f;
+    constexpr float z_mult = 1.0f;
     near_plane = (near_plane < 0) ? near_plane * z_mult : near_plane / z_mult;
     far_plane = (far_plane < 0) ? far_plane / z_mult : far_plane * z_mult;
 

@@ -21,15 +21,15 @@ ViewportManager::ViewportManager(borov_engine::Game &game)
       } {}
 
 void ViewportManager::SplitViewports(std::vector<borov_engine::Viewport> &into) {
-    const borov_engine::Viewport &target_viewport = TargetViewport();
-
-    target_viewport.camera->Width(target_viewport.width / 2.0f);
-    into.emplace_back(target_viewport.x, target_viewport.y, target_viewport.width / 2.0f, target_viewport.height,
-                      target_viewport.minDepth, target_viewport.maxDepth, target_viewport.camera);
-
-    stationary_camera_.get().Width(target_viewport.width / 2.0f);
-    stationary_camera_.get().Height(target_viewport.height);
-    into.emplace_back(target_viewport.x + target_viewport.width / 2.0f, target_viewport.y, target_viewport.width / 2.0f,
-                      target_viewport.height, target_viewport.minDepth, target_viewport.maxDepth,
-                      &stationary_camera_.get());
+    // const borov_engine::Viewport &target_viewport = TargetViewport();
+    //
+    // target_viewport.camera->Width(target_viewport.width / 2.0f);
+    // into.emplace_back(target_viewport.x, target_viewport.y, target_viewport.width / 2.0f, target_viewport.height,
+    //                   target_viewport.minDepth, target_viewport.maxDepth, target_viewport.camera);
+    //
+    // stationary_camera_.get().Width(target_viewport.width / 2.0f);
+    // stationary_camera_.get().Height(target_viewport.height);
+    // into.emplace_back(target_viewport.x + target_viewport.width / 2.0f, target_viewport.y, target_viewport.width / 2.0f,
+    //                   target_viewport.height, target_viewport.minDepth, target_viewport.maxDepth,
+    //                   &stationary_camera_.get());
 }

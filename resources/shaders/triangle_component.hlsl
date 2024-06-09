@@ -37,7 +37,7 @@ VS_Output VSMain(VS_Input input)
     output.color = input.color;
     output.texture_coordinate = input.texture_coordinate * tile_count;
     output.world_position = mul(float4(input.position, 1.0f), transform.world).xyz;
-    output.world_view_position = mul(float4(input.position, 1.0f), mul(transform.world, transform.view)).xyz;
+    output.world_view_position = mul(float4(output.world_position, 1.0f), transform.view).xyz;
 
     return output;
 }
@@ -52,7 +52,7 @@ cbuffer PSShadowMapConstantBuffer : register(b0)
 {
     float4x4 shadow_map_view_projections[SHADOW_MAP_CASCADE_COUNT];
     float4 shadow_map_debug_colors[SHADOW_MAP_CASCADE_COUNT];
-    float4 shadow_map_distances[((SHADOW_MAP_CASCADE_COUNT - 1) / 4) + 1];
+    float4 shadow_map_distances;
 };
 
 cbuffer PSConstantBuffer : register(b1)
@@ -111,25 +111,25 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
     float world_view_distance = abs(world_view_position.z);
     for (int i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++)
     {
-        float shadow_map_distance = shadow_map_distances[i / 4][i % 4];
+        float shadow_map_distance = shadow_map_distances[i];
         if (world_view_distance < shadow_map_distance)
         {
             shadow_map_slice = i;
             break;
         }
     }
+    shadow_map_slice = 1;
 
     float4 shadow_map_position = mul(float4(world_position, 1.0f), shadow_map_view_projections[shadow_map_slice]);
-    float2 shadow_map_texture_coordinate = float2(
-        0.5f + (shadow_map_position.x / shadow_map_position.w * 0.5f),
-        0.5f - (shadow_map_position.y / shadow_map_position.w * 0.5f)
-    );
-    if ((saturate(shadow_map_texture_coordinate.x) == shadow_map_texture_coordinate.x) &&
-        (saturate(shadow_map_texture_coordinate.y) == shadow_map_texture_coordinate.y))
+    shadow_map_position = shadow_map_position / shadow_map_position.w;
+    float2 texCoords = (shadow_map_position.xy + float2(1.0f, 1.0f)) * 0.5f;
+    // texCoords.y = 1.0f - texCoords.y;
+    if ((saturate(texCoords.x) == texCoords.x) &&
+        (saturate(texCoords.y) == texCoords.y))
     {
         float shadow_map_depth = ShadowMapDirectionalLight
-            .Sample(ShadowMapSampler, float3(shadow_map_texture_coordinate.xy, shadow_map_slice)).r;
-        float light_depth = shadow_map_position.z / shadow_map_position.w;
+            .Sample(ShadowMapSampler, float3(texCoords.xy, shadow_map_slice)).r;
+        float light_depth = shadow_map_position.z;
 
         if (light_depth < shadow_map_depth)
         {
@@ -141,7 +141,7 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
         }
     }
 
-    color *= shadow_map_debug_colors[shadow_map_slice];
+    // color *= shadow_map_debug_colors[shadow_map_slice];
     return color;
 }
 

@@ -465,6 +465,25 @@ void Game::Update(const float delta_time) {
     }
 }
 
+std::vector<DirectX::SimpleMath::Vector4> GetFrustumCornersWorldSpace(const DirectX::SimpleMath::Matrix& view,
+                                                                      const DirectX::SimpleMath::Matrix& proj) {
+    const auto viewProj = view * proj;
+    const auto inv = viewProj.Invert();
+
+    std::vector<DirectX::SimpleMath::Vector4> frustumCorners;
+    for (unsigned int x = 0; x < 2; ++x) {
+        for (unsigned int y = 0; y < 2; ++y) {
+            for (unsigned int z = 0; z < 2; ++z) {
+                const DirectX::SimpleMath::Vector4 pt = DirectX::SimpleMath::Vector4::Transform(
+                    DirectX::SimpleMath::Vector4(2.0f * x - 1.0f, 2.0f * y - 1.0f, z, 1.0f), inv);
+                frustumCorners.push_back(pt / pt.w);
+            }
+        }
+    }
+
+    return frustumCorners;
+}
+
 void Game::DrawInternal() {
     device_context_->ClearState();
     device_context_->ClearRenderTargetView(render_target_view_.Get(), clear_color_);
@@ -496,36 +515,101 @@ void Game::DrawInternal() {
         const float camera_near = camera != nullptr ? camera->NearPlane() : 0.0f;
         const float camera_far = camera != nullptr ? camera->FarPlane() : 0.0f;
         ShadowMapConstantBuffer shadow_map_constant_buffer{
-            .shadow_map_distances =
-                {
-                    camera_near + (camera_far - camera_near) / 10.0f,
-                    camera_near + (camera_far - camera_near) / 5.0f,
-                    camera_near + (camera_far - camera_near) / 2.0f,
-                    camera_far,
-                },
+            // .shadow_map_distances =
+            //     {
+            //         camera_near + (camera_far - camera_near) / 10.0f,
+            //         camera_near + (camera_far - camera_near) / 5.0f,
+            //         camera_near + (camera_far - camera_near) / 2.0f,
+            //         camera_far,
+            //     },
         };
-        for (std::uint8_t i = 0; i < shadow_map_cascade_count; ++i) {
-            if (camera != nullptr && i != 0) {
-                camera->NearPlane(shadow_map_constant_buffer.shadow_map_distances[i - 1]);
-            }
-            if (camera != nullptr && i != shadow_map_cascade_count - 1) {
-                camera->FarPlane(shadow_map_constant_buffer.shadow_map_distances[i]);
-            }
 
-            shadow_map_constant_buffer.shadow_map_view_projections[i] = directional_light_->ViewMatrix(camera) *
-                                                                        directional_light_->ProjectionMatrix(camera);
+        auto dist = camera->FarPlane() - camera->NearPlane();
+        auto aspect = camera->AspectRatio();
+        auto fov = dynamic_cast<const PerspectiveProjection &>(camera->Projection()).HorizontalFOV();
 
-            if (camera != nullptr) {
-                if (camera == MainCamera()) {
-                    debug_shadow_maps[i] = std::make_pair(camera->Frustum(), directional_light_->Frustum(camera));
-                } else if (i == 2) {
-                    DebugDraw().DrawFrustrum(debug_shadow_maps[i].first);
-                    DebugDraw().DrawFrustrum(debug_shadow_maps[i].second);
-                }
-                camera->NearPlane(camera_near);
-                camera->FarPlane(camera_far);
-            }
+        float parts[] = {1, 2, 3, 4};
+        float sum = 10;
+        float acc = camera->NearPlane();
+        for (int i = 0; i < shadow_map_cascade_count; ++i) {
+            acc += parts[i] / sum * dist;
+            shadow_map_constant_buffer.shadow_map_distances[i] = acc;
         }
+
+        for (int i = 0; i < shadow_map_cascade_count; ++i) {
+            float nearPlane = i == 0 ? camera->NearPlane() : shadow_map_constant_buffer.shadow_map_distances[i - 1];
+            float farPlane = shadow_map_constant_buffer.shadow_map_distances[i];
+
+            auto projMat = DirectX::SimpleMath::Matrix::CreatePerspectiveFieldOfView(fov, aspect, nearPlane, farPlane);
+
+            auto corners = GetFrustumCornersWorldSpace(camera->ViewMatrix(), projMat);
+
+            /////////////////// CALCULATE VIEW MATRIX ////////////////////////
+            DirectX::SimpleMath::Vector3 center = DirectX::SimpleMath::Vector3::Zero;
+            for (const auto &v : corners) {
+                center += math::Vector3{v.x, v.y, v.z};
+            }
+            center /= corners.size();
+
+            const auto lightView = DirectX::SimpleMath::Matrix::CreateLookAt(center, center + DirectionalLight().Direction(),
+                DirectX::SimpleMath::Vector3::Up  // TODO: check case when sun direction is {0,1,0}
+            );
+            /////////////////////////////////////////////////////////////////
+            ///
+            ///////////////// CALCULATE PROJ MATRIX /////////////////////////
+#undef min
+#undef max
+            float minX = std::numeric_limits<float>::max();
+            float maxX = std::numeric_limits<float>::lowest();
+            float minY = std::numeric_limits<float>::max();
+            float maxY = std::numeric_limits<float>::lowest();
+            float minZ = std::numeric_limits<float>::max();
+            float maxZ = std::numeric_limits<float>::lowest();
+            for (const auto &v : corners) {
+                const auto trf = DirectX::SimpleMath::Vector4::Transform(v, lightView);
+
+                minX = std::min(minX, trf.x);
+                maxX = std::max(maxX, trf.x);
+                minY = std::min(minY, trf.y);
+                maxY = std::max(maxY, trf.y);
+                minZ = std::min(minZ, trf.z);
+                maxZ = std::max(maxZ, trf.z);
+            }
+
+            constexpr float zMult = 10.0f;
+            minZ = (minZ < 0) ? minZ * zMult : minZ / zMult;
+            maxZ = (maxZ < 0) ? maxZ / zMult : maxZ * zMult;
+
+            auto lightProjection = DirectX::SimpleMath::Matrix::CreateOrthographicOffCenter(
+                minX, maxX, minY, maxY, minZ, maxZ);  // TODO: check case when sun direction is {0,1,0}
+
+            // Game::Instance->DebugRender->DrawFrustrum(lightView, lightProjection);
+
+            shadow_map_constant_buffer.shadow_map_view_projections[i] = lightView * lightProjection;
+        }
+
+        // for (std::uint8_t i = 0; i < shadow_map_cascade_count; ++i) {
+        //     if (camera != nullptr && i != 0) {
+        //         camera->NearPlane(shadow_map_constant_buffer.shadow_map_distances[i - 1]);
+        //     }
+        //     if (camera != nullptr && i != shadow_map_cascade_count - 1) {
+        //         camera->FarPlane(shadow_map_constant_buffer.shadow_map_distances[i]);
+        //     }
+        //
+        //     shadow_map_constant_buffer.shadow_map_view_projections[i] = directional_light_->ViewMatrix(camera) *
+        //                                                                 directional_light_->ProjectionMatrix(camera);
+        //
+        //     if (camera != nullptr) {
+        //         if (camera == MainCamera()) {
+        //             debug_shadow_maps[i] = std::make_pair(camera->Frustum(), directional_light_->Frustum(camera));
+        //         } else {
+        //             // DebugDraw().DrawFrustrum(debug_shadow_maps[i].first);
+        //             DebugDraw().DrawFrustrum(debug_shadow_maps[i].second);
+        //         }
+        //         camera->NearPlane(camera_near);
+        //         camera->FarPlane(camera_far);
+        //     }
+        // }
         UpdateShadowMapConstantBuffer(shadow_map_constant_buffer);
         const std::array gs_constant_buffers{shadow_map_constant_buffer_.Get()};
         device_context_->GSSetConstantBuffers(0, gs_constant_buffers.size(), gs_constant_buffers.data());
