@@ -52,7 +52,7 @@ cbuffer PSShadowMapConstantBuffer : register(b0)
 {
     float4x4 shadow_map_view_projections[SHADOW_MAP_CASCADE_COUNT];
     float4 shadow_map_debug_colors[SHADOW_MAP_CASCADE_COUNT];
-    float4 shadow_map_distances;
+    float4 shadow_map_distances[((SHADOW_MAP_CASCADE_COUNT - 1) / 4) + 1];
 };
 
 cbuffer PSConstantBuffer : register(b1)
@@ -97,21 +97,15 @@ float4 PhongLightning(in Light light, in Material material,
     return ambient + diffuse + specular;
 }
 
-float4 DirectionalLightning(in DirectionalLight directional_light, in Material material,
-                            float3 world_position, float3 normal, float3 world_view_position)
+float4 DirectionalLightningShadow(float3 world_position, float3 world_view_position)
 {
-    Light light;
-    light.ambient = directional_light.ambient;
-    light.diffuse = directional_light.diffuse;
-    light.specular = directional_light.specular;
-
-    float4 color = PhongAmbientLightning(light, material);
+    float4 result = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
     int shadow_map_slice = SHADOW_MAP_CASCADE_COUNT - 1;
     float world_view_distance = abs(world_view_position.z);
     for (int i = 0; i < SHADOW_MAP_CASCADE_COUNT; i++)
     {
-        float shadow_map_distance = shadow_map_distances[i];
+        float shadow_map_distance = shadow_map_distances[i / 4][i % 4];
         if (world_view_distance < shadow_map_distance)
         {
             shadow_map_slice = i;
@@ -120,28 +114,44 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
     }
 
     float4 shadow_map_position = mul(float4(world_position, 1.0f), shadow_map_view_projections[shadow_map_slice]);
-    shadow_map_position = shadow_map_position / shadow_map_position.w;
-    float2 texCoords = (shadow_map_position.xy + float2(1.0f, 1.0f)) * 0.5f;
-    texCoords.y = 1.0f - texCoords.y;
-    if ((saturate(texCoords.x) == texCoords.x) &&
-        (saturate(texCoords.y) == texCoords.y))
+    shadow_map_position /= shadow_map_position.w;
+
+    float3 shadow_map_texture_coordinate = float3(
+        0.5f + (shadow_map_position.x * 0.5f),
+        0.5f - (shadow_map_position.y * 0.5f),
+        shadow_map_slice
+    );
+    if ((saturate(shadow_map_texture_coordinate.x) == shadow_map_texture_coordinate.x) &&
+        (saturate(shadow_map_texture_coordinate.y) == shadow_map_texture_coordinate.y))
     {
-        float shadow_map_depth = ShadowMapDirectionalLight
-            .Sample(ShadowMapSampler, float3(texCoords.xy, shadow_map_slice)).r;
+        float shadow_map_depth = ShadowMapDirectionalLight.Sample(ShadowMapSampler, shadow_map_texture_coordinate).r;
         float light_depth = shadow_map_position.z;
 
-        if (light_depth < shadow_map_depth)
+        if (light_depth >= shadow_map_depth)
         {
-            float3 to_light_direction = -directional_light.direction;
-
-            float4 diffuse = PhongDiffuseLightning(light, material, normal, to_light_direction);
-            float4 specular = PhongSpecularLightning(light, material, world_position, normal, to_light_direction);
-            color += diffuse + specular;
+            result *= 0.0f;
         }
     }
 
-    // color *= shadow_map_debug_colors[shadow_map_slice];
-    return color;
+    // result *= shadow_map_debug_colors[shadow_map_slice];
+    return result;
+}
+
+float4 DirectionalLightning(in DirectionalLight directional_light, in Material material,
+                            float3 world_position, float3 normal, float3 world_view_position)
+{
+    Light light;
+    light.ambient = directional_light.ambient;
+    light.diffuse = directional_light.diffuse;
+    light.specular = directional_light.specular;
+
+    float3 to_light_direction = -directional_light.direction;
+
+    float4 ambient = PhongAmbientLightning(light, material);
+    float4 diffuse = PhongDiffuseLightning(light, material, normal, to_light_direction);
+    float4 specular = PhongSpecularLightning(light, material, world_position, normal, to_light_direction);
+
+    return ambient + (diffuse + specular) * DirectionalLightningShadow(world_position, world_view_position);
 }
 
 float4 PointLightning(in PointLight point_light, in Material material,
