@@ -1,3 +1,5 @@
+#pragma pack_matrix(row_major)
+
 #include "transform.hlsl"
 
 cbuffer VSConstantBuffer : register(b0)
@@ -21,7 +23,7 @@ VS_Output VSMain(VS_Input input)
 {
     VS_Output output = (VS_Output)0;
 
-    output.position = mul(WorldViewProjection(transform), float4(input.position, 1.0f));
+    output.position = mul(float4(input.position, 1.0f), WorldViewProjection(transform));
     output.color = input.color;
 
     return output;

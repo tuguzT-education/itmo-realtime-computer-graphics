@@ -1,3 +1,5 @@
+#pragma pack_matrix(row_major)
+
 #include "transform.hlsl"
 #include "material.hlsl"
 #include "light.hlsl"
@@ -30,12 +32,12 @@ VS_Output VSMain(VS_Input input)
 {
     VS_Output output = (VS_Output)0;
 
-    output.position = mul(WorldViewProjection(transform), float4(input.position, 1.0f));
-    output.normal = normalize(mul(transform.world, float4(input.normal, 0.0f)).xyz);
+    output.position = mul(float4(input.position, 1.0f), WorldViewProjection(transform));
+    output.normal = normalize(mul(float4(input.normal, 0.0f), transform.world).xyz);
     output.color = input.color;
     output.texture_coordinate = input.texture_coordinate * tile_count;
-    output.world_position = mul(transform.world, float4(input.position, 1.0f)).xyz;
-    output.world_view_position = mul(mul(transform.view, transform.world), float4(input.position, 1.0f)).xyz;
+    output.world_position = mul(float4(input.position, 1.0f), transform.world).xyz;
+    output.world_view_position = mul(float4(input.position, 1.0f), mul(transform.world, transform.view)).xyz;
 
     return output;
 }
@@ -117,7 +119,7 @@ float4 DirectionalLightning(in DirectionalLight directional_light, in Material m
         }
     }
 
-    float4 shadow_map_position = mul(shadow_map_view_projections[shadow_map_slice], float4(world_position, 1.0f));
+    float4 shadow_map_position = mul(float4(world_position, 1.0f), shadow_map_view_projections[shadow_map_slice]);
     float2 shadow_map_texture_coordinate = float2(
         0.5f + (shadow_map_position.x / shadow_map_position.w * 0.5f),
         0.5f - (shadow_map_position.y / shadow_map_position.w * 0.5f)
