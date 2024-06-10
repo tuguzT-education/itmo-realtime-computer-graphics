@@ -544,6 +544,25 @@ void Game::DrawInternal() {
             component.DrawInShadowMap(camera);
         }
 
+        for (std::uint32_t i = 0; i < shadow_map_cascade_count; i++) {
+            D3D11_SHADER_RESOURCE_VIEW_DESC shadow_map_shader_resource_view_desc{
+                .Format = DXGI_FORMAT_R32_FLOAT,
+                .ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY,
+                .Texture2DArray =
+                    D3D11_TEX2D_ARRAY_SRV{
+                        .MipLevels = 1,
+                        .FirstArraySlice = i,
+                        .ArraySize = shadow_map_cascade_count - i,
+                    },
+            };
+            detail::D3DPtr<ID3D11ShaderResourceView> shadow_map_shader_resource_view;
+            HRESULT result = device_->CreateShaderResourceView(shadow_map_.Get(), &shadow_map_shader_resource_view_desc,
+                                                               &shadow_map_shader_resource_view);
+            detail::CheckResult(result);
+
+            texture_draw_->DrawTexture(shadow_map_shader_resource_view, 0.0f, i * 200.0f, 200.0f, 200.0f, 1.0f);
+        }
+
         device_context_->ClearState();
 
         const std::array render_targets{render_target_view_.Get()};
@@ -563,6 +582,8 @@ void Game::DrawInternal() {
 
         Draw(camera);
         debug_draw_->Draw(camera);
+        texture_draw_->Draw(camera);
+        texture_draw_->Clear();
     }
     Draw();
 

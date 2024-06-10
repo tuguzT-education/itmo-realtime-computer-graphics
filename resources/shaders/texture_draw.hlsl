@@ -1,16 +1,13 @@
-struct ConstantData
-{
-    float4x4 WorldViewProj;
-};
+#pragma pack_matrix(row_major)
 
 cbuffer ConstBuf : register(b0) {
-    ConstantData ConstData;
+    float4x4 WorldViewProj;
 }
 
 struct VS_IN
 {
-    float4 pos : POSITION;
-    float4 tex : TEXCOORD0;
+    float3 pos : POSITION;
+    float2 tex : TEXCOORD0;
 };
 
 struct PS_IN
@@ -27,15 +24,15 @@ PS_IN VSMain( VS_IN input )
 {
     PS_IN output = (PS_IN)0;
 
-    output.pos = mul(float4(input.pos.xyz, 1.0f), ConstData.WorldViewProj);
-    output.tex = input.tex.xy;
+    output.pos = mul(float4(input.pos, 1.0f), WorldViewProj);
+    output.tex = input.tex;
 
     return output;
 }
 
 float4 PSMain( PS_IN input ) : SV_Target
 {
-    float4 color = DiffuseMap.SampleLevel(Sampler, input.tex.xy, 0);
+    float4 color = DiffuseMap.SampleLevel(Sampler, input.tex, 0);
 
-    return color;
+    return float4(color.r, color.r, color.r, 1.0f);
 }
