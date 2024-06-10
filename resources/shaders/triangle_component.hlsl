@@ -15,7 +15,7 @@ struct VS_Input
     float3 position : POSITION0;
     float3 normal : NORMAL0;
     float4 color : COLOR0;
-    float2 texture_coordinate : TEXCOORD0;
+    float2 texture_coordinates : TEXCOORD0;
 };
 
 struct VS_Output
@@ -23,7 +23,7 @@ struct VS_Output
     float4 position : SV_Position;
     float3 normal : NORMAL0;
     float4 color : COLOR0;
-    float2 texture_coordinate : TEXCOORD0;
+    float2 texture_coordinates : TEXCOORD0;
     float3 world_position : TEXCOORD1;
     float3 world_view_position : TEXCOORD2;
 };
@@ -35,7 +35,7 @@ VS_Output VSMain(VS_Input input)
     output.position = mul(float4(input.position, 1.0f), WorldViewProjection(transform));
     output.normal = normalize(mul(float4(input.normal, 0.0f), transform.world).xyz);
     output.color = input.color;
-    output.texture_coordinate = input.texture_coordinate * tile_count;
+    output.texture_coordinates = input.texture_coordinates * tile_count;
     output.world_position = mul(float4(input.position, 1.0f), transform.world).xyz;
     output.world_view_position = mul(float4(output.world_position, 1.0f), transform.view).xyz;
 
@@ -111,22 +111,20 @@ float4 DirectionalLightningShadow(float3 world_position, float3 world_view_posit
         }
     }
 
-    float4 shadow_map_position = mul(float4(world_position, 1.0f), shadow_map_view_projections[shadow_map_slice]);
-    shadow_map_position /= shadow_map_position.w;
-    float3 shadow_map_texture_coordinate = float3(
-        0.5f + (shadow_map_position.x * 0.5f),
-        0.5f - (shadow_map_position.y * 0.5f),
-        shadow_map_slice
-    );
+    float4 light_position = mul(float4(world_position, 1.0f), shadow_map_view_projections[shadow_map_slice]);
+    light_position /= light_position.w;
+
+    float2 shadow_map_coordinates = (light_position.xy + float2(1.0f, 1.0f)) * 0.5f;
+    shadow_map_coordinates.y = 1.0f - shadow_map_coordinates.y;
 
     float4 result = 0.0f;
     float3 texel_size = 1.0f / SHADOW_MAP_RESOLUTION;
-    for (int x = -1; x <= 1; ++x)
+    for (float x = -1.0f; x <= 1.0f; x += 1.0f)
     {
-        for (int y = -1; y <= 1; ++y)
+        for (float y = -1.0f; y <= 1.0f; y += 1.0f)
         {
-            float current_depth = shadow_map_position.z;
-            float3 sample_coordinates = shadow_map_texture_coordinate + float3(x, y, 0.0f) * texel_size;
+            float current_depth = light_position.z;
+            float3 sample_coordinates = float3(shadow_map_coordinates + float2(x, y) * texel_size, shadow_map_slice);
             result += ShadowMapDirectionalLight.SampleCmpLevelZero(ShadowMapSampler, sample_coordinates, current_depth);
         }
     }
@@ -203,7 +201,7 @@ float4 SpotLightning(in SpotLight spot_light, in Material material,
 float4 PSMain(PS_Input input) : SV_Target
 {
     float4 color = has_texture
-                       ? DiffuseMap.Sample(TextureSampler, input.texture_coordinate)
+                       ? DiffuseMap.Sample(TextureSampler, input.texture_coordinates)
                        : float4(1.0f, 1.0f, 1.0f, 1.0f);
     color *= input.color;
 

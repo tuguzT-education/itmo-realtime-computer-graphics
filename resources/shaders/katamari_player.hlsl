@@ -14,7 +14,7 @@ struct VS_Input
     float3 position : POSITION0;
     float3 normal : NORMAL0;
     float4 color : COLOR0;
-    float2 texture_coordinate : TEXCOORD0;
+    float2 texture_coordinates : TEXCOORD0;
 };
 
 struct VS_Output
@@ -22,7 +22,7 @@ struct VS_Output
     float4 position : SV_Position;
     float3 normal : NORMAL0;
     float4 color : COLOR0;
-    float2 texture_coordinate : TEXCOORD0;
+    float2 texture_coordinates : TEXCOORD0;
     float3 world_position : TEXCOORD1;
     float3 world_view_position : TEXCOORD2;
 };
@@ -40,7 +40,7 @@ VS_Output VSMain(VS_Input input)
     output.position = mul(float4(input.position, 1.0f), WorldViewProjection(transform));
     output.normal = normalize(mul(float4(input.normal, 0.0f), transform.world).xyz);
     output.color = input.color;
-    output.texture_coordinate = input.texture_coordinate * tile_count;
+    output.texture_coordinates = input.texture_coordinates * tile_count;
     output.world_position = mul(float4(input.position, 1.0f), transform.world).xyz;
     output.world_view_position = mul(float4(input.position, 1.0f), mul(transform.world, transform.view)).xyz;
 

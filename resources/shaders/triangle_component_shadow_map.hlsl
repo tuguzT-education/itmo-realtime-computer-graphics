@@ -13,7 +13,7 @@ struct VS_Input
     float3 position : POSITION0;
     float3 normal : NORMAL0;
     float4 color : COLOR0;
-    float2 texture_coordinate : TEXCOORD0;
+    float2 texture_coordinates : TEXCOORD0;
 };
 
 struct VS_Output
