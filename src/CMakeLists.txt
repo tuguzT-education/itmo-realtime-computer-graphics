@@ -47,6 +47,7 @@ set(HEADER_LIST
         ${PROJECT_SOURCE_DIR}/include/borov_engine/viewport_manager.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/transform.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/debug_draw.hpp
+        ${PROJECT_SOURCE_DIR}/include/borov_engine/texture_draw.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/scene_component.hpp
         ${PROJECT_SOURCE_DIR}/include/borov_engine/scene_component.inl
         ${PROJECT_SOURCE_DIR}/include/borov_engine/light.hpp
@@ -85,7 +86,8 @@ set(SOURCE_LIST
         light.cpp
         geometric_primitive_component.cpp
         triangle_component.cpp
-        box_component.cpp)
+        box_component.cpp
+        texture_draw.cpp)
 
 find_package(directxtk CONFIG REQUIRED)
 find_package(range-v3 CONFIG REQUIRED)

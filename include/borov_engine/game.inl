@@ -27,6 +27,12 @@ T &Game::DebugDraw(Args &&...args) {
     return dynamic_cast<T &>(*debug_draw_);
 }
 
+template <std::derived_from<class TextureDraw> T, typename... Args>
+T &Game::TextureDraw(Args &&...args) {
+    texture_draw_ = std::make_unique<T>(*this, std::forward<Args>(args)...);
+    return dynamic_cast<T &>(*texture_draw_);
+}
+
 template <std::derived_from<Component> T, typename... Args>
 T &Game::AddComponent(Args &&...args) {
     auto &component = components_.emplace_back(std::make_unique<T>(*this, std::forward<Args>(args)...));

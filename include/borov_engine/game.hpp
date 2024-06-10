@@ -12,6 +12,7 @@
 #include "debug_draw.hpp"
 #include "detail/d3d_ptr.hpp"
 #include "input.hpp"
+#include "texture_draw.hpp"
 #include "timer.hpp"
 #include "viewport_manager.hpp"
 
@@ -62,6 +63,12 @@ class Game {
 
     template <std::derived_from<class DebugDraw> T, typename... Args>
     T &DebugDraw(Args &&...args);
+
+    [[nodiscard]] const TextureDraw &TextureDraw() const;
+    [[nodiscard]] class TextureDraw &TextureDraw();
+
+    template <std::derived_from<class TextureDraw> T, typename... Args>
+    T &TextureDraw(Args &&...args);
 
     [[nodiscard]] const DirectionalLightComponent &DirectionalLight() const;
     [[nodiscard]] DirectionalLightComponent &DirectionalLight();
@@ -135,9 +142,12 @@ class Game {
 
     class Window &window_;
     class Input &input_;
+
     std::unique_ptr<class ViewportManager> viewport_manager_;
     std::unique_ptr<class CameraManager> camera_manager_;
     std::unique_ptr<class DebugDraw> debug_draw_;
+    std::unique_ptr<class TextureDraw> texture_draw_;
+
     std::unique_ptr<DirectionalLightComponent> directional_light_;
     std::unique_ptr<PointLightComponent> point_light_;
     std::unique_ptr<SpotLightComponent> spot_light_;

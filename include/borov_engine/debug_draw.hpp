@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef BOROV_ENGINE_DEBUG_DRAW_HPP_INCLUDED
+#define BOROV_ENGINE_DEBUG_DRAW_HPP_INCLUDED
+
 #include <VertexTypes.h>
 
 #include "component.hpp"
@@ -56,8 +59,6 @@ class DebugDraw : public Component {
 
     void DrawFrustrum(const math::Frustum& frustum, const DrawOpts& opts = {});
 
-    // virtual void DrawTextureOnScreen(ID3D11ShaderResourceView* tex, int x, int y, int width, int height, int zOrder);
-
     // virtual void DrawStaticMesh(const StaticMesh& mesh, const DirectX::SimpleMath::Matrix& transform,
     //                             const DirectX::SimpleMath::Color& color);
 
@@ -73,12 +74,10 @@ class DebugDraw : public Component {
     void InitializePrimitiveRasterizerState();
     void InitializePrimitiveVertexBuffer();
 
-    // void InitQuads();
     // void InitMeshes();
 
     void DrawPrimitives(const Camera* camera);
     void RemoveOldPrimitives();
-    // void DrawQuads();
     // void DrawMeshes();
 
     void UpdatePrimitiveVertexBuffer();
@@ -110,34 +109,6 @@ class DebugDraw : public Component {
     static const std::size_t max_points_count;
 #pragma endregion Primitives
 
-    // #pragma region Quads
-    //
-    //     math::Matrix4x4 quadProjMatrix;
-    //
-    //     struct QuadInfo {
-    //         ID3D11ShaderResourceView* Srv;
-    //         math::Matrix4x4 TransformMat;
-    //     };
-    //
-    //     std::vector<QuadInfo> quads;
-    //
-    //     const UINT QuadMaxDrawCount = 100;
-    //
-    //     detail::D3DPtr<ID3D11Buffer> quadBuf;
-    //     UINT quadBindingStride;
-    //
-    //     detail::D3DPtr<ID3D11PixelShader> pixelQuadShader;
-    //     detail::D3DPtr<ID3D11VertexShader> vertexQuadShader;
-    //     detail::D3DPtr<ID3DBlob> pixelQuadCompResult;
-    //     detail::D3DPtr<ID3DBlob> vertexQuadCompResult;
-    //
-    //     detail::D3DPtr<ID3D11InputLayout> quadLayout;
-    //     detail::D3DPtr<ID3D11SamplerState> quadSampler;
-    //
-    //     detail::D3DPtr<ID3D11RasterizerState> quadRastState;
-    //
-    // #pragma endregion Quads
-
     // #pragma region Meshes
     //
     //     struct MeshInfo {
@@ -166,3 +137,5 @@ class DebugDraw : public Component {
 };
 
 }  // namespace borov_engine
+
+#endif  // BOROV_ENGINE_DEBUG_DRAW_HPP_INCLUDED

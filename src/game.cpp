@@ -33,6 +33,8 @@ Game::Game(class Window &window, class Input &input)
 
     ViewportManager<class ViewportManager>();
     DebugDraw<class DebugDraw>();
+    TextureDraw<class TextureDraw>();
+
     directional_light_ = std::make_unique<DirectionalLightComponent>(*this);
     directional_light_->IsLightEnabled() = true;
     directional_light_->Ambient() = math::Color{math::colors::linear::White};
@@ -89,6 +91,14 @@ const DebugDraw &Game::DebugDraw() const {
 
 DebugDraw &Game::DebugDraw() {
     return *debug_draw_;
+}
+
+const TextureDraw &Game::TextureDraw() const {
+    return *texture_draw_;
+}
+
+TextureDraw &Game::TextureDraw() {
+    return *texture_draw_;
 }
 
 const DirectionalLightComponent &Game::DirectionalLight() const {

@@ -98,80 +98,6 @@ void DebugDraw::InitializePrimitiveVertexBuffer() {
     detail::CheckResult(result, "Failed to create primitive vertex buffer");
 }
 
-// void DebugDraw::InitQuads() {
-//     quadProjMatrix = Matrix::CreateOrthographicOffCenter(0, static_cast<float>(game->Display->ClientWidth),
-//                                                          static_cast<float>(game->Display->ClientHeight), 0, 0.1f,
-//                                                          1000.0f);
-//
-//     ID3DBlob* errorCode = nullptr;
-//
-//     D3DCompileFromFile(L"Shaders/TexturedShader.hlsl", nullptr, nullptr, "VSMain", "vs_5_0",
-//                        D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, 0, &vertexQuadCompResult, &errorCode);
-//     game->Device->CreateVertexShader(vertexQuadCompResult->GetBufferPointer(), vertexQuadCompResult->GetBufferSize(),
-//                                      nullptr, &vertexQuadShader);
-//
-//     if (errorCode) errorCode->Release();
-//
-//     D3DCompileFromFile(L"Shaders/TexturedShader.hlsl", nullptr, nullptr, "PSMain", "ps_5_0",
-//                        D3DCOMPILE_PACK_MATRIX_ROW_MAJOR, 0, &pixelQuadCompResult, &errorCode);
-//     game->Device->CreatePixelShader(pixelQuadCompResult->GetBufferPointer(), pixelQuadCompResult->GetBufferSize(),
-//                                     nullptr, &pixelQuadShader);
-//
-//     if (errorCode) errorCode->Release();
-//
-//     quadLayout = VertexPositionTex::GetLayout(vertexQuadCompResult);
-//     quadBindingStride = VertexPositionTex::Stride;
-//
-//     quads.reserve(10);
-//
-//     auto points = new Vector4[8]{
-//         Vector4(1, 1, 0.0f, 1.0f),       Vector4(1.0f, 1.0f, 0.0f, 0.0f), Vector4(0, 1, 0.0f, 1.0f),
-//         Vector4(0.0f, 1.0f, 0.0f, 0.0f), Vector4(1, 0, 0.0f, 1.0f),       Vector4(1.0f, 0.0f, 0.0f, 0.0f),
-//         Vector4(0, 0, 0.0f, 1.0f),       Vector4(0.0f, 0.0f, 0.0f, 0.0f),
-//     };
-//
-//     D3D11_BUFFER_DESC bufDesc = {};
-//     {
-//         bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-//         bufDesc.CPUAccessFlags = 0;
-//         bufDesc.MiscFlags = 0;
-//         bufDesc.Usage = D3D11_USAGE_DEFAULT;
-//         bufDesc.ByteWidth = sizeof(float) * 4 * 8;
-//     }
-//
-//     D3D11_SUBRESOURCE_DATA subData = {};
-//     subData.pSysMem = points;
-//
-//     game->Device->CreateBuffer(&bufDesc, &subData, &quadBuf);
-//
-//     delete[] points;
-//
-//     float borderCol[] = {1.0f, 0.0f, 0.0f, 1.0f};
-//
-//     D3D11_SAMPLER_DESC samplDesc = {};
-//     {
-//         samplDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-//         samplDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-//         samplDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-//         samplDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-//         samplDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-//         samplDesc.BorderColor[0] = 1.0f;
-//         samplDesc.BorderColor[1] = 0.0f;
-//         samplDesc.BorderColor[2] = 0.0f;
-//         samplDesc.BorderColor[3] = 1.0f;
-//         samplDesc.MaxLOD = static_cast<float>(INT_MAX);
-//     }
-//     game->Device->CreateSamplerState(&samplDesc, &quadSampler);
-//
-//     D3D11_RASTERIZER_DESC rastDesc = {};
-//     {
-//         rastDesc.CullMode = D3D11_CULL_NONE;
-//         rastDesc.FillMode = D3D11_FILL_SOLID;
-//     }
-//
-//     game->Device->CreateRasterizerState(&rastDesc, &quadRastState);
-// }
-//
 // void DebugDraw::InitMeshes() {
 //     ID3DBlob* errorCode;
 //
@@ -235,34 +161,6 @@ void DebugDraw::DrawPrimitives(const Camera* camera) {
     DeviceContext().Draw(primitive_vertices_.size(), 0);
 }
 
-// void DebugDraw::DrawQuads() {
-//     if (quads.empty()) return;
-//
-//     game->Context->OMSetDepthStencilState(depthState, 0);
-//     game->Context->RSSetState(quadRastState);
-//
-//     game->Context->VSSetShader(vertexQuadShader, nullptr, 0);
-//     game->Context->PSSetShader(pixelQuadShader, nullptr, 0);
-//
-//     game->Context->IASetInputLayout(quadLayout);
-//     game->Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-//
-//     const UINT offset = 0;
-//     game->Context->IASetVertexBuffers(0, 1, &quadBuf, &quadBindingStride, &offset);
-//
-//     game->Context->VSSetConstantBuffers(0, 1, &constBuf);
-//
-//     for (auto& quad : quads) {
-//         auto mat = quad.TransformMat * quadProjMatrix;
-//         game->Context->UpdateSubresource(constBuf, 0, nullptr, &mat, 0, 0);
-//
-//         game->Context->PSSetShaderResources(0, 1, &quad.Srv);
-//         game->Context->PSSetSamplers(0, 1, &quadSampler);
-//
-//         game->Context->Draw(4, 0);
-//     }
-// }
-//
 // void DebugDraw::DrawMeshes() {
 //     if (meshes.empty()) return;
 //
@@ -304,14 +202,12 @@ void DebugDraw::UpdatePrimitiveVertexBuffer() {
 
 void DebugDraw::Clear() {
     primitive_vertices_.clear();
-    // quads.clear();
     // meshes.clear();
 }
 
 void DebugDraw::Draw(const Camera* camera) {
     DrawPrimitives(camera);
     RemoveOldPrimitives();
-    // DrawQuads();
     // DrawMeshes();
 }
 
@@ -538,18 +434,6 @@ void DebugDraw::Update(const float delta_time) {
     auto decrease_duration = [delta_time](Vertex& vertex) { vertex.duration -= delta_time; };
     std::for_each(std::execution::par, primitive_vertices_.begin(), primitive_vertices_.end(), decrease_duration);
 }
-
-// void DebugDraw::DrawTextureOnScreen(ID3D11ShaderResourceView* tex, int x, int y, int width, int height, int zOrder) {
-//     if (quads.size() >= QuadMaxDrawCount) return;
-//
-//     QuadInfo quad = {};
-//     quad.Srv = tex;
-//     quad.TransformMat =
-//         Matrix::CreateScale(static_cast<float>(width), static_cast<float>(height), 1.0f) *
-//         Matrix::CreateTranslation(static_cast<float>(x), static_cast<float>(y), static_cast<float>(zOrder));
-//
-//     quads.emplace_back(quad);
-// }
 
 // void DebugDraw::DrawStaticMesh(const StaticMesh& mesh, const DirectX::SimpleMath::Matrix& transform,
 //                                const DirectX::SimpleMath::Color& color) {
